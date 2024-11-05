@@ -16,7 +16,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Fetch settings from API
-    fetch('${config.BASE_URL}/api/misc_settings')
+    fetch(`${config.BASE_URL}/api/misc_settings`)
       .then((response) => response.json())
       .then((data) => {
         if (data.code === 1000) {
@@ -36,7 +36,7 @@ export default function SettingsPage() {
     const updatedValue = document.getElementById(`value-${keyName}`).value;
 
     // Send updated value to the API
-    fetch('${config.BASE_URL}/api/misc_settings', {
+    fetch(`${config.BASE_URL}/api/misc_settings`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ export default function AppView() {
     // Fetch data from the endpoint
     const fetchData = async () => {
       try {
-        const response = await fetch('${config.BASE_URL}/api/dashboard/overview');
+        const response = await fetch(`${config.BASE_URL}/api/dashboard/overview`);
         const data = await response.json();
 
         if (data.code === 1000) {

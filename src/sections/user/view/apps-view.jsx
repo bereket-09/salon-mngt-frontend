@@ -53,7 +53,7 @@ export default function QuestionsTable() {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const url = '${config.BASE_URL}/api/questions';
+      const url = `${config.BASE_URL}/api/questions`;
       try {
         const response = await fetch(url);
         const result = await response.json();
@@ -120,7 +120,7 @@ export default function QuestionsTable() {
   // const handleSubmit = async (data) => {
   //   const url = selectedQuestion
   //     ? `${config.BASE_URL}/api/questions/${selectedQuestion.question_id}`
-  //     : '${config.BASE_URL}/api/questions';
+  //     : `${config.BASE_URL}/api/questions`;
   //   const method = selectedQuestion ? 'PUT' : 'POST';
 
   //   const response = await fetch(url, {

@@ -217,7 +217,7 @@ const ImportQuestions = () => {
         status: 'active',
       }));
 
-      fetch('${config.BASE_URL}/api/questions/bulk-question', {
+      fetch(`${config.BASE_URL}/api/questions/bulk-question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

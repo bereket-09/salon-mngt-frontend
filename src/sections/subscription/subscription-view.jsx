@@ -37,7 +37,7 @@ export default function SubscriptionView() {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      const url = '${config.BASE_URL}/api/customers';
+      const url = `${config.BASE_URL}/api/customers`;
       try {
         const response = await fetch(url);
         const result = await response.json();

@@ -29,12 +29,13 @@ export default function TriviaList() {
 
   useEffect(() => {
     const fetchTrivia = async () => {
-      const url = '${config.BASE_URL}/api/trivia';
+      const url = `${config.BASE_URL}/api/trivia`;
       try {
         const response = await fetch(url);
         const result = await response.json();
         if (result.code === 1000) {
           setTriviaData(result.data);
+          s;
         } else {
           console.error('Error fetching trivia data:', result.message);
         }
