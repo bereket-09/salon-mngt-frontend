@@ -29,7 +29,7 @@ export default function UserTableRow({
   isVerified,
   status,
   handleClick,
-  row
+  row,
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function UserTableRow({
 
   // eslint-disable-next-line no-shadow
   const handleOpenDialog = (row) => {
-    console.log(row)
+    console.log(row);
     setSelectedRow(row);
     setDialogOpen(true);
   };
@@ -47,53 +47,52 @@ export default function UserTableRow({
     setSelectedRow(null);
   };
 
-
   const handleRowDelete = async (rowData) => {
     // Show confirmation dialog with the user's name
     const result = await Swal.fire({
-        title: `Are you sure? You want to delete ${rowData.username}`, // Use template literals here
-        text: 'This action cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
+      title: `Are you sure? You want to delete ${rowData.username}`, // Use template literals here
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
     });
 
     if (result.isConfirmed) {
-        try {
-            const response = await fetch(`http://localhost:4000/api/users/delete/${rowData.id}`, {
-                method: 'DELETE',
-            });
+      try {
+        const response = await fetch(`${config.BASE_URL}/api/users/delete/${rowData.id}`, {
+          method: 'DELETE',
+        });
 
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'User deleted successfully',
-                }).then(() => {
-                    // Refresh the table data after deletion
-                    window.location.reload();
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to delete user',
-                    text: 'Please try again.',
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'An error occurred',
-                text: 'Please try again.',
-            });
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'User deleted successfully',
+          }).then(() => {
+            // Refresh the table data after deletion
+            window.location.reload();
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed to delete user',
+            text: 'Please try again.',
+          });
         }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'An error occurred',
+          text: 'Please try again.',
+        });
+      }
     }
-};
-
-
+  };
 
   const handleSubmit = async (data) => {
-    const url = selectedRow ? `${config.BASE_URL}/users/update/${selectedRow.id}` : `${config.BASE_URL}/users`;
+    const url = selectedRow
+      ? `${config.BASE_URL}/users/update/${selectedRow.id}`
+      : `${config.BASE_URL}/users`;
     const method = selectedRow ? 'PUT' : 'POST';
 
     const response = await fetch(url, {
@@ -107,13 +106,12 @@ export default function UserTableRow({
     if (response.ok) {
       console.log(selectedRow ? 'User updated successfully' : 'User created successfully');
       handleCloseDialog();
-      
-    window.location.reload();
+
+      window.location.reload();
     } else {
       console.error(selectedRow ? 'Failed to update user' : 'Failed to create user');
     }
   };
-  
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -171,21 +169,21 @@ export default function UserTableRow({
           Edit
         </MenuItem> */}
 
-<MenuItem onClick={() => handleOpenDialog(row)}>
-        <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-        Edit
-      </MenuItem>
+        <MenuItem onClick={() => handleOpenDialog(row)}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+          Edit
+        </MenuItem>
 
-      <MenuItem onClick={() => handleRowDelete(row)} sx={{ color: 'error.main' }}>
-    <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-    Delete
-</MenuItem>
+        <MenuItem onClick={() => handleRowDelete(row)} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+          Delete
+        </MenuItem>
         <UserForm
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        onSubmit={handleSubmit}
-        initialData={selectedRow}
-      />
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          onSubmit={handleSubmit}
+          initialData={selectedRow}
+        />
       </Popover>
     </>
   );

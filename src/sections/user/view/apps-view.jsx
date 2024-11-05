@@ -29,7 +29,8 @@ import TableNoData from '../table-no-data';
 import TableEmptyRows from '../table-empty-rows';
 import { useNavigate } from 'react-router-dom';
 import EditQuestionForm from './editQuestion';
-  // import { useNavigate } from 'react-router-dom';
+import config from 'src/config'; // Import the config file
+// import { useNavigate } from 'react-router-dom';
 export default function QuestionsTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
@@ -44,7 +45,6 @@ export default function QuestionsTable() {
   const [orderBy, setOrderBy] = useState('question_id'); // State for sorting column
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
-
   const navigate = useNavigate();
 
   const handleRedirect = () => {
@@ -53,7 +53,7 @@ export default function QuestionsTable() {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const url = 'http://localhost:4000/api/questions';
+      const url = '${config.BASE_URL}/api/questions';
       try {
         const response = await fetch(url);
         const result = await response.json();
@@ -107,11 +107,10 @@ export default function QuestionsTable() {
     if (question && question.question_id) {
       navigate(`/edit-question/${question.question_id}`);
     } else {
-      console.log(question.question_id,question)
+      console.log(question.question_id, question);
       console.error('Question ID is missing');
     }
   };
-  
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -120,8 +119,8 @@ export default function QuestionsTable() {
 
   // const handleSubmit = async (data) => {
   //   const url = selectedQuestion
-  //     ? `http://localhost:4000/api/questions/${selectedQuestion.question_id}`
-  //     : 'http://localhost:4000/api/questions';
+  //     ? `${config.BASE_URL}/api/questions/${selectedQuestion.question_id}`
+  //     : '${config.BASE_URL}/api/questions';
   //   const method = selectedQuestion ? 'PUT' : 'POST';
 
   //   const response = await fetch(url, {
@@ -166,9 +165,6 @@ export default function QuestionsTable() {
   const handleRedirectImport = () => {
     navigate('/upload-question');
   };
-
-
-
 
   const isEmpty = !sortedData.length && !loading;
 
@@ -364,8 +360,6 @@ export default function QuestionsTable() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
-
-  
     </Container>
   );
 }

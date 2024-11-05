@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import Label from 'src/components/label';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import config from 'src/config'; // Import the config file
 
 export default function TriviaList() {
   const [page, setPage] = useState(0);
@@ -28,7 +29,7 @@ export default function TriviaList() {
 
   useEffect(() => {
     const fetchTrivia = async () => {
-      const url = 'http://localhost:4000/api/trivia';
+      const url = '${config.BASE_URL}/api/trivia';
       try {
         const response = await fetch(url);
         const result = await response.json();

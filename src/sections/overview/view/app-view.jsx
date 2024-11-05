@@ -18,7 +18,7 @@ export default function AppView() {
     // Fetch data from the endpoint
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/dashboard/overview');
+        const response = await fetch('${config.BASE_URL}/api/dashboard/overview');
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -38,12 +38,7 @@ export default function AppView() {
     return <Typography variant="h6">Loading...</Typography>;
   }
 
-  const {
-    overview,
-    weeklyParticipation,
-    todaysParticipation,
-    subscriptionRate,
-  } = overviewData;
+  const { overview, weeklyParticipation, todaysParticipation, subscriptionRate } = overviewData;
 
   return (
     <Container maxWidth="xl">
@@ -97,10 +92,7 @@ export default function AppView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits
-            title={todaysParticipation.title}
-            chart={todaysParticipation.chart}
-          />
+          <AppCurrentVisits title={todaysParticipation.title} chart={todaysParticipation.chart} />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>

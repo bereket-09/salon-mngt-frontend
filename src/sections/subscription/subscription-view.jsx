@@ -17,11 +17,12 @@ import {
   MenuItem,
   Select,
   TableSortLabel,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import Label from 'src/components/label';
 import TableNoData from '../user/table-no-data';
 import TableEmptyRows from '../user/table-empty-rows';
+import config from 'src/config'; // Import the config file
 
 export default function SubscriptionView() {
   const [page, setPage] = useState(0);
@@ -36,7 +37,7 @@ export default function SubscriptionView() {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      const url = 'http://localhost:4000/api/customers';
+      const url = '${config.BASE_URL}/api/customers';
       try {
         const response = await fetch(url);
         const result = await response.json();
@@ -207,34 +208,38 @@ export default function SubscriptionView() {
                 </TableRow>
               ) : isEmpty ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">No data available</TableCell>
+                  <TableCell colSpan={9} align="center">
+                    No data available
+                  </TableCell>
                 </TableRow>
               ) : (
-                sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((customer) => (
-                  <TableRow
-                    key={customer.subscriber_id}
-                    hover
-                    onClick={() => handleRowClick(customer.subscriber_id)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>{customer.subscriber_id}</TableCell>
-                    <TableCell>{customer.msisdn}</TableCell>
-                    <TableCell>{customer.language}</TableCell>
-                    <TableCell>
-                      <Label
-                        variant="soft"
-                        color={(customer.status === 'D' && 'error') || 'success'}
-                      >
-                        {customer.status === 'A' ? 'Active' : 'Inactive'}
-                      </Label>
-                    </TableCell>
-                    <TableCell>{customer.shortcode}</TableCell>
-                    <TableCell>{customer.offercode}</TableCell>
-                    <TableCell>{customer.subscriber_lifecycle}</TableCell>
-                    <TableCell>{new Date(customer.created_at).toLocaleString()}</TableCell>
-                    <TableCell>{new Date(customer.updated_at).toLocaleString()}</TableCell>
-                  </TableRow>
-                ))
+                sortedData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((customer) => (
+                    <TableRow
+                      key={customer.subscriber_id}
+                      hover
+                      onClick={() => handleRowClick(customer.subscriber_id)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <TableCell>{customer.subscriber_id}</TableCell>
+                      <TableCell>{customer.msisdn}</TableCell>
+                      <TableCell>{customer.language}</TableCell>
+                      <TableCell>
+                        <Label
+                          variant="soft"
+                          color={(customer.status === 'D' && 'error') || 'success'}
+                        >
+                          {customer.status === 'A' ? 'Active' : 'Inactive'}
+                        </Label>
+                      </TableCell>
+                      <TableCell>{customer.shortcode}</TableCell>
+                      <TableCell>{customer.offercode}</TableCell>
+                      <TableCell>{customer.subscriber_lifecycle}</TableCell>
+                      <TableCell>{new Date(customer.created_at).toLocaleString()}</TableCell>
+                      <TableCell>{new Date(customer.updated_at).toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>

@@ -15,7 +15,7 @@ import {
   DialogContentText,
   DialogTitle,
   Chip,
-  TableContainer
+  TableContainer,
 } from '@mui/material';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
+import config from 'src/config'; // Import the config file
 
 const ImportQuestions = () => {
   const [parsedData, setParsedData] = useState([]);
@@ -33,7 +33,7 @@ const ImportQuestions = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [newFile, setNewFile] = useState(null);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false); // Clear confirmation dialog
-  const navigate = useNavigate();  // Hook for navigation
+  const navigate = useNavigate(); // Hook for navigation
 
   const requiredColumns = [
     'Question_TEXT_(English)',
@@ -196,54 +196,45 @@ const ImportQuestions = () => {
     setClearConfirmOpen(false);
   };
 
-
   const handleConfirm = () => {
     // Ask user if they want to insert all questions into the DB
-    const userConfirmed = window.confirm('Do you want to insert all the questions into the database?');
+    const userConfirmed = window.confirm(
+      'Do you want to insert all the questions into the database?'
+    );
     if (userConfirmed) {
-        isConfirmDisabled=true;
+      isConfirmDisabled = true;
       const account = JSON.parse(localStorage.getItem('userData'));
       const username = account.username;
 
       const formattedQuestions = parsedData.map((row) => ({
         englishText: row['Question_TEXT_(English)'],
         amharicText: row['Question_TEXT_(Amharic)'],
-        englishOptions: [
-          row['English_Option_A'],
-          row['English_Option_B'],
-          row['English_Option_C']
-        ],
-        amharicOptions: [
-          row['Amharic_Option_A'],
-          row['Amharic_Option_B'],
-          row['Amharic_Option_C']
-        ],
+        englishOptions: [row['English_Option_A'], row['English_Option_B'], row['English_Option_C']],
+        amharicOptions: [row['Amharic_Option_A'], row['Amharic_Option_B'], row['Amharic_Option_C']],
         correctAnswer: row['CORRECT_ANSWER'],
         date: row['Scheduled_Date'],
         created_by_username: username,
-        status: 'active'
+        status: 'active',
       }));
 
-      fetch('http://localhost:4000/api/questions/bulk-question', {
+      fetch('${config.BASE_URL}/api/questions/bulk-question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formattedQuestions),
       })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           console.log('Success:', data);
           if (data.code === 1000) {
-
-             // Handle success (e.g., show a success message)
+            // Handle success (e.g., show a success message)
             toast.success(data.message);
-            setTimeout(() => navigate('/questions'), 2000);  // Redirect after 2 seconds to allow toast to be displayed
-            } else {
-                toast.error('Failed to create question: ' + data.message);
-                isConfirmDisabled = errorCount > 0;
-            }
-         
+            setTimeout(() => navigate('/questions'), 2000); // Redirect after 2 seconds to allow toast to be displayed
+          } else {
+            toast.error('Failed to create question: ' + data.message);
+            isConfirmDisabled = errorCount > 0;
+          }
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -293,7 +284,13 @@ const ImportQuestions = () => {
               style={{ display: 'none' }}
               onChange={handleFileInputChange}
             />
-            {file && <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>{`Selected File: ${file.name}`}</Typography>}
+            {file && (
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ mt: 2 }}
+              >{`Selected File: ${file.name}`}</Typography>
+            )}
           </Box>
           {error && <Typography color="error">{error}</Typography>}
         </Box>
@@ -345,12 +342,7 @@ const ImportQuestions = () => {
             Confirm Import
           </Button>
 
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleClear}
-            sx={{ mt: 2, ml: 2 }}
-          >
+          <Button variant="outlined" color="secondary" onClick={handleClear} sx={{ mt: 2, ml: 2 }}>
             Clear
           </Button>
         </Paper>
@@ -374,7 +366,9 @@ const ImportQuestions = () => {
       <Dialog open={clearConfirmOpen} onClose={handleCancelClear}>
         <DialogTitle>Clear Confirmation</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to clear the uploaded file and data?</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to clear the uploaded file and data?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelClear}>Cancel</Button>

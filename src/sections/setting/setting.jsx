@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { RouterLink } from 'src/routes/components';
 import Logo from 'src/components/logo';
+import config from 'src/config'; // Import the config file
 
 // ----------------------------------------------------------------------
 
@@ -15,16 +16,16 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Fetch settings from API
-    fetch('http://localhost:4000/api/misc_settings')
-      .then(response => response.json())
-      .then(data => {
+    fetch('${config.BASE_URL}/api/misc_settings')
+      .then((response) => response.json())
+      .then((data) => {
         if (data.code === 1000) {
           setSettings(data.data);
         } else {
           console.error('Failed to fetch settings');
         }
       })
-      .catch(error => console.error('Error fetching settings:', error));
+      .catch((error) => console.error('Error fetching settings:', error));
   }, []);
 
   const handleEditClick = (keyName) => {
@@ -35,26 +36,28 @@ export default function SettingsPage() {
     const updatedValue = document.getElementById(`value-${keyName}`).value;
 
     // Send updated value to the API
-    fetch('http://localhost:4000/api/misc_settings', {
+    fetch('${config.BASE_URL}/api/misc_settings', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ keyName, value: updatedValue }),
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.code === 1000) {
           // Update the settings state with the new value
-          setSettings(prevSettings => prevSettings.map(setting =>
-            setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
-          ));
+          setSettings((prevSettings) =>
+            prevSettings.map((setting) =>
+              setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
+            )
+          );
           setIsEditing(null);
         } else {
           console.error('Failed to update setting');
         }
       })
-      .catch(error => console.error('Error updating setting:', error));
+      .catch((error) => console.error('Error updating setting:', error));
   };
 
   return (
@@ -88,8 +91,17 @@ export default function SettingsPage() {
           </Typography>
 
           <Box sx={{ width: '100%' }}>
-            {settings.map(setting => (
-              <Box key={setting.keyName} sx={{ mb: 2, display: 'flex', alignItems: 'center', borderBottom: '1px solid #ddd', p: 2 }}>
+            {settings.map((setting) => (
+              <Box
+                key={setting.keyName}
+                sx={{
+                  mb: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #ddd',
+                  p: 2,
+                }}
+              >
                 <Box sx={{ flexBasis: '30%', fontWeight: 'bold', textAlign: 'left' }}>
                   {setting.keyName}
                 </Box>

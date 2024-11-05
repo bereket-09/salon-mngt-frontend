@@ -22,7 +22,7 @@ export default function TriviaDetailView() {
     // Fetch data from the new endpoint using trivia_id
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/trivia/${trivia_id}`);
+        const response = await fetch(`${config.BASE_URL}/api/trivia/${trivia_id}`);
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -56,8 +56,6 @@ export default function TriviaDetailView() {
       </Typography>
 
       <Grid container spacing={3}>
-     
-
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Active Players"
@@ -76,7 +74,6 @@ export default function TriviaDetailView() {
           />
         </Grid>
 
-     
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Total Completed"
@@ -94,8 +91,6 @@ export default function TriviaDetailView() {
           />
         </Grid>
 
-        
-
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentVisits title={todaysParticipation.title} chart={todaysParticipation.chart} />
         </Grid>
@@ -110,7 +105,9 @@ export default function TriviaDetailView() {
         <Grid xs={12} md={6} lg={8}>
           <AppConversionRates
             title={questionParticipation?.title || 'Question-wise Participation'}
-            subheader={questionParticipation?.subheader || 'Response Count For Each Questions in this Trivia'}
+            subheader={
+              questionParticipation?.subheader || 'Response Count For Each Questions in this Trivia'
+            }
             chart={questionParticipation?.chart}
           />
         </Grid>

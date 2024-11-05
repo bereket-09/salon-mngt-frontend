@@ -15,8 +15,9 @@ import {
   Container,
   Typography,
   Grid,
-  Button
+  Button,
 } from '@mui/material';
+import config from 'src/config'; // Import the config file
 
 export default function CustomerDetail() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export default function CustomerDetail() {
 
   useEffect(() => {
     const fetchCustomerDetail = async () => {
-      const url = `http://localhost:4000/api/customers/${id}`;
+      const url = `${config.BASE_URL}/api/customers/${id}`;
       console.log(url);
       try {
         const response = await fetch(url);
@@ -60,11 +61,7 @@ export default function CustomerDetail() {
 
   return (
     <Container>
-      <Button 
-        variant="outlined" 
-        onClick={() => navigate(-1)} 
-        sx={{ mb: 2 }}
-      >
+      <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mb: 2 }}>
         Back
       </Button>
       <Card sx={{ p: 3 }}>
@@ -72,7 +69,7 @@ export default function CustomerDetail() {
           Customer Details
         </Typography>
         <Divider />
-        
+
         {/* General Detail Section */}
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid item xs={12} sm={6} md={4}>
@@ -131,12 +128,18 @@ export default function CustomerDetail() {
                   <TableRow key={sub.history_id}>
                     <TableCell>{sub.history_id}</TableCell>
                     <TableCell>
-                      <Label variant="soft" color={(sub.old_status === 'inactive' && 'error') || 'success'}>
+                      <Label
+                        variant="soft"
+                        color={(sub.old_status === 'inactive' && 'error') || 'success'}
+                      >
                         {sub.old_status === 'active' ? 'Active' : 'Inactive'}
                       </Label>
                     </TableCell>
                     <TableCell>
-                      <Label variant="soft" color={(sub.new_status === 'inactive' && 'error') || 'success'}>
+                      <Label
+                        variant="soft"
+                        color={(sub.new_status === 'inactive' && 'error') || 'success'}
+                      >
                         {sub.new_status === 'active' ? 'Active' : 'Inactive'}
                       </Label>
                     </TableCell>
@@ -181,17 +184,32 @@ export default function CustomerDetail() {
                     <TableCell>{participation.current_question}</TableCell>
                     <TableCell>{participation.total_questions_left}</TableCell>
                     <TableCell>
-                      <Label variant="soft" color={
-                        (participation.status === 'IN_PROGRESS' && 'warning') ||
-                        (participation.status === 'COMPLETED' && 'success') ||
-                        (participation.status === 'FAILED' && 'error') || 'default'}>
+                      <Label
+                        variant="soft"
+                        color={
+                          (participation.status === 'IN_PROGRESS' && 'warning') ||
+                          (participation.status === 'COMPLETED' && 'success') ||
+                          (participation.status === 'FAILED' && 'error') ||
+                          'default'
+                        }
+                      >
                         {participation.status}
                       </Label>
                     </TableCell>
                     <TableCell>{new Date(participation.start_time).toLocaleDateString()}</TableCell>
-                    <TableCell>{participation.end_time ? new Date(participation.end_time).toLocaleDateString() : 'N/A'}</TableCell>
-                    <TableCell>{participation.average_completion_time ? `${participation.average_completion_time} mins` : 'N/A'}</TableCell>
-                    <TableCell>{participation.score !== null ? participation.score : 'N/A'}</TableCell>
+                    <TableCell>
+                      {participation.end_time
+                        ? new Date(participation.end_time).toLocaleDateString()
+                        : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      {participation.average_completion_time
+                        ? `${participation.average_completion_time} mins`
+                        : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      {participation.score !== null ? participation.score : 'N/A'}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
