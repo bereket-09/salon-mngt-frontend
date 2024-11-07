@@ -36,7 +36,7 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${config.PORTAL_URL}/users/login`, {
+      const response = await fetch(`${config.PORTAL_URL}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

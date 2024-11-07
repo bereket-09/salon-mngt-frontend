@@ -13,6 +13,7 @@ import AppWidgetSummary from '../overview/app-widget-summary';
 import AppConversionRates from '../overview/app-conversion-rates';
 
 import AppOrderTimeline from '../overview/app-order-timeline';
+import config from 'src/config';
 
 export default function TriviaDetailView() {
   const { trivia_id } = useParams(); // Get trivia_id from the URL

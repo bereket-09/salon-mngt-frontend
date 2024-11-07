@@ -91,8 +91,8 @@ export default function UserTableRow({
 
   const handleSubmit = async (data) => {
     const url = selectedRow
-      ? `${config.BASE_URL}/users/update/${selectedRow.id}`
-      : `${config.BASE_URL}/users`;
+      ? `${config.BASE_URL}/api/users/update/${selectedRow.id}`
+      : `${config.BASE_URL}/api/users`;
     const method = selectedRow ? 'PUT' : 'POST';
 
     const response = await fetch(url, {

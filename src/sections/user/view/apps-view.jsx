@@ -117,31 +117,6 @@ export default function QuestionsTable() {
     setSelectedQuestion(null);
   };
 
-  // const handleSubmit = async (data) => {
-  //   const url = selectedQuestion
-  //     ? `${config.BASE_URL}/api/questions/${selectedQuestion.question_id}`
-  //     : `${config.BASE_URL}/api/questions`;
-  //   const method = selectedQuestion ? 'PUT' : 'POST';
-
-  //   const response = await fetch(url, {
-  //     method,
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(data),
-  //   });
-
-  //   if (response.ok) {
-  //     console.log(
-  //       selectedQuestion ? 'Question updated successfully' : 'Question created successfully'
-  //     );
-  //     window.location.reload();
-  //     handleCloseDialog();
-  //   } else {
-  //     console.error(selectedQuestion ? 'Failed to update question' : 'Failed to create question');
-  //   }
-  // };
-
   // Apply filtering
   const filteredData = questions.filter((row) => {
     const matchesName =
@@ -170,18 +145,6 @@ export default function QuestionsTable() {
 
   return (
     <Container>
-      {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-        <Typography variant="h4">Manage Questions</Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={() => handleOpenDialog(null)}
-        >
-          New Question
-        </Button>
-      </Stack> */}
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
         <Typography variant="h4">Manage Questions</Typography>
         <Stack direction="row" spacing={2}>
@@ -323,6 +286,19 @@ export default function QuestionsTable() {
                       <TableCell>{question.amharic_text}</TableCell>
                       <TableCell>{question.english_options.join(', ')}</TableCell>
                       <TableCell>{question.amharic_options.join(', ')}</TableCell>
+                      {/* <TableCell>
+                        {(Array.isArray(question.english_options)
+                          ? question.english_options
+                          : []
+                        ).join(', ')}
+                      </TableCell>
+                      <TableCell>
+                        {(Array.isArray(question.amharic_options)
+                          ? question.amharic_options
+                          : []
+                        ).join(', ')}
+                      </TableCell> */}
+
                       <TableCell>{question.correct_answer}</TableCell>
                       <TableCell>{question.question_date}</TableCell>
                       <TableCell>{question.created_by_username}</TableCell>
@@ -339,9 +315,6 @@ export default function QuestionsTable() {
                           <IconButton onClick={() => handleOpenDialog(question)}>
                             <Iconify icon="eva:edit-fill" />
                           </IconButton>
-                          {/* <IconButton color="error">
-                            <Iconify icon="eva:trash-2-outline" />
-                          </IconButton> */}
                         </Stack>
                       </TableCell>
                     </TableRow>

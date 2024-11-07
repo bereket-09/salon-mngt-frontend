@@ -10,6 +10,7 @@ import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
 import AppConversionRates from '../app-conversion-rates';
+import config from 'src/config'; // Import the config file
 
 export default function AppView() {
   const [overviewData, setOverviewData] = useState(null);

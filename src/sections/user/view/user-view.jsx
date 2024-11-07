@@ -47,7 +47,7 @@ export default function UserPage() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const url = `${config.BASE_URL}/users`;
+      const url = `${config.BASE_URL}/api/users`;
       try {
         const response = await fetch(url);
         const result = await response.json();
@@ -128,8 +128,8 @@ export default function UserPage() {
 
   const handleSubmit = async (data) => {
     const url = selectedRow
-      ? `${config.BASE_URL}/users/update/${selectedRow.id}`
-      : `${config.BASE_URL}/users/register`;
+      ? `${config.BASE_URL}/api/users/update/${selectedRow.id}`
+      : `${config.BASE_URL}/api/users/register`;
     const method = selectedRow ? 'PUT' : 'POST';
 
     const response = await fetch(url, {
