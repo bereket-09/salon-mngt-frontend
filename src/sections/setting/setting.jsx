@@ -62,31 +62,17 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Box
-        component="header"
-        sx={{
-          top: 0,
-          left: 0,
-          width: 1,
-          lineHeight: 0,
-          position: 'fixed',
-          p: (theme) => ({ xs: theme.spacing(3, 3, 0), sm: theme.spacing(5, 5, 0) }),
-        }}
-      >
-        <Logo />
-      </Box>
-
       <Container>
         <Box
           sx={{
             py: 12,
-            maxWidth: 800,
+            maxWidth: 900, // Increase max width of the container
             mx: 'auto',
             minHeight: '100vh',
             textAlign: 'center',
           }}
         >
-          <Typography variant="h3" sx={{ mb: 3 }}>
+          <Typography variant="h3" sx={{ mb: 5, fontWeight: 'bold' }}>
             Settings
           </Typography>
 
@@ -95,29 +81,37 @@ export default function SettingsPage() {
               <Box
                 key={setting.keyName}
                 sx={{
-                  mb: 2,
+                  mb: 3,
+                  p: 3,
                   display: 'flex',
                   alignItems: 'center',
-                  borderBottom: '1px solid #ddd',
-                  p: 2,
+                  justifyContent: 'space-between',
+                  borderRadius: 1,
+                  backgroundColor: 'background.default',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
                 }}
               >
-                <Box sx={{ flexBasis: '30%', fontWeight: 'bold', textAlign: 'left' }}>
+                <Box sx={{ flexBasis: '50%', fontWeight: 'bold', textAlign: 'left', pr: 2 }}>
                   {setting.keyName}
                 </Box>
-                <Box sx={{ flexBasis: '50%', textAlign: 'left' }}>
+                <Box sx={{ flexBasis: '40%', textAlign: 'left', pr: 2 }}>
                   {isEditing === setting.keyName ? (
                     <TextField
                       id={`value-${setting.keyName}`}
                       defaultValue={setting.value}
                       variant="outlined"
                       fullWidth
+                      multiline
+                      minRows={3}
+                      size="small"
                     />
                   ) : (
-                    setting.value
+                    <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+                      {setting.value}
+                    </Typography>
                   )}
                 </Box>
-                <Box sx={{ flexBasis: '20%', display: 'flex', justifyContent: 'flex-end' }}>
+                <Box sx={{ flexBasis: '10%', display: 'flex', justifyContent: 'flex-end' }}>
                   {isEditing === setting.keyName ? (
                     <>
                       <Button
@@ -153,11 +147,123 @@ export default function SettingsPage() {
             ))}
           </Box>
 
-          <Button href="/" size="large" variant="contained" component={RouterLink} sx={{ mt: 4 }}>
+          <Button
+            href="/"
+            size="large"
+            variant="contained"
+            component={RouterLink}
+            sx={{
+              mt: 6,
+              px: 4,
+              py: 1.5,
+              fontSize: '1rem',
+            }}
+          >
             Go to Home
           </Button>
         </Box>
       </Container>
     </>
   );
+
+  // return (
+  //   <>
+  //     <Box
+  //       component="header"
+  //       sx={{
+  //         top: 0,
+  //         left: 0,
+  //         width: 1,
+  //         lineHeight: 0,
+  //         position: 'fixed',
+  //         p: (theme) => ({ xs: theme.spacing(3, 3, 0), sm: theme.spacing(5, 5, 0) }),
+  //       }}
+  //     >
+  //       <Logo />
+  //     </Box>
+
+  //     <Container>
+  //       <Box
+  //         sx={{
+  //           py: 12,
+  //           maxWidth: 800,
+  //           mx: 'auto',
+  //           minHeight: '100vh',
+  //           textAlign: 'center',
+  //         }}
+  //       >
+  //         <Typography variant="h3" sx={{ mb: 3 }}>
+  //           Settings
+  //         </Typography>
+
+  //         <Box sx={{ width: '100%' }}>
+  //           {settings.map((setting) => (
+  //             <Box
+  //               key={setting.keyName}
+  //               sx={{
+  //                 mb: 2,
+  //                 display: 'flex',
+  //                 alignItems: 'center',
+  //                 borderBottom: '1px solid #ddd',
+  //                 p: 2,
+  //               }}
+  //             >
+  //               <Box sx={{ flexBasis: '30%', fontWeight: 'bold', textAlign: 'left' }}>
+  //                 {setting.keyName}
+  //               </Box>
+  //               <Box sx={{ flexBasis: '50%', textAlign: 'left' }}>
+  //                 {isEditing === setting.keyName ? (
+  //                   <TextField
+  //                     id={`value-${setting.keyName}`}
+  //                     defaultValue={setting.value}
+  //                     variant="outlined"
+  //                     fullWidth
+  //                   />
+  //                 ) : (
+  //                   setting.value
+  //                 )}
+  //               </Box>
+  //               <Box sx={{ flexBasis: '20%', display: 'flex', justifyContent: 'flex-end' }}>
+  //                 {isEditing === setting.keyName ? (
+  //                   <>
+  //                     <Button
+  //                       onClick={() => handleSaveClick(setting.keyName)}
+  //                       variant="contained"
+  //                       color="primary"
+  //                       size="small"
+  //                       sx={{ mr: 1 }}
+  //                     >
+  //                       Save
+  //                     </Button>
+  //                     <Button
+  //                       onClick={() => setIsEditing(null)}
+  //                       variant="outlined"
+  //                       color="secondary"
+  //                       size="small"
+  //                     >
+  //                       Cancel
+  //                     </Button>
+  //                   </>
+  //                 ) : (
+  //                   <Button
+  //                     onClick={() => handleEditClick(setting.keyName)}
+  //                     variant="outlined"
+  //                     color="primary"
+  //                     size="small"
+  //                   >
+  //                     Edit
+  //                   </Button>
+  //                 )}
+  //               </Box>
+  //             </Box>
+  //           ))}
+  //         </Box>
+
+  //         <Button href="/" size="large" variant="contained" component={RouterLink} sx={{ mt: 4 }}>
+  //           Go to Home
+  //         </Button>
+  //       </Box>
+  //     </Container>
+  //   </>
+  // );
 }

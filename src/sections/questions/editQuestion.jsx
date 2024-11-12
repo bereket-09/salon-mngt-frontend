@@ -43,7 +43,7 @@ const EditQuestion = () => {
   useEffect(() => {
     const fetchQuestionDetails = async () => {
       try {
-        const response = await axios.get(`${config.BASE_URL}/api/questions/${id}`);
+        const response = await axios.get(`${config.BASE_URL}/api/questions/editQuestion/${id}`);
         if (response.data.code === 1000) {
           const questionData = response.data.data[0];
           setQuestion({

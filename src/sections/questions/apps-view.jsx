@@ -25,8 +25,8 @@ import {
   TableSortLabel,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
-import TableNoData from '../table-no-data';
-import TableEmptyRows from '../table-empty-rows';
+import TableNoData from '../user/table-no-data';
+import TableEmptyRows from '../user/table-empty-rows';
 import { useNavigate } from 'react-router-dom';
 import EditQuestionForm from './editQuestion';
 import config from 'src/config'; // Import the config file
@@ -41,8 +41,8 @@ export default function QuestionsTable() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [dates, setDates] = useState([]); // To store unique dates for the filter
-  const [order, setOrder] = useState('asc'); // State for sorting order
-  const [orderBy, setOrderBy] = useState('question_id'); // State for sorting column
+  const [order, setOrder] = useState('desc'); // State for sorting order
+  const [orderBy, setOrderBy] = useState('question_date'); // State for sorting column
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const navigate = useNavigate();

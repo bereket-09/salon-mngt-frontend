@@ -59,28 +59,142 @@ const ImportQuestions = () => {
 
   const validateRow = (row) => {
     const today = dayjs().format('YYYY-MM-DD');
+    const currentTime = dayjs().format('HH:mm');
     let status = { message: 'Success', color: 'success' };
 
     for (let col of requiredColumns) {
-      if (!row[col] || row[col].trim() === '') {
+      // Check if row[col] is defined and is a string; if not, handle it as empty
+      if (!row[col] || (typeof row[col] === 'string' && row[col].trim() === '')) {
         status = { message: `Error: ${col} is empty`, color: 'error' };
         return status;
       }
     }
+    const account = JSON.parse(localStorage.getItem('userData'));
+    const role = account.role;
 
     const scheduledDate = row['Scheduled_Date'];
     if (!dayjs(scheduledDate, 'YYYY-MM-DD', true).isValid()) {
       status = { message: 'Error: Invalid date format', color: 'error' };
     } else if (dayjs(scheduledDate).isBefore(today)) {
       status = { message: 'Error: Scheduled date is in the past', color: 'error' };
+    } else if (scheduledDate === today && currentTime >= '09:00' && role != 'admin') {
+      status = { message: 'Error: Scheduled date cannot be today after 09:00', color: 'error' };
     }
 
     return status;
   };
 
+  // const validateRow = (row) => {
+  //   const today = dayjs().format('YYYY-MM-DD');
+  //   // Get the current local time
+  //   const currentTime = dayjs().format('HH:mm');
+  //   let status = { message: 'Success', color: 'success' };
+
+  //   for (let col of requiredColumns) {
+  //     if (!row[col] || row[col].trim() === '') {
+  //       status = { message: `Error: ${col} is empty`, color: 'error' };
+  //       return status;
+  //     }
+  //   }
+
+  //   const scheduledDate = row['Scheduled_Date'];
+  //   if (!dayjs(scheduledDate, 'YYYY-MM-DD', true).isValid()) {
+  //     status = { message: 'Error: Invalid date format', color: 'error' };
+  //   } else if (dayjs(scheduledDate).isBefore(today)) {
+  //     status = { message: 'Error: Scheduled date is in the past', color: 'error' };
+  //   } else if (scheduledDate === today && currentTime >= '18:00') {
+  //     status = { message: 'Error: Scheduled date cannot be today after 08:00', color: 'error' };
+  //   }
+
+  //   return status;
+  // };
+
+  // const handleFileUpload = (file) => {
+  //   const extension = file.name.split('.').pop().toLowerCase();
+  //   setFileType(extension);
+
+  //   const reader = new FileReader();
+
+  //   const fileReaderOnLoad = (e) => {
+  //     const binaryString = e.target.result;
+  //     try {
+  //       const workbook = XLSX.read(binaryString, { type: 'binary' });
+  //       const sheetName = workbook.SheetNames[0];
+  //       const worksheet = workbook.Sheets[sheetName];
+  //       const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+  //       const columns = Object.keys(jsonData[0]);
+  //       if (!validateColumns(columns)) {
+  //         return;
+  //       }
+
+  //       const dataWithStatus = jsonData.map((row) => ({
+  //         ...row,
+  //         status: validateRow(row),
+  //       }));
+
+  //       setParsedData(dataWithStatus);
+  //       setError('');
+  //     } catch (error) {
+  //       setError('Error parsing Excel file. Please check the file format.');
+  //     }
+  //   };
+
+  //   if (extension === 'csv') {
+  //     reader.onload = () => {
+  //       Papa.parse(file, {
+  //         header: true,
+  //         complete: (result) => {
+  //           if (result.errors.length > 0) {
+  //             setError('Error parsing CSV file. Please check the file format.');
+  //             return;
+  //           }
+
+  //           const columns = Object.keys(result.data[0]);
+  //           if (!validateColumns(columns)) {
+  //             return;
+  //           }
+
+  //           const dataWithStatus = result.data.map((row) => ({
+  //             ...row,
+  //             status: validateRow(row),
+  //           }));
+
+  //           setParsedData(dataWithStatus);
+  //           setError('');
+  //         },
+  //       });
+  //     };
+  //     reader.readAsText(file);
+  //   } else if (extension === 'xlsx') {
+  //     reader.onload = fileReaderOnLoad;
+  //     reader.readAsBinaryString(file);
+  //   } else {
+  //     setError('Unsupported file format. Only CSV and XLSX are allowed.');
+  //   }
+
+  //   setFile(file);
+  // };
+
+  // const handleFileInputChange = (event) => {
+  //   const selectedFile = event.target.files[0];
+  //   if (selectedFile) {
+  //     if (file && file.name === selectedFile.name && file.size === selectedFile.size) {
+  //       // File is the same as the previous one
+  //       setConfirmOpen(true);
+  //       setNewFile(selectedFile);
+  //     } else {
+  //       handleFileUpload(selectedFile);
+  //     }
+  //   }
+  // };
+
   const handleFileUpload = (file) => {
+    console.log('File selected:', file); // Log file details
+
     const extension = file.name.split('.').pop().toLowerCase();
     setFileType(extension);
+    console.log('File extension:', extension); // Log file extension
 
     const reader = new FileReader();
 
@@ -91,9 +205,11 @@ const ImportQuestions = () => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        console.log('Parsed Excel data:', jsonData); // Log parsed Excel data
 
         const columns = Object.keys(jsonData[0]);
         if (!validateColumns(columns)) {
+          console.error('Invalid columns:', columns); // Log invalid columns
           return;
         }
 
@@ -104,7 +220,9 @@ const ImportQuestions = () => {
 
         setParsedData(dataWithStatus);
         setError('');
+        console.log('Data with status added:', dataWithStatus); // Log data with validation status
       } catch (error) {
+        console.error('Error parsing Excel file:', error); // Log parsing error
         setError('Error parsing Excel file. Please check the file format.');
       }
     };
@@ -115,12 +233,14 @@ const ImportQuestions = () => {
           header: true,
           complete: (result) => {
             if (result.errors.length > 0) {
+              console.error('CSV parsing errors:', result.errors); // Log CSV parsing errors
               setError('Error parsing CSV file. Please check the file format.');
               return;
             }
 
             const columns = Object.keys(result.data[0]);
             if (!validateColumns(columns)) {
+              console.error('Invalid columns in CSV:', columns); // Log invalid columns in CSV
               return;
             }
 
@@ -131,6 +251,7 @@ const ImportQuestions = () => {
 
             setParsedData(dataWithStatus);
             setError('');
+            console.log('CSV data with status added:', dataWithStatus); // Log CSV data with validation status
           },
         });
       };
@@ -139,6 +260,7 @@ const ImportQuestions = () => {
       reader.onload = fileReaderOnLoad;
       reader.readAsBinaryString(file);
     } else {
+      console.error('Unsupported file format:', extension); // Log unsupported file format
       setError('Unsupported file format. Only CSV and XLSX are allowed.');
     }
 
@@ -147,9 +269,12 @@ const ImportQuestions = () => {
 
   const handleFileInputChange = (event) => {
     const selectedFile = event.target.files[0];
+    console.log('Selected file from input:', selectedFile); // Log selected file from input
+
     if (selectedFile) {
       if (file && file.name === selectedFile.name && file.size === selectedFile.size) {
         // File is the same as the previous one
+        console.log('Same file selected, prompting confirmation'); // Log same file selection
         setConfirmOpen(true);
         setNewFile(selectedFile);
       } else {

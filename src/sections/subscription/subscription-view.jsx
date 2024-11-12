@@ -31,7 +31,7 @@ export default function SubscriptionView() {
   const [filterStatus, setFilterStatus] = useState('');
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState('desc');
   const [orderBy, setOrderBy] = useState('subscriber_id');
   const navigate = useNavigate(); // Hook for navigation
 
@@ -219,7 +219,7 @@ export default function SubscriptionView() {
                     <TableRow
                       key={customer.subscriber_id}
                       hover
-                      onClick={() => handleRowClick(customer.subscriber_id)}
+                      onDoubleClick={() => handleRowClick(customer.subscriber_id)}
                       style={{ cursor: 'pointer' }}
                     >
                       <TableCell>{customer.subscriber_id}</TableCell>

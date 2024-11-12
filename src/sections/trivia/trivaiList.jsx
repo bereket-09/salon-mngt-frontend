@@ -23,7 +23,7 @@ export default function TriviaList() {
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [triviaData, setTriviaData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState('desc');
   const [orderBy, setOrderBy] = useState('trivia_id');
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -83,7 +83,7 @@ export default function TriviaList() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-        <Typography variant="h4">Trivia List</Typography>
+        <Typography variant="h4">Trivia Games List</Typography>
       </Stack>
 
       {/* Table Section */}
@@ -95,7 +95,7 @@ export default function TriviaList() {
                 <TableCell>
                   <TableSortLabel
                     active={orderBy === 'trivia_id'}
-                    direction={orderBy === 'trivia_id' ? order : 'asc'}
+                    direction={orderBy === 'trivia_id' ? order : 'desc'}
                     onClick={() => handleRequestSort('trivia_id')}
                   >
                     Trivia ID
@@ -177,11 +177,14 @@ export default function TriviaList() {
                     <TableRow
                       key={trivia.trivia_id}
                       hover
-                      onClick={() => handleRowClick(trivia.trivia_id)} // Make row clickable
+                      onDoubleClick={() => handleRowClick(trivia.trivia_id)} // Make row clickable
                       style={{ cursor: 'pointer' }} // Add cursor pointer to indicate clickability
                     >
                       <TableCell>{trivia.trivia_id}</TableCell>
-                      <TableCell>{new Date(trivia.execution_date).toLocaleString()}</TableCell>
+                      <TableCell>
+                        {new Date(trivia.execution_date).toISOString().split('T')[0]}
+                      </TableCell>{' '}
+                      {/* Format date as YYYY-MM-DD */}
                       <TableCell>{trivia.total_questions_count}</TableCell>
                       <TableCell>{trivia.total_participants_pushed_count}</TableCell>
                       <TableCell>

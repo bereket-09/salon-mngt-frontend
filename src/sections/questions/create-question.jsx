@@ -134,7 +134,7 @@ const QuestionBuilder = () => {
     };
 
     try {
-      const response = await axios.post('${config.BASE_URL}/api/questions', formattedData, {
+      const response = await axios.post(`${config.BASE_URL}/api/questions`, formattedData, {
         headers: {
           'Content-Type': 'application/json',
         },

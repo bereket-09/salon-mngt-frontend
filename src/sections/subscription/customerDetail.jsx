@@ -16,8 +16,13 @@ import {
   Typography,
   Grid,
   Button,
+  IconButton,
+  CardHeader,
+  Collapse,
 } from '@mui/material';
 import config from 'src/config'; // Import the config file
+// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+// import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 export default function CustomerDetail() {
   const { id } = useParams();
@@ -59,169 +64,135 @@ export default function CustomerDetail() {
   const subscriptionHistory = customer[0]?.subscriptionHistory || [];
   const triviaParticipationHistory = customer[0]?.triviaParticipationHistory || [];
 
+  // import { useState } from 'react';
+
+  // CollapsibleSection Component
+  const CollapsibleSection = ({ title, children }) => {
+    const [open, setOpen] = useState(true);
+    return (
+      <Card sx={{ mb: 3 }}>
+        <CardHeader
+          title={title}
+          action={<IconButton onClick={() => setOpen(!open)}>{open ? '^' : 'v'}</IconButton>}
+        />
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          {children}
+        </Collapse>
+      </Card>
+    );
+  };
+
+  // ScrollableTable Component
+  const ScrollableTable = ({ children }) => (
+    <TableContainer component={Card} sx={{ maxHeight: 300, overflow: 'auto', boxShadow: 1 }}>
+      <Table>
+        <TableHead>
+          <TableRow>{/* Add Table Headers */}</TableRow>
+        </TableHead>
+        <TableBody>{children}</TableBody>
+      </Table>
+    </TableContainer>
+  );
+
   return (
-    <Container>
-      <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mb: 2 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mb: 3 }}>
         Back
       </Button>
-      <Card sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Customer Details
-        </Typography>
-        <Divider />
 
-        {/* General Detail Section */}
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">ID: {customer[0].subscriber_id}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">MSISDN: {customer[0].msisdn}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Language: {customer[0].language}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">
-              Status: {customer[0].status === 'A' ? 'Active' : 'Inactive'}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Shortcode: {customer[0].shortcode}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Offer Code: {customer[0].offercode}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">
-              Subscriber Lifecycle: {customer[0].subscriber_lifecycle}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">
-              Created At: {new Date(customer[0].created_at).toLocaleString()}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">
-              Updated At: {new Date(customer[0].updated_at).toLocaleString()}
-            </Typography>
-          </Grid>
+      <Card sx={{ p: 4, boxShadow: 3, backgroundColor: '#ffffff' }}>
+        {/* <Typography variant="h4" gutterBottom>
+          Customer Details
+        </Typography> */}
+        <Divider sx={{ mb: 3 }} />
+
+        <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
+          General Information
+        </Typography>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          {[
+            { label: 'ID', value: customer[0].subscriber_id },
+            { label: 'MSISDN', value: customer[0].msisdn },
+            { label: 'Language', value: customer[0].language },
+            { label: 'Current Status', value: customer[0].status === 'A' ? 'Active' : 'Inactive' },
+            { label: 'Shortcode', value: customer[0].shortcode },
+            { label: 'Offer Code', value: customer[0].offercode },
+            { label: 'Subscriber Lifecycle', value: customer[0].subscriber_lifecycle },
+            { label: 'Created At', value: new Date(customer[0].created_at).toLocaleString() },
+            { label: 'Updated At', value: new Date(customer[0].updated_at).toLocaleString() },
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Typography variant="subtitle2" color="textSecondary">
+                {item.label}
+              </Typography>
+              <Typography variant="h6" color="textPrimary">
+                {item.value}
+              </Typography>
+            </Grid>
+          ))}
         </Grid>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6">Subscription History</Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Subscription ID</TableCell>
-                <TableCell>OLD STATUS</TableCell>
-                <TableCell>NEW STATUS</TableCell>
-                <TableCell>Change Date</TableCell>
+        <CollapsibleSection title="Subscription History">
+          <ScrollableTable>
+            {subscriptionHistory.map((sub) => (
+              <TableRow key={sub.history_id} hover>
+                <TableCell>{sub.history_id}</TableCell>
+                <TableCell>
+                  <Label variant="soft" color={sub.old_status === 'D' ? 'error' : 'success'}>
+                    {sub.old_status === 'A' ? 'Active' : 'Inactive'}
+                  </Label>
+                </TableCell>
+                <TableCell>
+                  <Label variant="soft" color={sub.new_status === 'D' ? 'error' : 'success'}>
+                    {sub.new_status === 'A' ? 'Active' : 'Inactive'}
+                  </Label>
+                </TableCell>
+                <TableCell>{new Date(sub.changed_at).toLocaleDateString()}</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {subscriptionHistory.length > 0 ? (
-                subscriptionHistory.map((sub) => (
-                  <TableRow key={sub.history_id}>
-                    <TableCell>{sub.history_id}</TableCell>
-                    <TableCell>
-                      <Label
-                        variant="soft"
-                        color={(sub.old_status === 'inactive' && 'error') || 'success'}
-                      >
-                        {sub.old_status === 'active' ? 'Active' : 'Inactive'}
-                      </Label>
-                    </TableCell>
-                    <TableCell>
-                      <Label
-                        variant="soft"
-                        color={(sub.new_status === 'inactive' && 'error') || 'success'}
-                      >
-                        {sub.new_status === 'active' ? 'Active' : 'Inactive'}
-                      </Label>
-                    </TableCell>
-                    <TableCell>{new Date(sub.changed_at).toLocaleDateString()}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No subscription history available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            ))}
+          </ScrollableTable>
+        </CollapsibleSection>
 
-        <Divider sx={{ my: 2 }} />
-
-        <Typography variant="h6">Trivia Participation History</Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Participation Game ID</TableCell>
-                <TableCell>Trivia ID</TableCell>
-                <TableCell>Current Question</TableCell>
-                <TableCell>Total Questions Left</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Start Time</TableCell>
-                <TableCell>End Time</TableCell>
-                <TableCell>Average Completion Time</TableCell>
-                <TableCell>Score</TableCell>
+        <CollapsibleSection title="Trivia Participation History">
+          <ScrollableTable>
+            {triviaParticipationHistory.map((participation) => (
+              <TableRow key={participation.participation_game_id} hover>
+                <TableCell>{participation.participation_game_id}</TableCell>
+                <TableCell>{participation.trivia_id}</TableCell>
+                <TableCell>{participation.current_question}</TableCell>
+                <TableCell>{participation.total_questions_left}</TableCell>
+                <TableCell>
+                  <Label
+                    variant="soft"
+                    color={
+                      participation.status === 'IN_PROGRESS'
+                        ? 'warning'
+                        : participation.status === 'COMPLETED'
+                        ? 'success'
+                        : 'error'
+                    }
+                  >
+                    {participation.status}
+                  </Label>
+                </TableCell>
+                <TableCell>{new Date(participation.start_time).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {participation.end_time
+                    ? new Date(participation.end_time).toLocaleDateString()
+                    : 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {participation.average_completion_time
+                    ? `${participation.average_completion_time} mins`
+                    : 'N/A'}
+                </TableCell>
+                <TableCell>{participation.score !== null ? participation.score : 'N/A'}</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {triviaParticipationHistory.length > 0 ? (
-                triviaParticipationHistory.map((participation) => (
-                  <TableRow key={participation.participation_game_id}>
-                    <TableCell>{participation.participation_game_id}</TableCell>
-                    <TableCell>{participation.trivia_id}</TableCell>
-                    <TableCell>{participation.current_question}</TableCell>
-                    <TableCell>{participation.total_questions_left}</TableCell>
-                    <TableCell>
-                      <Label
-                        variant="soft"
-                        color={
-                          (participation.status === 'IN_PROGRESS' && 'warning') ||
-                          (participation.status === 'COMPLETED' && 'success') ||
-                          (participation.status === 'FAILED' && 'error') ||
-                          'default'
-                        }
-                      >
-                        {participation.status}
-                      </Label>
-                    </TableCell>
-                    <TableCell>{new Date(participation.start_time).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      {participation.end_time
-                        ? new Date(participation.end_time).toLocaleDateString()
-                        : 'N/A'}
-                    </TableCell>
-                    <TableCell>
-                      {participation.average_completion_time
-                        ? `${participation.average_completion_time} mins`
-                        : 'N/A'}
-                    </TableCell>
-                    <TableCell>
-                      {participation.score !== null ? participation.score : 'N/A'}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={9} align="center">
-                    No trivia participation history available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            ))}
+          </ScrollableTable>
+        </CollapsibleSection>
       </Card>
     </Container>
   );

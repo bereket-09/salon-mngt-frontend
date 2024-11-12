@@ -5,9 +5,9 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import SettingsPage from 'src/sections/setting/setting';
 import TriviaList from 'src/sections/trivia/trivaiList';
-import ImportQuestions from 'src/sections/user/view/upload';
-import ApplicationPage from 'src/sections/user/view/apps-view';
-import EditQuestionForm from 'src/sections/user/view/editQuestion';
+import ImportQuestions from 'src/sections/questions/upload';
+import ApplicationPage from 'src/sections/questions/apps-view';
+import EditQuestionForm from 'src/sections/questions/editQuestion';
 import TriviaDetailView from 'src/sections/trivia/triviaDetailView';
 import QuestionBuilder from 'src/sections/questions/create-question';
 import CustomerDetail from 'src/sections/subscription/customerDetail';
@@ -57,11 +57,11 @@ export default function Router() {
         { path: 'trivia', element: <TriviaList /> },
         { path: 'setting', element: <SettingsPage /> },
         { path: 'create-question', element: <QuestionBuilder /> },
-        
+
         { path: 'upload-question', element: <ImportQuestions /> },
         { path: 'edit-question/:id', element: <EditQuestionForm /> },
         { path: '/customerDetail/:id', element: <CustomerDetail /> },
-        
+
         { path: '/triviaDetail/:trivia_id', element: <TriviaDetailView /> },
       ],
     },
