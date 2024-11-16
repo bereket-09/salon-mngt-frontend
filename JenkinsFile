@@ -74,12 +74,11 @@ stage('Build Project') {
     steps {
         container('nodejs') {
             script {
+                echo "Installing Vite globally..."
+                sh 'npm install -g vite'  // Installs Vite globally
+                
                 echo "Running npm run build..."
-                // sh 'npm install'
-                sh 'npm run build'
-
-                // Ensure the build folder is created
-                echo "Build folder created."
+                sh 'npm run build'  // This should now work.
             }
         }
     }
@@ -92,6 +91,7 @@ stage('Build Project') {
         }
     }
 }
+
 
 stage('Sonar code publish / Scan') {
     when { expression { true } }
