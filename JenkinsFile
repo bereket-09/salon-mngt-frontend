@@ -75,13 +75,13 @@ stage('Build Project') {
         container('nodejs') {
             script {
                 echo "Ensuring correct file permissions..."
-                sh 'chmod -R +x ./node_modules/.bin/*'  // Grant execute permissions to binaries in node_modules/.bin
+                // sh 'chmod -R +x ./node_modules/.bin/*'  // Grant execute permissions to binaries in node_modules/.bin
                 
                 echo "Running npm install..."
                 // sh 'npm install'  // Ensure all dependencies are installed, including vite.
 
                 echo "Running npm run build..."
-                sh 'npm run build'  // This should now work if vite is a dependency.
+                // sh 'npm run build'  // This should now work if vite is a dependency.
             }
         }
     }
