@@ -94,7 +94,6 @@ stage('Build Project') {
         }
     }
 }
-
 stage('Sonar code publish / Scan') {
     when { expression { true } }
     steps {
@@ -105,7 +104,7 @@ stage('Sonar code publish / Scan') {
                   /opt/sonar-scanner/bin/sonar-scanner \
                     -Dsonar.projectKey=sms-trivia-care-portal \
                     -Dsonar.projectName=sms-trivia-care-portal \
-                    -Dsonar.sources=build \
+                    -Dsonar.sources=dist \
                     -Dsonar.exclusions=node_modules/**,tests/** \
                     -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                 '''
