@@ -69,10 +69,29 @@ stage('Initialize') {
 }
 
 
-// add a new stage here where it will do is run npm run build and it will create  a build folder inside the repo
+stage('Build Project') {
+    when { expression { true } }
+    steps {
+        container('nodejs') {
+            script {
+                echo "Running npm run build..."
+                // sh 'npm install'
+                sh 'npm run build'
 
-
-// update sonarquibe to scan the dist folder or the build verion not the source code
+                // Ensure the build folder is created
+                echo "Build folder created."
+            }
+        }
+    }
+    post {
+        success {
+            echo "Build completed and build folder created."
+        }
+        failure {
+            echo "Build failed."
+        }
+    }
+}
 
 stage('Sonar code publish / Scan') {
     when { expression { true } }
@@ -84,7 +103,7 @@ stage('Sonar code publish / Scan') {
                   /opt/sonar-scanner/bin/sonar-scanner \
                     -Dsonar.projectKey=sms-trivia-care-portal \
                     -Dsonar.projectName=sms-trivia-care-portal \
-                    -Dsonar.sources=. \
+                    -Dsonar.sources=build \
                     -Dsonar.exclusions=node_modules/**,tests/** \
                     -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                 '''
@@ -100,6 +119,7 @@ stage('Sonar code publish / Scan') {
         }
     }
 }
+
 
 
 
