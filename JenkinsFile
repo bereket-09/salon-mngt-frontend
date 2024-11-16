@@ -92,7 +92,6 @@ stage('Build Project') {
     }
 }
 
-
 stage('Sonar code publish / Scan') {
     when { expression { true } }
     steps {
