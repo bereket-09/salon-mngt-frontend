@@ -1,0 +1,253 @@
+pipeline {
+    agent {
+        kubernetes {
+            cloud 'kubernetes_mdc1'
+            inheritFrom 'k8-vas-sms-trivia-agents'
+            idleMinutes 0
+            yamlFile 'k8-pod-agents_mdc1.yml'
+            defaultContainer 'nodejs'
+        }
+    }
+
+    options {
+        gitLabConnection('gitlab')
+    }
+    environment {
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_URL = "nexus.dev3.safaricomet.net"
+        NEXUS_REPOSITORY = "ibex-client-fucntions"
+        NEXUS_CREDENTIAL_ID = "nexus_cred"
+        NPM_TOKEN = credentials('nexus_tdm_admin')
+        NPM_REGISTRY = 'http://nexus.dev3.safaricomet.net/sms-trivia-care-portal/'
+        GITLAB_ACCESS_TOKENS="qbh4KoxWo_FqQwAfiv5c"
+        // TARGET_BRANCH = "main"
+        TARGET_BRANCH = "${env.GIT_BRANCH.split('/').last()}"
+        APP_NAME = "trivia-care-portal"
+        IMAGE_PREFIX="0.0."
+        IMAGE_TAG = "${IMAGE_PREFIX}${env.BUILD_ID}"
+        // IMAGE_TAG="latest"
+        HARBOR_HOSTNAME = "mdc1-sfcr.safaricomet.net/vas"
+        MANIFEST_URL = 'vas_dev/sms-trivia/sms-trivia-manifest'
+        REPOSITORY_NAME = 'SMS-Trivia-Backend'
+        REPOSITORY_URL = "gitlab.safaricomet.net/${MANIFEST_URL}"
+        INSIGHTVM_API_KEY = "aadb504d-8a70-48b7-827e-d0fb6b805649"
+        IMAGE_NAME = "${HARBOR_HOSTNAME}/${APP_NAME}-${TARGET_BRANCH}"
+    }
+
+    stages {
+stage('Initialize') {
+    steps {
+        script {
+            try {
+                // Mark the directory as safe
+                sh "git config --global --add safe.directory ${env.WORKSPACE}"
+
+                // Check if the workspace already exists, no need to checkout again
+                if (fileExists('.git')) {
+                    // Get the committer name and latest commit message
+                    def committerName = sh(script: "git log -1 --pretty=format:'%an'", returnStdout: true).trim()
+                    def commitMessage = sh(script: "git log -1 --pretty=format:'%s'", returnStdout: true).trim()
+
+                    echo "Committer name: ${committerName}"
+                    echo "Commit message: ${commitMessage}"
+
+                    env.COMMITTER_NAME = committerName
+                    env.COMMIT_MESSAGE = commitMessage
+                } else {
+                    echo "Git repository not available in the workspace."
+                    env.COMMITTER_NAME = "Unknown"
+                    env.COMMIT_MESSAGE = "No commit message available"
+                }
+            } catch (Exception e) {
+                echo "Error capturing committer name or commit message: ${e.message}"
+                env.COMMITTER_NAME = "Unknown"
+                env.COMMIT_MESSAGE = "No commit message available"
+            }
+        }
+    }
+}
+
+
+// add a new stage here where it will do is run npm run build and it will create  a build folder inside the repo
+
+
+// update sonarquibe to scan the dist folder or the build verion not the source code
+
+stage('Sonar code publish / Scan') {
+    when { expression { true } }
+    steps {
+        container('sonarcli') {
+            updateGitlabCommitStatus name: 'Sonar code publish', state: 'pending'
+            withSonarQubeEnv('sonarqube') {
+                sh '''
+                  /opt/sonar-scanner/bin/sonar-scanner \
+                    -Dsonar.projectKey=sms-trivia-care-portal \
+                    -Dsonar.projectName=sms-trivia-care-portal \
+                    -Dsonar.sources=. \
+                    -Dsonar.exclusions=node_modules/**,tests/** \
+                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                '''
+            }
+        }
+    }
+    post {
+        success {
+            updateGitlabCommitStatus name: 'Sonar code publish', state: 'success'
+        }
+        failure {
+            updateGitlabCommitStatus name: 'Sonar code publish', state: 'failed'
+        }
+    }
+}
+
+
+
+
+        stage('Build Docker Image and Push') {
+            when { expression { true } }
+            steps {
+                container('kubectl') {
+                    script {
+                        echo "Listing available secrets in the pod:"
+                        sh 'kubectl get secrets'
+                        echo "Describing vas-secret to view keys:"
+                        sh 'kubectl describe secret vas-secret'
+                        echo "Getting and decoding .dockerconfigjson data from vas-secret:"
+                        sh "kubectl get secret vas-secret -o jsonpath='{.data.\\.dockerconfigjson}' | base64 --decode"
+                    }
+                }
+
+                container('kaniko') {
+                    script {
+                        echo "IMAGE_NAME: ${IMAGE_NAME}"
+                        echo "IMAGE_TAG: ${IMAGE_TAG}"
+
+                        sh '''
+                        mkdir -p /workspace/tarballs/mdc1-sfcr.safaricomet.net/vas
+                        ls -l /workspace/tarballs
+                        ls -l /workspace/tarballs/mdc1-sfcr.safaricomet.net
+                        '''
+
+                        echo "Building, saving to tar, and pushing Docker image"
+                        sh "/kaniko/executor --dockerfile Dockerfile --context . --destination ${IMAGE_NAME}:${IMAGE_TAG} --insecure --skip-tls-verify --tar-path /workspace/tarballs/mdc1-sfcr.safaricomet.net/vas/${IMAGE_TAG}.tar"
+                    }
+                }
+            }
+            post {
+                success {
+                    updateGitlabCommitStatus name: 'Build Docker Image Save', state: 'success'
+                }
+                failure {
+                    updateGitlabCommitStatus name: 'Build Docker Image Save', state: 'failed'
+                }
+            }
+        }
+
+
+        stage('Update deployment manifest') {
+    when { expression { true } }
+    steps {
+        container('nodejs') {
+            script {
+                def repoDir = "sms-trivia-manifest"
+
+                echo "Cloning the repository..."
+                sh """
+                    # Ignore SSL certificate issues for this job
+                    git -c http.sslVerify=false clone -b ${TARGET_BRANCH} https://bereket.zelalem:${GITLAB_ACCESS_TOKENS}@gitlab.safaricomet.net/${MANIFEST_URL}.git ${repoDir}
+                """
+
+                dir(repoDir) {
+                    echo "Ensuring the required directories and files exist..."
+                    sh """
+                        mkdir -p Frontend
+                        touch Frontend/frontend.yaml
+                    """
+
+                    echo "Updating deployment manifest with the new image details..."
+                    sh """
+                        awk -v imageName="${IMAGE_NAME}" -v imageTag="${IMAGE_TAG}" '
+                            /image:/ {sub(/image:.*/, "image: " imageName ":" imageTag)}
+                            {print}
+                        ' Frontend/frontend.yaml > Frontend/frontend.tmp && mv Frontend/frontend.tmp Frontend/frontend.yaml
+                    """
+                    echo "Updated backend.yaml content:"
+                    sh 'cat Frontend/frontend.yaml'
+
+                    echo "Configuring Git and committing changes..."
+                    sh """
+                        git config --global user.email 'bereket.zelalem@safaricom.et'
+                        git config --global user.name 'bereket.zelalem'
+                        git add Frontend/frontend.yaml
+                        git commit -m 'Updating image Version to ${IMAGE_TAG} from Jenkins'
+                        git -c http.sslVerify=false push origin ${TARGET_BRANCH}
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            updateGitlabCommitStatus name: 'k8 manifest update', state: 'success'
+        }
+        failure {
+            updateGitlabCommitStatus name: 'k8 manifest update', state: 'failed'
+        }
+    }
+}
+
+
+
+
+
+        stage('Notify') {
+            when { expression { true } }
+            steps {
+                script {
+                    // Get the latest commit message
+                    // def commitMessage = sh(script: "git log -1 --pretty=format:'%s'", returnStdout: true).trim()        
+                    def teamsWebhookUrl = 'https://safaricomethiopia.webhook.office.com/webhookb2/52f16aba-6599-4a97-8335-ef179049968b@5e563b91-9daf-498a-b342-4ad22c029ea1/IncomingWebhook/76fb04f7c05b4205916805825300382f/99e46c42-10dd-4d1a-956e-6784f1766044/V2o-1YjfMoEwnzQCSXabonf221xBvuPkL5JfxMa20HCio1'
+                    def message = """
+                    {
+                        "@type": "MessageCard",
+                        "@context": "http://schema.org/extensions",
+                        "themeColor": "00FF00",
+                        "summary": "✅ SMS TRIVIA CARE PORTAL - Build Success ✅",
+                        "sections": [{
+                            "activityTitle": "✅ Build Pipeline Success | SMS TRIVIA CARE PORTAL",
+                            "activitySubtitle": "Job: ${env.JOB_NAME}",
+                            "facts": [
+                                {"name": "Build Number", "value": "${env.BUILD_NUMBER}"},
+                                {"name": "Status", "value": "Success"},
+                                {"name": "Image Name", "value": "${IMAGE_NAME}:${IMAGE_TAG}"},
+                                {"name": "Image Tag", "value": "${IMAGE_TAG}"},
+                                {"name": "Committer", "value": "${env.COMMITTER_NAME}"},
+                                {"name": "Commit Message", "value": "${env.COMMIT_MESSAGE}"},
+                                {"name": "Build URL", "value": "[Click Here](${env.BUILD_URL})"}
+                            ],
+                            "markdown": true
+                        }]
+                    }
+                    """
+                    sh(script: "curl -H 'Content-Type: application/json' -d '${message}' ${teamsWebhookUrl}")
+                }
+            }
+        }
+    }
+
+
+    post {
+        success {
+            script {
+                echo "Build and deployment completed successfully!"
+            }
+        }
+        failure {
+            script {
+                echo "Build and deployment failed."
+            }
+        }
+    }
+}
+

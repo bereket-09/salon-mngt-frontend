@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8-agent-containers
+  namespace: jenkins
+  labels:
+    job: k8-agents
+spec:
+  serviceAccountName: jenkins-admin # jenkins-admin-et02 for et02 cluster
+  initContainers:
+    - name: cleanup-container
+      image: mdc1-sfcr.safaricomet.net/dev-tools/busybox:lts
+      command: ["sh", "-c", "rm -rf /home/jenkins/agent/*"]
+      volumeMounts:
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+  containers:
+    - name: jnlp
+      image: mdc1-sfcr.safaricomet.net/dev-tools/jenkins-inbound-agent:custom3
+      imagePullPolicy: Always # use cache or pull image for agent
+      resources: # limits the resources your build container
+        requests:
+          memory: "256Mi"
+          cpu: "50m"
+        limits:
+          memory: "2Gi"
+          cpu: "900m"
+      volumeMounts:
+        - name: ca-cert
+          mountPath: /etc/ssl/certs
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+    - name: maven
+      image: mdc1-sfcr.safaricomet.net/dev-tools/maven-builder:offline #mdc1-sfcr.safaricomet.net/dev-tools/maven-builder-3.8.3-jdk-11:offline
+      command: ["tail", "-f", "/dev/null"]
+      env:
+        - name: MAVEN_OPTS
+          value: "-Xmx512m"
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "50m"
+        limits:
+          memory: "800Mi"
+          cpu: "120m"
+      volumeMounts:
+        - name: ca-cert
+          mountPath: /etc/ssl/certs # importing ssl certs
+        - name: maven-cache
+          mountPath: "/root/.m2"
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+    - name: nodejs
+      image: mdc1-sfcr.safaricomet.net/dev-tools/node-login-cli-latest:offline #mdc1-sfcr.safaricomet.net/dev-tools/node-latest:offline
+      command: ["tail", "-f", "/dev/null"]
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "50m"
+        limits:
+          memory: "4Gi"
+          cpu: "400m"
+      volumeMounts:
+        - name: nodejs-cache
+          mountPath: "/root/.npm" # nodejs dependencies
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+          readOnly: false
+    - name: sonarcli
+      image: mdc1-sfcr.safaricomet.net/dev-tools/sonar-scanner-cli:offline
+      imagePullPolicy: Always
+      command: ["tail", "-f", "/dev/null"]
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "80m"
+        limits:
+          memory: "2Gi"
+          cpu: "900m"
+      volumeMounts:
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+          readOnly: false
+    - name: kaniko
+      image: mdc1-sfcr.safaricomet.net/dev-tools/kaniko-debug-local:offline
+      command:
+        - cat
+      tty: true
+      imagePullPolicy: Always
+      restartPolicy: Never
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "50m"
+        limits:
+          memory: "2Gi"
+          cpu: "1"
+      env:
+        - name: DOCKER_CONFIG
+          value: /.docker
+      volumeMounts:
+        - name: docker-config
+          mountPath: /.docker
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+          readOnly: false
+    - name: kubectl
+      image: mdc1-sfcr.safaricomet.net/dev-tools/kubectl:latest-local
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      resources: # limits the resources your build container
+        requests:
+          memory: "256Mi"
+          cpu: "50m"
+        limits:
+          memory: "2Gi"
+          cpu: "800m"
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: ca-cert
+          mountPath: /etc/ssl/certs # importing ssl certs
+        - name: nodejs-workspace-volume
+          mountPath: /home/jenkins/agent # temp project folder
+          readOnly: false
+  imagePullSecrets:
+    - name: harbor-registry-secret
+  volumes:
+    - name: ca-cert
+      configMap:
+        name: safaricomet.net
+        items:
+          - key: ca-certificates.crt
+            path: ca-certificates.crt
+    - name: docker-config
+      secret:
+        secretName: vas-secret #harbor-et02-registry-secret-kaniko # for ET02 cluster: harbor-et02-registry-secret-kaniko for mdc1: mdc1-devtools-harbor-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: maven-cache
+      persistentVolumeClaim:
+        claimName: maven-cache-pvc
+    - name: nodejs-cache
+      persistentVolumeClaim:
+        claimName: nodejs-cache-pvc
+    - name: nodejs-workspace-volume
+      persistentVolumeClaim:
+        claimName: nodejs-cache-workspace-pvc
