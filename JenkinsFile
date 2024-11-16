@@ -75,7 +75,7 @@ stage('Build Project') {
         container('nodejs') {
             script {
                 echo "Installing Vite globally..."
-                sh 'npm install -g vite'  // Installs Vite globally
+                // sh 'npm install -g vite'  // Installs Vite globally
                 
                 echo "Running npm run build..."
                 sh 'npm run build'  // This should now work.
