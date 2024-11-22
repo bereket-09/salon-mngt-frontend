@@ -1,37 +1,72 @@
-import SvgColor from 'src/components/svg-color';
-
-// ----------------------------------------------------------------------
-
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-);
+/* eslint-disable perfectionist/sort-imports */
+import { FaCog, FaLock, FaTachometerAlt, FaQuestionCircle } from 'react-icons/fa';
 
 const navConfig = [
   {
-    title: 'dashboard',
-    path: '/',
-    icon: icon('ic_analytics'),
-  },
-
-  {
-    title: 'Manage Questions',
-    path: '/questions',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'Manage Subscriptions',
-    path: '/subscriptions',
-    icon: icon('ic_lock'),
+    title: 'Overview',
+    icon: <FaTachometerAlt />,
+    children: [
+      {
+        title: 'Dashboard',
+        path: '/',
+      },
+    ],
   },
   {
-    title: 'Manage Trivia',
-    path: '/trivia',
-    icon: icon('ic_blog'),
+    title: 'Questions', // Shortened group title
+    icon: <FaQuestionCircle />,
+    children: [
+      {
+        title: '- Questions List',
+        path: '/questions',
+      },
+      {
+        title: '- Create Question',
+        path: '/create-question',
+      },
+      {
+        title: '- Upload Questions',
+        path: '/upload-question',
+      },
+    ],
   },
   {
-    title: 'Manage users',
-    path: '/user',
-    icon: icon('ic_user'),
+    title: 'Subscriptions', // Shortened group title
+    icon: <FaLock />,
+    children: [
+      {
+        title: '- Subscriptions List',
+        path: '/subscriptions',
+      },
+    ],
+  },
+  {
+    title: 'Trivia', // Shortened group title
+    icon: <FaTachometerAlt />,
+    children: [
+      {
+        title: '- Trivia List',
+        path: '/trivia',
+      },
+      // {
+      //   title: '- Trivia Winners',
+      //   path: '/triviawinners',
+      // },
+      // {
+      //   title: '- Trivia Losers',
+      //   path: '/trivialosers',
+      // },
+    ],
+  },
+  {
+    title: 'Settings',
+    icon: <FaCog />,
+    children: [
+      {
+        title: '- Settings Page',
+        path: '/setting',
+      },
+    ],
   },
 ];
 

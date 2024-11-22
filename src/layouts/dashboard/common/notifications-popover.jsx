@@ -3,25 +3,25 @@ import PropTypes from 'prop-types';
 import { set, sub } from 'date-fns';
 import { faker } from '@faker-js/faker';
 
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
+// import Box from '@mui/material/Box';
+// import List from '@mui/material/List';
 import Badge from '@mui/material/Badge';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import Popover from '@mui/material/Popover';
+// import Divider from '@mui/material/Divider';
+// import Tooltip from '@mui/material/Tooltip';
+// import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
+// import ListSubheader from '@mui/material/ListSubheader';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import { fToNow } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
+// import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -74,8 +74,8 @@ const NOTIFICATIONS = [
 ];
 
 export default function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
-
+  // const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications] = useState(NOTIFICATIONS);
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const [open, setOpen] = useState(null);
@@ -84,18 +84,18 @@ export default function NotificationsPopover() {
     setOpen(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setOpen(null);
-  };
+  // const handleClose = () => {
+  //   setOpen(null);
+  // };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
-  };
+  // const handleMarkAllAsRead = () => {
+  //   setNotifications(
+  //     notifications.map((notification) => ({
+  //       ...notification,
+  //       isUnRead: false,
+  //     }))
+  //   );
+  // };
 
   return (
     <>
@@ -105,7 +105,7 @@ export default function NotificationsPopover() {
         </Badge>
       </IconButton>
 
-      <Popover
+      {/* <Popover
         open={!!open}
         anchorEl={open}
         onClose={handleClose}
@@ -173,7 +173,7 @@ export default function NotificationsPopover() {
             View All
           </Button>
         </Box>
-      </Popover>
+      </Popover> */}
     </>
   );
 }

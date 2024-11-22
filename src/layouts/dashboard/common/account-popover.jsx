@@ -1,5 +1,5 @@
+/* eslint-disable perfectionist/sort-imports */
 import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
@@ -8,7 +8,7 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-
+import { useKeycloak } from '@react-keycloak/web'; // Ensure this hook is imported
 import { useRouter } from 'src/routes/hooks';
 
 import { accountMock } from 'src/_mock/account';
@@ -36,8 +36,10 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const { keycloak } = useKeycloak(); // Call useKeycloak here inside the component
   const router = useRouter();
   const account = JSON.parse(localStorage.getItem('userData'));
+
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -58,17 +60,22 @@ export default function AccountPopover() {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
 
     if (confirmLogout) {
-      // Clear the token from local storage
+      // Clear the token and user data from local storage
       localStorage.removeItem('authToken');
-
       localStorage.removeItem('userData');
+
+      // Clear the Keycloak session
+      if (keycloak) {
+        keycloak.logout({
+          redirectUri: `${window.location.origin}/`, // Redirect to login page after logout
+        });
+      } else {
+        // If Keycloak is not initialized, just redirect manually
+        window.location.href = '/';
+      }
 
       // Show logout success message
       alert('Logged out successfully');
-
-      // Redirect to the login page
-      router.push('/login'); // Use router.push if using custom router hook
-      // navigate('/login'); // Use navigate if using react-router v6
 
       // Close any open menu (if applicable)
       setOpen(null);
@@ -77,7 +84,6 @@ export default function AccountPopover() {
       setOpen(null);
     }
   };
-
   return (
     <>
       <IconButton

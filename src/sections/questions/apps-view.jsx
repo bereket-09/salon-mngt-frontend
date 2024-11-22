@@ -30,7 +30,7 @@ import TableEmptyRows from '../user/table-empty-rows';
 import { useNavigate } from 'react-router-dom';
 import EditQuestionForm from './editQuestion';
 import config from 'src/config'; // Import the config file
-// import { useNavigate } from 'react-router-dom';
+
 export default function QuestionsTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
@@ -44,6 +44,7 @@ export default function QuestionsTable() {
   const [order, setOrder] = useState('desc'); // State for sorting order
   const [orderBy, setOrderBy] = useState('question_date'); // State for sorting column
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [userRoles, setUserRoles] = useState([]); // State to store user roles
 
   const navigate = useNavigate();
 
@@ -52,6 +53,12 @@ export default function QuestionsTable() {
   };
 
   useEffect(() => {
+    // Fetch user data from local storage and extract roles
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && Array.isArray(userData.roles)) {
+      setUserRoles(userData.roles); // Set the roles in state
+    }
+
     const fetchQuestions = async () => {
       const url = `${config.BASE_URL}/api/questions`;
       try {
@@ -142,6 +149,11 @@ export default function QuestionsTable() {
   };
 
   const isEmpty = !sortedData.length && !loading;
+
+  // Check if the user has admin or trivia-related roles
+  const hasEditPermission = userRoles.some(role =>
+    ['admin', 'trivia-admin', 'trivia-questions-admin'].includes(role)
+  );
 
   return (
     <Container>
@@ -268,7 +280,7 @@ export default function QuestionsTable() {
                     Status
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>Actions</TableCell>
+                {hasEditPermission && <TableCell>Actions</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -286,19 +298,6 @@ export default function QuestionsTable() {
                       <TableCell>{question.amharic_text}</TableCell>
                       <TableCell>{question.english_options.join(', ')}</TableCell>
                       <TableCell>{question.amharic_options.join(', ')}</TableCell>
-                      {/* <TableCell>
-                        {(Array.isArray(question.english_options)
-                          ? question.english_options
-                          : []
-                        ).join(', ')}
-                      </TableCell>
-                      <TableCell>
-                        {(Array.isArray(question.amharic_options)
-                          ? question.amharic_options
-                          : []
-                        ).join(', ')}
-                      </TableCell> */}
-
                       <TableCell>{question.correct_answer}</TableCell>
                       <TableCell>{question.question_date}</TableCell>
                       <TableCell>{question.created_by_username}</TableCell>
@@ -310,13 +309,15 @@ export default function QuestionsTable() {
                           {question.status}
                         </Label>
                       </TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={1}>
-                          <IconButton onClick={() => handleOpenDialog(question)}>
-                            <Iconify icon="eva:edit-fill" />
-                          </IconButton>
-                        </Stack>
-                      </TableCell>
+                      {hasEditPermission && (
+                        <TableCell>
+                          <Stack direction="row" spacing={1}>
+                            <IconButton onClick={() => handleOpenDialog(question)}>
+                              <Iconify icon="eva:edit-fill" />
+                            </IconButton>
+                          </Stack>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
               )}
