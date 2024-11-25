@@ -12,6 +12,7 @@ export default function App() {
   const handleEvent = (event, error) => {
     console.log('Keycloak Event:', event, error);
   };
+
   const handleTokens = (tokens) => {
     if (tokens.token) {
       localStorage.setItem('authToken', tokens.token);
