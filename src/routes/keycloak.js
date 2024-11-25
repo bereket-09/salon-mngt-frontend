@@ -2,9 +2,9 @@
 import Keycloak from 'keycloak-js';
 
 const keycloakConfig = {
-    url: 'http://keycloak.vas.safaricomet.net',
-    realm: 'vas-trivia-realm',
-    clientId: 'trivia-client',
+    url: import.meta.env.KEYCLOAK_PORTAL_URL || 'http://keycloak.vas.safaricomet.net',
+    realm: import.meta.env.KEYCLOAK_REALM || 'vas-trivia-realm',
+    clientId: import.meta.env.KEYCLOAK_CLIENT_ID || 'trivia-client',
 };
 
 const keycloak = new Keycloak(keycloakConfig);
