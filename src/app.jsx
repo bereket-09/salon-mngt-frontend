@@ -10,16 +10,16 @@ import keycloak from './routes/keycloak';
 
 export default function App() {
   const handleEvent = (event, error) => {
-    // console.log('Keycloak Event:', event, error);
+    console.log('Keycloak Event:', event, error);
   };
   const handleTokens = (tokens) => {
     if (tokens.token) {
       localStorage.setItem('authToken', tokens.token);
-      // console.log('Auth Token Saved:', tokens.token);
+      console.log('Auth Token Saved:', tokens.token);
 
       // Decode the token manually
       const decodedToken = jwtDecode(tokens.token);
-      // console.log('Decoded Token:', decodedToken);
+      console.log('Decoded Token:', decodedToken);
 
       // Create userData from the decoded token
       const userData = {
@@ -30,7 +30,7 @@ export default function App() {
         status: 'active',
       };
       localStorage.setItem('userData', JSON.stringify(userData));
-      // console.log('User Data Saved:', userData);
+      console.log('User Data Saved:', userData);
     } else {
       console.warn('Token is missing');
     }
