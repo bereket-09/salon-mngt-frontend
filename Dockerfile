@@ -1,17 +1,11 @@
-# Use an official Node.js runtime as a parent image
-FROM mdc1-sfcr.safaricomet.net/vas/node:20-alpine
+# Use the unprivileged NGINX image
+FROM mdc1-sfcr.safaricomet.net/library/nginxinc/nginx-unprivileged:1.20
 
-# Set the working directory inside the container to /app
-WORKDIR /app
+# Copy the NGINX configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Install serve globally
-RUN npm install -g serve
+# Copy the dist folder into NGINX's HTML directory
+COPY dist /usr/share/nginx/html
 
-# Copy the dist folder to the container
-COPY dist ./dist
-
-# Expose port 3000 for the application
+# Expose port 3000
 EXPOSE 3000
-
-# Serve the application using serve
-CMD ["serve", "-s", "dist", "-l", "3000"]
