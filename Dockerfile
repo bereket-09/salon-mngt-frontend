@@ -1,5 +1,5 @@
 # Use the unprivileged NGINX image
-FROM mdc1-sfcr.safaricomet.net/library/nginxinc/nginx-unprivileged:1.20
+FROM mdc1-sfcr.safaricomet.net/vas/nginx:stable
 
 # Copy the NGINX configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
