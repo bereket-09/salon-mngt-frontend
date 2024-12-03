@@ -8,7 +8,7 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { useKeycloak } from '@react-keycloak/web'; // Ensure this hook is imported
+import Swal from 'sweetalert2';
 import { useRouter } from 'src/routes/hooks';
 
 import { accountMock } from 'src/_mock/account';
@@ -36,7 +36,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const { keycloak } = useKeycloak(); // Call useKeycloak here inside the component
+  // const { keycloak } = useKeycloak(); // Call useKeycloak here inside the component
   const router = useRouter();
   const account = JSON.parse(localStorage.getItem('userData'));
 
@@ -55,35 +55,76 @@ export default function AccountPopover() {
     handleClose();
   };
 
+  // const handleLogout = () => {
+  //   // Show confirmation dialog
+  //   const confirmLogout = window.confirm('Are you sure you want to log out?');
+
+  //   if (confirmLogout) {
+  //     // Clear the token and user data from local storage
+  //     localStorage.removeItem('authToken');
+  //     localStorage.removeItem('userData');
+
+  //     // Clear the Keycloak session
+  //     // if (keycloak) {
+  //     //   keycloak.logout({
+  //     //     redirectUri: `${window.location.origin}/`, // Redirect to login page after logout
+  //     //   });
+  //     // } else {
+  //     // If Keycloak is not initialized, just redirect manually
+  //     window.location.href = '/';
+  //     // }
+
+  //     // Show logout success message
+  //     alert('Logged out successfully');
+
+  //     // Close any open menu (if applicable)
+  //     setOpen(null);
+  //   } else {
+  //     // Do nothing if user cancels
+  //     setOpen(null);
+  //   }
+  // };
+
   const handleLogout = () => {
-    // Show confirmation dialog
-    const confirmLogout = window.confirm('Are you sure you want to log out?');
+    // Show SweetAlert2 confirmation dialog
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log me out',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Clear the token and user data from local storage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
 
-    if (confirmLogout) {
-      // Clear the token and user data from local storage
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-
-      // Clear the Keycloak session
-      if (keycloak) {
-        keycloak.logout({
-          redirectUri: `${window.location.origin}/`, // Redirect to login page after logout
+        // Show logout success message
+        Swal.fire('Logged out!', 'You have been logged out successfully.', 'success').then(() => {
+          // Wait for 5 seconds before redirecting
+          setTimeout(() => {
+            // Redirect to home page (or login page)
+            window.location.href = '/';
+          }, 1000); // 5000ms = 5 seconds
         });
+
+        setTimeout(() => {
+          // Redirect to home page (or login page)
+          window.location.href = '/';
+        }, 1000); // 5000ms = 5 seconds
+   
+
+        // Close any open menu (if applicable)
+        setOpen(null);
       } else {
-        // If Keycloak is not initialized, just redirect manually
-        window.location.href = '/';
+        // Do nothing if user cancels
+        setOpen(null);
       }
-
-      // Show logout success message
-      alert('Logged out successfully');
-
-      // Close any open menu (if applicable)
-      setOpen(null);
-    } else {
-      // Do nothing if user cancels
-      setOpen(null);
-    }
+    });
   };
+
   return (
     <>
       <IconButton
@@ -100,7 +141,7 @@ export default function AccountPopover() {
       >
         <Avatar
           src={accountMock.photoURL}
-          alt={account.username}
+          alt={account?.username}
           sx={{
             width: 36,
             height: 36,

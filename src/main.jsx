@@ -1,5 +1,5 @@
 // Importing the crypto-browserify polyfill for Web Crypto API
-import * as crypto from 'crypto-browserify';
+// import * as crypto from 'crypto-browserify';
 
 import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';

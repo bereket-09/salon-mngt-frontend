@@ -1,7 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
 import DashboardLayout from 'src/layouts/dashboard';
 import SettingsPage from 'src/sections/setting/setting';
 import TriviaList from 'src/sections/trivia/trivaiList';
@@ -24,16 +23,15 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 /* eslint-disable react/prop-types */
 const PrivateRoute = ({ children }) => {
-  const { keycloak, initialized } = useKeycloak();
+  // Check if userData and authToken exist in localStorage
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  const authToken = localStorage.getItem('authToken');
 
-  if (!initialized) {
-    console.log('initialized', initialized);
-    return <div>Loading (!initialized)...</div>;
-  }
-
-  if (!keycloak.authenticated) {
-    keycloak.login();
-    return <div>Redirecting to login...</div>;
+  if (!userData || !authToken) {
+    // Clear localStorage
+    localStorage.removeItem('userData');
+    localStorage.removeItem('authToken');
+    return <Navigate to="/login" replace />;
   }
 
   return children;
@@ -53,7 +51,6 @@ export default function Router() {
       ),
       children: [
         { element: <IndexPage />, index: true },
-        // { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'questions', element: <ApplicationPage /> },

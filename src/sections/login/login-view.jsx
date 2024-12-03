@@ -1,39 +1,27 @@
-import { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
-import InputAdornment from '@mui/material/InputAdornment';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'src/routes/hooks';
-import { bgGradient } from 'src/theme/css';
-import Logo from 'src/components/logo';
-import Iconify from 'src/components/iconify';
-import config from 'src/config'; // Import the config file
+import config from 'src/config';
+import { ToastContainer, toast } from 'react-toastify'; // Import Toastify components
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS
+import './styles.css';
 
 export default function LoginView() {
-  const theme = useTheme();
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if token exists in local storage
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Redirect to dashboard if token is found
       router.push('/');
     }
   }, [router]);
 
-  const handleClick = async () => {
+  const handleSignIn = async (e) => {
+    e.preventDefault();
     setLoading(true);
     try {
       const response = await fetch(`${config.PORTAL_URL}/api/users/login`, {
@@ -41,110 +29,166 @@ export default function LoginView() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
-
       const result = await response.json();
-
       if (response.ok && result.code === 1000) {
-        // Save token and user data to local storage
-        localStorage.setItem('authToken', result.token);
+        localStorage.setItem('authToken', result.data.accessToken);
         localStorage.setItem('userData', JSON.stringify(result.data));
-
-        // Show login success message
-        // alert('Login successful');
-
-        // console.log(result.data)
-
-        // Redirect to the dashboard page
+        toast.success('Login successful!'); // Show success message
         router.push('/');
       } else {
-        // Show error message
-        alert(`Error ${result.code}: ${result.message}`);
+        toast.error(`Error ${result.code}: ${result.message}`); // Show error message
       }
     } catch (error) {
       console.error('Login failed', error);
-      alert('An unexpected error occurred.');
+      toast.error('An unexpected error occurred.'); // Show error message
     } finally {
       setLoading(false);
     }
   };
 
-  const renderForm = (
-    <>
-      <Stack spacing={3}>
-        <TextField
-          name="email"
-          label="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Stack>
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
-      </Stack>
-      <LoadingButton
-        fullWidth
-        size="large"
-        type="submit"
-        variant="contained"
-        color="inherit"
-        onClick={handleClick}
-        loading={loading}
-      >
-        Login
-      </LoadingButton>
-    </>
-  );
+  const [shouldRenderLogo, setShouldRenderLogo] = useState(true);
+
+  useEffect(() => {
+    setShouldRenderLogo(false);
+
+    const timer = setTimeout(() => {
+      setShouldRenderLogo(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [showSignUp]);
 
   return (
-    <Box
-      sx={{
-        ...bgGradient({
-          color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: '/assets/background/overlay_4.jpg',
-        }),
-        height: 1,
-      }}
-    >
-      <Logo
-        sx={{
-          position: 'fixed',
-          top: { xs: 16, md: 24 },
-          left: { xs: 16, md: 24 },
-        }}
+    <div className={`container ${showSignUp ? 'sign-up-mode' : ''}`}>
+      {shouldRenderLogo &&
+        (showSignUp ? (
+          <img src="/assets/logo.png" alt="Logo" className="logo top-left" />
+        ) : (
+          <img src="/assets/logo.png" alt="Logo" className="logo top-right" />
+        ))}
+
+      <div className={`container ${showSignUp ? 'sign-up-mode' : ''}`}>
+        <img
+          src="/assets/logo.png"
+          alt="Logo"
+          className={`logo ${showSignUp ? 'move-left' : 'move-right'}`}
+        />
+      </div>
+      <div className="forms-container">
+        <div className="signin-signup">
+          {/* Sign-In Form */}
+          <form onSubmit={handleSignIn} className="sign-in-form">
+            <h4 className="title">Welcome Back</h4>
+            <div className="input-field">
+              <i className="fas fa-user"></i>
+              <input
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input-field">
+              <i className="fas fa-lock"></i>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="btn solid" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          {/* About Us Section */}
+          <form className="sign-up-form">
+            <h2 className="title">About Us</h2>
+            <div className="about-us-content">
+              <p>
+                Welcome to the **SMS Trivia Manager**—your ultimate tool for creating, managing, and
+                analyzing SMS-based trivia campaigns.
+              </p>
+              <h3>Meet the Team</h3>
+              <ul className="team-list">
+                <li>
+                  <strong>John Doe</strong> - Lead Developer
+                  <br />
+                  Email: <a href="mailto:john.doe@example.com">john.doe@example.com</a>
+                </li>
+                <li>
+                  <strong>Jane Smith</strong> - UX Designer
+                  <br />
+                  Email: <a href="mailto:jane.smith@example.com">jane.smith@example.com</a>
+                </li>
+                <li>
+                  <strong>Alex Johnson</strong> - Backend Engineer
+                  <br />
+                  Email: <a href="mailto:alex.johnson@example.com">alex.johnson@example.com</a>
+                </li>
+              </ul>
+              <h3>Contact Us</h3>
+              <p>For questions or support, reach out:</p>
+              <ul className="support-contact">
+                <li>
+                  Email: <a href="mailto:support@example.com">support@example.com</a>
+                </li>
+                <li>Phone: +1 800-555-1234</li>
+              </ul>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Panels Container */}
+      <div className="panels-container">
+        <div className="panel left-panel">
+          <div className="content">
+            <h1>SMS-Based Trivia Portal</h1>
+            <p>
+              Empowering businesses and communities with real-time engagement and insights through
+              SMS-based trivia campaigns.
+            </p>
+            <button
+              className="btn transparent"
+              id="sign-up-btn"
+              onClick={() => setShowSignUp(true)}
+            >
+              Learn More
+            </button>
+          </div>
+          <img src="/assets/log.svg" className="image" alt="Login Illustration" />
+        </div>
+
+        <div className="panel right-panel">
+          <div className="content">
+            <h3>Already a Member?</h3>
+            <p>Log in now to access your campaigns, analytics, and audience tools.</p>
+            <button
+              className="btn transparent"
+              id="sign-in-btn"
+              onClick={() => setShowSignUp(false)}
+            >
+              Log In
+            </button>
+          </div>
+          <img src="/assets/register.svg" className="image" alt="About Us Illustration" />
+        </div>
+      </div>
+
+      {/* Add Toast Container here */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar
+        newestOnTop
+        closeButton
       />
-      <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card
-          sx={{
-            p: 5,
-            width: 1,
-            maxWidth: 420,
-          }}
-        >
-          <Typography variant="h4">Sign in to Trivia Manager</Typography>
-          <Divider sx={{ my: 3 }} />
-          {renderForm}
-        </Card>
-      </Stack>
-    </Box>
+    </div>
   );
 }
