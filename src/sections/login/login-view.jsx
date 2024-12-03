@@ -80,7 +80,7 @@ export default function LoginView() {
         <div className="signin-signup">
           {/* Sign-In Form */}
           <form onSubmit={handleSignIn} className="sign-in-form">
-            <h4 className="title">Welcome Back</h4>
+            <h6 className="title">Welcome 👋</h6>
             <div className="input-field">
               <i className="fas fa-user"></i>
               <input
@@ -108,37 +108,71 @@ export default function LoginView() {
 
           {/* About Us Section */}
           <form className="sign-up-form">
-            <h2 className="title">About Us</h2>
+            <h3 className="title">About Us</h3>
             <div className="about-us-content">
               <p>
-                Welcome to the **SMS Trivia Manager**—your ultimate tool for creating, managing, and
-                analyzing SMS-based trivia campaigns.
+                <strong>Welcome 👋!</strong> We're the VAS team, dedicated to crafting delightful
+                tools that Add values to our customers experience.
               </p>
+       
+
+              {/* <br /> */}
+              <br />
+              {/* <br /> */}
               <h3>Meet the Team</h3>
               <ul className="team-list">
                 <li>
-                  <strong>John Doe</strong> - Lead Developer
+                  <strong>Bereket Zelalem</strong>
                   <br />
-                  Email: <a href="mailto:john.doe@example.com">john.doe@example.com</a>
+                  {/* - VAS Systems Engineer and Developer<br /> */}
+                  Email:{' '}
+                  <a href="mailto:bereket.zelalem@example.com">bereket.zelalem@example.com</a>
+                  <br />
+                  Phone: <a href="tel:+251799214838">+251 799 214 838</a>
                 </li>
                 <li>
-                  <strong>Jane Smith</strong> - UX Designer
+                  <strong>Yordanos Tesfay</strong>
                   <br />
-                  Email: <a href="mailto:jane.smith@example.com">jane.smith@example.com</a>
+                  Email:{' '}
+                  <a href="mailto:yordanos.tesfay@partner.safaricom.et">
+                    yordanos.tesfay@partner.safaricom.et
+                  </a>
+                  <br />
+                  Phone: <a href="tel:+251799410131">+251 799 410 131</a>
                 </li>
                 <li>
-                  <strong>Alex Johnson</strong> - Backend Engineer
+                  <strong>Taddeal Moges</strong>
                   <br />
-                  Email: <a href="mailto:alex.johnson@example.com">alex.johnson@example.com</a>
+                  Email:{' '}
+                  <a href="mailto:taddeal.moges@partner.safaricom.et">
+                    taddeal.moges@partner.safaricom.et
+                  </a>
+                  <br />
+                  Phone: <a href="tel:+251799410131">+251 799 400 512</a>
+                </li>
+                <li>
+                  <strong>Yohannes Ademe</strong>
+                  <br />
+                  Email:{' '}
+                  <a href="mailto:yohannes.ademe@safaricom.et">yohannes.ademe@safaricom.et</a>
+                  <br />
+                  Phone: <a href="tel:+251777777640">+251 777 777 640</a>
                 </li>
               </ul>
+
+              <br />
               <h3>Contact Us</h3>
-              <p>For questions or support, reach out:</p>
+              <p>
+                For urgent issues, don't hesitate to reach out using the details below. Remember,
+                we’re just a message away!
+              </p>
               <ul className="support-contact">
                 <li>
-                  Email: <a href="mailto:support@example.com">support@example.com</a>
+                  Email: <a href="mailto:vas.csb@safaricom.et">vas.csb@safaricom.et</a>
                 </li>
-                <li>Phone: +1 800-555-1234</li>
+                {/* <li>
+                  Phone: <a href="tel:+2518005551234">+1 800-555-1234</a>
+                </li> */}
               </ul>
             </div>
           </form>
@@ -150,10 +184,16 @@ export default function LoginView() {
         <div className="panel left-panel">
           <div className="content">
             <h1>SMS-Based Trivia Portal</h1>
+            <br />
             <p>
-              Empowering businesses and communities with real-time engagement and insights through
-              SMS-based trivia campaigns.
+              <strong>Engage. Challenge. Discover.</strong>
+              {/* <br /> */}
+              <br />
+              Welcome to the <strong>SMS Trivia Manager Portal</strong>—your go-to hub for creating,
+              managing our fun SMS trivia campaigns!
             </p>
+            {/* <br /> */}
+            <br />
             <button
               className="btn transparent"
               id="sign-up-btn"
@@ -167,8 +207,10 @@ export default function LoginView() {
 
         <div className="panel right-panel">
           <div className="content">
-            <h3>Already a Member?</h3>
-            <p>Log in now to access your campaigns, analytics, and audience tools.</p>
+            <h2>Already a Member?</h2>
+            <br />
+            <p>Log in now to access our campaigns, analytics, and audience tools.</p>
+            <br />
             <button
               className="btn transparent"
               id="sign-in-btn"
