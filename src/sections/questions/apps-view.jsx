@@ -22,6 +22,7 @@ import {
   MenuItem,
   Select,
   Input,
+  Grid,
   TableSortLabel,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
@@ -151,71 +152,80 @@ export default function QuestionsTable() {
   const isEmpty = !sortedData.length && !loading;
 
   // Check if the user has admin or trivia-related roles
-  const hasEditPermission = userRoles.some(role =>
+  const hasEditPermission = userRoles.some((role) =>
     ['admin', 'trivia-admin', 'trivia-questions-admin'].includes(role)
   );
 
   return (
-    <Container>
+    <Container maxWidth="xl">
+      {' '}
+      {/* Wider container for better table visibility */}
+      {/* Header Section */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-        <Typography variant="h4">Manage Questions</Typography>
+        <Typography variant="h4" fontWeight="bold">
+          Manage Questions
+        </Typography>
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
-            color="inherit"
+            color="primary"
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={handleRedirect}
           >
             New Question
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             color="success"
-            startIcon={<Iconify icon="eva:plus-fill" />}
+            startIcon={<Iconify icon="eva:download-fill" />}
             onClick={handleRedirectImport}
           >
             Import
           </Button>
         </Stack>
       </Stack>
-
       {/* Filter Section */}
-      <Card sx={{ mb: 3, p: 2 }}>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={filterName}
-            onChange={handleFilterByName}
-            placeholder="Search by text..."
-          />
-          <Select
-            value={filterDate}
-            onChange={handleFilterByDate}
-            displayEmpty
-            size="small"
-            inputProps={{ 'aria-label': 'Filter by Date' }}
-            fullWidth
-            sx={{ minWidth: 60 }}
-          >
-            <MenuItem value="">All Dates</MenuItem>
-            {dates.map((date) => (
-              <MenuItem key={date} value={date}>
-                {date}
-              </MenuItem>
-            ))}
-          </Select>
-        </Stack>
+      <Card sx={{ mb: 3, p: 3, borderRadius: 2, boxShadow: 1 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={8}>
+            <TextField
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={filterName}
+              onChange={handleFilterByName}
+              placeholder="Search questions..."
+              InputProps={{
+                startAdornment: <Iconify icon="eva:search-fill" style={{ marginRight: 8 }} />,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Select
+              value={filterDate}
+              onChange={handleFilterByDate}
+              displayEmpty
+              size="small"
+              fullWidth
+              sx={{ minWidth: 120 }}
+            >
+              <MenuItem value="">All Dates</MenuItem>
+              {dates.map((date) => (
+                <MenuItem key={date} value={date}>
+                  {date}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+        </Grid>
       </Card>
-
       {/* Table Section */}
-      <Card>
+      <Card sx={{ borderRadius: 2, boxShadow: 1, overflow: 'hidden' }}>
         <TableContainer>
           <Table>
-            <TableHead>
+            <TableHead sx={{ backgroundColor: 'primary.light' }}>
               <TableRow>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'question_id'}
                     direction={orderBy === 'question_id' ? order : 'asc'}
@@ -224,7 +234,7 @@ export default function QuestionsTable() {
                     ID
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'english_text'}
                     direction={orderBy === 'english_text' ? order : 'asc'}
@@ -233,7 +243,7 @@ export default function QuestionsTable() {
                     English Text
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'amharic_text'}
                     direction={orderBy === 'amharic_text' ? order : 'asc'}
@@ -242,9 +252,13 @@ export default function QuestionsTable() {
                     Amharic Text
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>English Options</TableCell>
-                <TableCell>Amharic Options</TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                  English Options
+                </TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                  Amharic Options
+                </TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'correct_answer'}
                     direction={orderBy === 'correct_answer' ? order : 'asc'}
@@ -253,7 +267,7 @@ export default function QuestionsTable() {
                     Correct Answer
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'question_date'}
                     direction={orderBy === 'question_date' ? order : 'asc'}
@@ -262,7 +276,7 @@ export default function QuestionsTable() {
                     Question Date
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                   <TableSortLabel
                     active={orderBy === 'created_by_username'}
                     direction={orderBy === 'created_by_username' ? order : 'asc'}
@@ -271,16 +285,8 @@ export default function QuestionsTable() {
                     Created By
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={orderBy === 'status'}
-                    direction={orderBy === 'status' ? order : 'asc'}
-                    onClick={() => handleRequestSort('status')}
-                  >
-                    Status
-                  </TableSortLabel>
-                </TableCell>
-                {hasEditPermission && <TableCell>Actions</TableCell>}
+                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Status</TableCell>
+                {hasEditPermission && <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -292,7 +298,7 @@ export default function QuestionsTable() {
                 sortedData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((question) => (
-                    <TableRow key={question.question_id}>
+                    <TableRow key={question.question_id} hover>
                       <TableCell>{question.question_id}</TableCell>
                       <TableCell>{question.english_text}</TableCell>
                       <TableCell>{question.amharic_text}</TableCell>
@@ -311,11 +317,9 @@ export default function QuestionsTable() {
                       </TableCell>
                       {hasEditPermission && (
                         <TableCell>
-                          <Stack direction="row" spacing={1}>
-                            <IconButton onClick={() => handleOpenDialog(question)}>
-                              <Iconify icon="eva:edit-fill" />
-                            </IconButton>
-                          </Stack>
+                          <IconButton onClick={() => handleOpenDialog(question)}>
+                            <Iconify icon="eva:edit-fill" />
+                          </IconButton>
                         </TableCell>
                       )}
                     </TableRow>
@@ -335,5 +339,185 @@ export default function QuestionsTable() {
         />
       </Card>
     </Container>
+
+    // <Container>
+    //   <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
+    //     <Typography variant="h4">Manage Questions</Typography>
+    //     <Stack direction="row" spacing={2}>
+    //       <Button
+    //         variant="contained"
+    //         color="inherit"
+    //         startIcon={<Iconify icon="eva:plus-fill" />}
+    //         onClick={handleRedirect}
+    //       >
+    //         New Question
+    //       </Button>
+    //       <Button
+    //         variant="contained"
+    //         color="success"
+    //         startIcon={<Iconify icon="eva:plus-fill" />}
+    //         onClick={handleRedirectImport}
+    //       >
+    //         Import
+    //       </Button>
+    //     </Stack>
+    //   </Stack>
+
+    //   {/* Filter Section */}
+    //   <Card sx={{ mb: 3, p: 2 }}>
+    //     <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+    //       <TextField
+    //         variant="outlined"
+    //         size="small"
+    //         fullWidth
+    //         value={filterName}
+    //         onChange={handleFilterByName}
+    //         placeholder="Search by text..."
+    //       />
+    //       <Select
+    //         value={filterDate}
+    //         onChange={handleFilterByDate}
+    //         displayEmpty
+    //         size="small"
+    //         inputProps={{ 'aria-label': 'Filter by Date' }}
+    //         fullWidth
+    //         sx={{ minWidth: 60 }}
+    //       >
+    //         <MenuItem value="">All Dates</MenuItem>
+    //         {dates.map((date) => (
+    //           <MenuItem key={date} value={date}>
+    //             {date}
+    //           </MenuItem>
+    //         ))}
+    //       </Select>
+    //     </Stack>
+    //   </Card>
+
+    //   {/* Table Section */}
+    //   <Card>
+    //     <TableContainer>
+    //       <Table>
+    //         <TableHead>
+    //           <TableRow>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'question_id'}
+    //                 direction={orderBy === 'question_id' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('question_id')}
+    //               >
+    //                 ID
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'english_text'}
+    //                 direction={orderBy === 'english_text' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('english_text')}
+    //               >
+    //                 English Text
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'amharic_text'}
+    //                 direction={orderBy === 'amharic_text' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('amharic_text')}
+    //               >
+    //                 Amharic Text
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>English Options</TableCell>
+    //             <TableCell>Amharic Options</TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'correct_answer'}
+    //                 direction={orderBy === 'correct_answer' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('correct_answer')}
+    //               >
+    //                 Correct Answer
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'question_date'}
+    //                 direction={orderBy === 'question_date' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('question_date')}
+    //               >
+    //                 Question Date
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'created_by_username'}
+    //                 direction={orderBy === 'created_by_username' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('created_by_username')}
+    //               >
+    //                 Created By
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             <TableCell>
+    //               <TableSortLabel
+    //                 active={orderBy === 'status'}
+    //                 direction={orderBy === 'status' ? order : 'asc'}
+    //                 onClick={() => handleRequestSort('status')}
+    //               >
+    //                 Status
+    //               </TableSortLabel>
+    //             </TableCell>
+    //             {hasEditPermission && <TableCell>Actions</TableCell>}
+    //           </TableRow>
+    //         </TableHead>
+    //         <TableBody>
+    //           {loading ? (
+    //             <TableNoData isNotFound={loading} />
+    //           ) : isEmpty ? (
+    //             <TableEmptyRows emptyRows={0} />
+    //           ) : (
+    //             sortedData
+    //               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    //               .map((question) => (
+    //                 <TableRow key={question.question_id}>
+    //                   <TableCell>{question.question_id}</TableCell>
+    //                   <TableCell>{question.english_text}</TableCell>
+    //                   <TableCell>{question.amharic_text}</TableCell>
+    //                   <TableCell>{question.english_options.join(', ')}</TableCell>
+    //                   <TableCell>{question.amharic_options.join(', ')}</TableCell>
+    //                   <TableCell>{question.correct_answer}</TableCell>
+    //                   <TableCell>{question.question_date}</TableCell>
+    //                   <TableCell>{question.created_by_username}</TableCell>
+    //                   <TableCell>
+    //                     <Label
+    //                       variant="soft"
+    //                       color={(question.status === 'deleted' && 'error') || 'success'}
+    //                     >
+    //                       {question.status}
+    //                     </Label>
+    //                   </TableCell>
+    //                   {hasEditPermission && (
+    //                     <TableCell>
+    //                       <Stack direction="row" spacing={1}>
+    //                         <IconButton onClick={() => handleOpenDialog(question)}>
+    //                           <Iconify icon="eva:edit-fill" />
+    //                         </IconButton>
+    //                       </Stack>
+    //                     </TableCell>
+    //                   )}
+    //                 </TableRow>
+    //               ))
+    //           )}
+    //         </TableBody>
+    //       </Table>
+    //     </TableContainer>
+    //     <TablePagination
+    //       rowsPerPageOptions={[15, 30, 45]}
+    //       component="div"
+    //       count={filteredData.length}
+    //       rowsPerPage={rowsPerPage}
+    //       page={page}
+    //       onPageChange={handleChangePage}
+    //       onRowsPerPageChange={handleChangeRowsPerPage}
+    //     />
+    //   </Card>
+    // </Container>
   );
 }

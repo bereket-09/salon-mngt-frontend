@@ -52,7 +52,10 @@ export default function TriviaDetailView() {
   return (
     <Container maxWidth="xl">
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h4">Trivia Detail Dashboard - {trivia_id}</Typography>
+        <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
+          Back
+        </Button>
+        <Typography variant="h4">Trivia Detail Dashboard - ({trivia_id})</Typography>
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"

@@ -17,15 +17,15 @@ const navConfig = [
     icon: <FaQuestionCircle />,
     children: [
       {
-        title: '- Questions List',
+        title: 'Questions List',
         path: '/questions',
       },
       {
-        title: '- Create Question',
+        title: 'Create Question',
         path: '/create-question',
       },
       {
-        title: '- Upload Questions',
+        title: 'Upload Questions',
         path: '/upload-question',
       },
     ],
@@ -35,7 +35,7 @@ const navConfig = [
     icon: <FaLock />,
     children: [
       {
-        title: '- Subscriptions List',
+        title: 'Subscriptions List',
         path: '/subscriptions',
       },
     ],
@@ -45,15 +45,15 @@ const navConfig = [
     icon: <FaTachometerAlt />,
     children: [
       {
-        title: '- Trivia List',
+        title: 'Trivia List',
         path: '/trivia',
       },
       // {
-      //   title: '- Trivia Winners',
+      //   title: 'Trivia Winners',
       //   path: '/triviawinners',
       // },
       // {
-      //   title: '- Trivia Losers',
+      //   title: 'Trivia Losers',
       //   path: '/trivialosers',
       // },
     ],
@@ -63,7 +63,7 @@ const navConfig = [
     icon: <FaCog />,
     children: [
       {
-        title: '- Settings Page',
+        title: 'Settings Page',
         path: '/setting',
       },
     ],

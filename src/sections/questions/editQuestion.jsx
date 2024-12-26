@@ -135,10 +135,11 @@ const EditQuestion = () => {
   };
 
   return (
+    
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box
         sx={{
-          p: 4,
+          p: 6,
           backgroundColor: '#f5f5f5',
           minHeight: '90vh',
           display: 'flex',
@@ -170,6 +171,7 @@ const EditQuestion = () => {
                 onChange={(e) => handleQuestionChange(e, 'englishText')}
               />
             </Grid>
+            
             <Grid item xs={12}>
               <TextareaAutosize
                 minRows={4}
@@ -250,6 +252,10 @@ const EditQuestion = () => {
           </Grid>
 
           <Box sx={{ mt: 4, textAlign: 'center' }}>
+             <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
+        Back
+      </Button>
+
             <Button variant="contained" color="primary" onClick={handleSubmit}>
               Save Changes
             </Button>

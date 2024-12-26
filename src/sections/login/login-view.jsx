@@ -114,7 +114,6 @@ export default function LoginView() {
                 <strong>Welcome 👋!</strong> We're the VAS team, dedicated to crafting delightful
                 tools that Add values to our customers experience.
               </p>
-       
 
               {/* <br /> */}
               <br />

@@ -376,6 +376,10 @@ const ImportQuestions = () => {
     <div>
       {!file && (
         <Box sx={{ mb: 3 }}>
+              <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
+                  Back
+                </Button>
+                <br />
           <Typography variant="h5" gutterBottom>
             Import Questions
           </Typography>
