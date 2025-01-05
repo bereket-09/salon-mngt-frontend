@@ -140,14 +140,14 @@ const EditQuestion = () => {
       <Box
         sx={{
           p: 6,
-          backgroundColor: '#f5f5f5',
+          // backgroundColor: '#f5f5f5',
           minHeight: '90vh',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <Paper elevation={6} sx={{ p: 4, maxWidth: 700, width: '100%', borderRadius: '12px' }}>
+        <Paper elevation={6} sx={{ p: 4,  width: '80%', borderRadius: '12px' }}>
           <Typography
             variant="h4"
             gutterBottom

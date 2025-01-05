@@ -170,7 +170,7 @@ const QuestionBuilder = () => {
   <Box
     sx={{
       p: 4,
-      background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+      // background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
       minHeight: '100vh',
       display: 'flex',
       justifyContent: 'center',
@@ -181,8 +181,8 @@ const QuestionBuilder = () => {
       elevation={6}
       sx={{
         p: 6,
-        maxWidth: '900px',
-        width: '100%',
+        // maxWidth: '900px',
+        width: '80%',
         borderRadius: '16px',
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
         backgroundColor: 'white',
@@ -204,7 +204,7 @@ const QuestionBuilder = () => {
             Question (English)
           </FormLabel>
           <TextareaAutosize
-            minRows={2}
+            minRows={3}
             style={{
               width: '100%',
               padding: '12px',
@@ -224,7 +224,7 @@ const QuestionBuilder = () => {
             Question (Amharic)
           </FormLabel>
           <TextareaAutosize
-            minRows={2}
+            minRows={3}
             style={{
               width: '100%',
               padding: '12px',
@@ -345,142 +345,6 @@ const QuestionBuilder = () => {
     <ToastContainer />
   </Box>
 </LocalizationProvider>
-
-    // <LocalizationProvider dateAdapter={AdapterDayjs}>
-    //   <Box
-    //     sx={{
-    //       p: 4,
-    //       backgroundColor: '#f5f5f5',
-    //       minHeight: '90vh',
-    //       display: 'flex',
-    //       justifyContent: 'center',
-    //       alignItems: 'center',
-    //     }}
-    //   >
-    //     <Paper elevation={6} sx={{ p: 4, maxWidth: 700, width: '100%', borderRadius: '12px' }}>
-    //       <Typography
-    //         variant="h4"
-    //         gutterBottom
-    //         align="center"
-    //         sx={{ fontWeight: 'bold', color: '#1976d2' }}
-    //       >
-    //         Create New Question
-    //       </Typography>
-    //       <Grid container spacing={3}>
-    //         <Grid item xs={12}>
-    //           <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
-    //             Question (English)
-    //           </FormLabel>
-    //           <TextareaAutosize
-    //             minRows={4}
-    //             style={{
-    //               width: '100%',
-    //               padding: '10px',
-    //               borderRadius: '8px',
-    //               borderColor: '#1976d2',
-    //             }}
-    //             value={question.englishText}
-    //             onChange={(e) => handleQuestionChange(e, 'englishText')}
-    //           />
-    //           {errors.englishText && <Alert severity="error">{errors.englishText}</Alert>}
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
-    //             Question (Amharic)
-    //           </FormLabel>
-    //           <TextareaAutosize
-    //             minRows={4}
-    //             style={{
-    //               width: '100%',
-    //               padding: '10px',
-    //               borderRadius: '8px',
-    //               borderColor: '#1976d2',
-    //             }}
-    //             value={question.amharicText}
-    //             onChange={(e) => handleQuestionChange(e, 'amharicText')}
-    //           />
-    //           {errors.amharicText && <Alert severity="error">{errors.amharicText}</Alert>}
-    //         </Grid>
-
-    //         {['A', 'B', 'C'].map((option) => (
-    //           <React.Fragment key={option}>
-    //             <Grid item xs={6}>
-    //               <TextField
-    //                 label={`Option ${option} (English)`}
-    //                 variant="outlined"
-    //                 fullWidth
-    //                 value={options[option].english}
-    //                 onChange={(e) => handleOptionChange(e, option, 'english')}
-    //                 sx={{ borderColor: '#1976d2' }}
-    //                 required
-    //               />
-    //               {errors[`${option}English`] && (
-    //                 <Alert severity="error">{errors[`${option}English`]}</Alert>
-    //               )}
-    //             </Grid>
-    //             <Grid item xs={6}>
-    //               <TextField
-    //                 label={`Option ${option} (Amharic)`}
-    //                 variant="outlined"
-    //                 fullWidth
-    //                 value={options[option].amharic} // Corrected line
-    //                 onChange={(e) => handleOptionChange(e, option, 'amharic')}
-    //                 sx={{ borderColor: '#1976d2' }}
-    //                 required
-    //               />
-    //               {errors[`${option}Amharic`] && (
-    //                 <Alert severity="error">{errors[`${option}Amharic`]}</Alert>
-    //               )}
-    //             </Grid>
-    //           </React.Fragment>
-    //         ))}
-
-    //         <Grid item xs={12}>
-    //           <FormControl component="fieldset">
-    //             <FormLabel component="legend" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-    //               Select the Correct Answer
-    //             </FormLabel>
-    //             <RadioGroup row value={correctAnswer} onChange={handleCorrectAnswerChange}>
-    //               {['A', 'B', 'C'].map((option) => (
-    //                 <FormControlLabel
-    //                   key={option}
-    //                   value={option}
-    //                   control={<Radio />}
-    //                   label={`Option ${option}`}
-    //                 />
-    //               ))}
-    //             </RadioGroup>
-    //           </FormControl>
-    //         </Grid>
-
-    //         <Grid item xs={12}>
-    //           <DatePicker
-    //             label="Select Date"
-    //             value={date}
-    //             onChange={handleDateChange}
-    //             renderInput={(params) => <TextField {...params} fullWidth />}
-    //             disablePast
-    //           />
-    //           {questionCount !== null && (
-    //             <Alert severity="info" sx={{ mt: 2 }}>
-    //               {`There are ${questionCount} questions scheduled for this date.`}
-    //             </Alert>
-    //           )}
-    //         </Grid>
-    //       </Grid>
-
-    //       <Box sx={{ mt: 4, textAlign: 'center' }}>
-    //             <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
-    //                 Back
-    //               </Button>
-    //         <Button variant="contained" color="primary" onClick={handleSubmit}>
-    //           Submit Question
-    //         </Button>
-    //       </Box>
-    //     </Paper>
-    //     <ToastContainer />
-    //   </Box>
-    // </LocalizationProvider>
   );
 };
 

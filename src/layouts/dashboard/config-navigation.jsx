@@ -1,70 +1,71 @@
 /* eslint-disable perfectionist/sort-imports */
-import { FaCog, FaLock, FaTachometerAlt, FaQuestionCircle } from 'react-icons/fa';
+// Navigation configuration for the side menu.
 
 const navConfig = [
+  // Main category: Overview
   {
     title: 'Overview',
-    icon: <FaTachometerAlt />,
+    icon: 'icomoon-free:stats-bars',
     children: [
       {
         title: 'Dashboard',
-        path: '/',
+        path: '/', // More descriptive route
       },
     ],
   },
+  
+  // Main category: Questions
   {
-    title: 'Questions', // Shortened group title
-    icon: <FaQuestionCircle />,
+    title: 'Questions Bank',
+    icon: 'mdi:frequently-asked-questions',
     children: [
       {
-        title: 'Questions List',
-        path: '/questions',
+        title: 'Question List',
+        path: '/questions', // Reflects hierarchical structure
       },
       {
-        title: 'Create Question',
-        path: '/create-question',
+        title: 'Add Question',
+        path: '/create-question', // Simplified wording
       },
       {
-        title: 'Upload Questions',
-        path: '/upload-question',
+        title: 'Bulk Upload',
+        path: '/upload-question', // Shortened for clarity
       },
     ],
   },
+  
+  // Main category: Subscriptions
   {
-    title: 'Subscriptions', // Shortened group title
-    icon: <FaLock />,
+    title: 'Subscription Hub',
+    icon: 'mdi:account-group',
     children: [
       {
-        title: 'Subscriptions List',
-        path: '/subscriptions',
+        title: 'All Subscriptions',
+        path: '/subscriptions', // Explicitly describes content
       },
     ],
   },
+  
+  // Main category: Trivia
   {
-    title: 'Trivia', // Shortened group title
-    icon: <FaTachometerAlt />,
+    title: 'Trivia Games Center',
+    icon: 'material-symbols:toys-and-games-outline',
     children: [
       {
-        title: 'Trivia List',
-        path: '/trivia',
+        title: 'Games List',
+        path: '/trivia', // Clarified as a list of games
       },
-      // {
-      //   title: 'Trivia Winners',
-      //   path: '/triviawinners',
-      // },
-      // {
-      //   title: 'Trivia Losers',
-      //   path: '/trivialosers',
-      // },
     ],
   },
+  
+  // Main category: Settings
   {
     title: 'Settings',
-    icon: <FaCog />,
+    icon: 'tdesign:chat-setting',
     children: [
       {
-        title: 'Settings Page',
-        path: '/setting',
+        title: 'General Settings',
+        path: '/setting', // Simplified path
       },
     ],
   },

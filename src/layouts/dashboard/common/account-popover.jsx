@@ -1,5 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
@@ -8,12 +9,11 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Swal from 'sweetalert2';
+
+import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 
 import { accountMock } from 'src/_mock/account';
-
-// ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
@@ -21,108 +21,34 @@ const MENU_OPTIONS = [
     icon: 'eva:home-fill',
     route: '/',
   },
-  // {
-  //   label: 'Profile',
-  //   icon: 'eva:person-fill',
-  //   route: '/profile', // Assuming a route for profile
-  // },
   {
     label: 'Settings',
     icon: 'eva:settings-2-fill',
-    route: '/setting', // Assuming a route for settings
+    route: '/setting',
   },
 ];
-// ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  // const { keycloak } = useKeycloak(); // Call useKeycloak here inside the component
   const router = useRouter();
-  const account = JSON.parse(localStorage.getItem('userData'));
+  const account = JSON.parse(localStorage.getItem('userData')) || accountMock;
 
-  const handleOpen = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setOpen(null);
-  };
+  const handleOpen = (event) => setOpen(event.currentTarget);
+  const handleClose = () => setOpen(null);
 
   const handleMenuItemClick = (route) => {
-    // Navigate to the selected route
-    router.push(route); // Use this if using react-router v6
-    // router.push(route); // Use this if using custom router hook
+    router.push(route);
     handleClose();
   };
 
-  // const handleLogout = () => {
-  //   // Show confirmation dialog
-  //   const confirmLogout = window.confirm('Are you sure you want to log out?');
-
-  //   if (confirmLogout) {
-  //     // Clear the token and user data from local storage
-  //     localStorage.removeItem('authToken');
-  //     localStorage.removeItem('userData');
-
-  //     // Clear the Keycloak session
-  //     // if (keycloak) {
-  //     //   keycloak.logout({
-  //     //     redirectUri: `${window.location.origin}/`, // Redirect to login page after logout
-  //     //   });
-  //     // } else {
-  //     // If Keycloak is not initialized, just redirect manually
-  //     window.location.href = '/';
-  //     // }
-
-  //     // Show logout success message
-  //     alert('Logged out successfully');
-
-  //     // Close any open menu (if applicable)
-  //     setOpen(null);
-  //   } else {
-  //     // Do nothing if user cancels
-  //     setOpen(null);
-  //   }
-  // };
-
   const handleLogout = () => {
-    // Show SweetAlert2 confirmation dialog
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to log out?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, log me out',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Clear the token and user data from local storage
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
-
-        // Show logout success message
-        Swal.fire('Logged out!', 'You have been logged out successfully.', 'success').then(() => {
-          // Wait for 5 seconds before redirecting
-          setTimeout(() => {
-            // Redirect to home page (or login page)
-            window.location.href = '/';
-          }, 1000); // 5000ms = 5 seconds
-        });
-
-        setTimeout(() => {
-          // Redirect to home page (or login page)
-          window.location.href = '/';
-        }, 1000); // 5000ms = 5 seconds
-   
-
-        // Close any open menu (if applicable)
-        setOpen(null);
-      } else {
-        // Do nothing if user cancels
-        setOpen(null);
-      }
-    });
+    if (window.confirm('Are you sure you want to log out?')) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+      alert('Logged out successfully');
+      router.push('/login');
+      setOpen(null);
+    }
   };
 
   return (
@@ -132,23 +58,34 @@ export default function AccountPopover() {
         sx={{
           width: 40,
           height: 40,
-          background: (theme) => alpha(theme.palette.grey[500], 0.08),
+          bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
+          '&:hover': {
+            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+          },
           ...(open && {
-            background: (theme) =>
+            bgcolor: (theme) =>
               `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
           }),
         }}
       >
         <Avatar
-          src={accountMock.photoURL}
-          alt={account?.username}
+          // src={accountMock.photoURL}
+          // alt={account.username}
           sx={{
-            width: 36,
-            height: 36,
-            border: (theme) => `solid 2px ${theme.palette.background.default}`,
+            width: 40,
+            height: 40,
+            border: (theme) => `solid 1px ${theme.palette.background.default}`,
+            bgcolor: 'primary.main',
+            '&:hover': {
+              bgcolor: 'secondary.main',
+            },
           }}
         >
-          {account.username.charAt(0).toUpperCase()}
+          <Iconify
+            icon="ri:account-pin-circle-fill"
+            style={{ color: '#fff', fontSize: '48px', transform: 'scale(1.5)' }}
+          />
+          {/* {account.username.charAt(0).toUpperCase()} */}
         </Avatar>
       </IconButton>
 
@@ -162,16 +99,32 @@ export default function AccountPopover() {
           sx: {
             p: 0,
             mt: 1,
-            ml: 0.75,
-            width: 200,
+            width: 240,
+            boxShadow: 4,
+            borderRadius: 1.5,
           },
         }}
       >
-        <Box sx={{ my: 1.5, px: 2 }}>
-          <Typography variant="subtitle2" noWrap>
-            {account.username}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+        <Box sx={{ p: 2, textAlign: 'center', justifyContent: 'center' }}>
+          {/* <Avatar
+            src={accountMock.photoURL}
+            alt={account.username}
+            sx={{
+              width: 44,
+              height: 44,
+              mb: 1,
+            }}
+          /> */}
+
+          <Iconify
+            icon="ix:panel-ipc-question"
+            style={{ color: '#00A76F', fontSize: '48px', transform: 'scale(2.4)' }}
+          />
+
+          <br />
+          <br />
+          <Typography variant="subtitle1">{account.name}</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {account.email}
           </Typography>
         </Box>
@@ -179,23 +132,31 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={() => handleMenuItemClick(option.route)}>
-            {/* <Iconify icon={option.icon} /> */}
+          <MenuItem
+            key={option.label}
+            onClick={() => handleMenuItemClick(option.route)}
+            sx={{ px: 2.5 }}
+          >
+            <Iconify icon={option.icon} sx={{ mr: 2, width: 20, height: 20 }} />
             {option.label}
           </MenuItem>
         ))}
 
-        <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
+        <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuItem
-          disableRipple
-          disableTouchRipple
           onClick={handleLogout}
-          sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
+          sx={{
+            typography: 'body2',
+            color: 'error.main',
+            py: 1.5,
+          }}
         >
+          <Iconify icon="ri:logout-circle-line" sx={{ mr: 2, width: 20, height: 20 }} />
           Logout
         </MenuItem>
       </Popover>
     </>
   );
 }
+
