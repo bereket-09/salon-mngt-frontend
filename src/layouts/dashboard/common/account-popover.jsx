@@ -127,6 +127,11 @@ export default function AccountPopover() {
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {account.email}
           </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {account.roles?.[0] || account.role}
+          </Typography>
+
+        
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
