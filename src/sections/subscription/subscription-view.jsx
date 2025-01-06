@@ -18,11 +18,19 @@ import {
   Select,
   TableSortLabel,
   CircularProgress,
+  Box,
 } from '@mui/material';
 import Label from 'src/components/label';
-import TableNoData from '../user/table-no-data';
-import TableEmptyRows from '../user/table-empty-rows';
 import config from 'src/config'; // Import the config file
+import { styled } from '@mui/system';
+
+const languageMapping = {
+  1: 'English',
+  2: 'Amharic',
+  3: 'Somali',
+  4: 'Tigrinya',
+  5: 'Afaan Oromo',
+};
 
 export default function SubscriptionView() {
   const [page, setPage] = useState(0);
@@ -101,13 +109,26 @@ export default function SubscriptionView() {
     navigate(`/customerDetail/${id}`); // Navigate to the detail page
   };
 
+  
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  maxHeight: '70vh', // Set table container height to 80% of the viewport height
+  overflowY: 'auto', // Enable vertical scrolling
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: '10px',
+  },
+}));
+
   return (
-    <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-        <Typography variant="h4">Manage Subscriptions</Typography>
+    <Container maxWidth="xl">
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+        <Typography variant="h5">Manage Subscriptions</Typography>
       </Stack>
 
-      {/* Filter Section */}
+      {/* Combined Filter and Table Section */}
       <Card sx={{ mb: 3, p: 2 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <TextField
@@ -125,18 +146,17 @@ export default function SubscriptionView() {
             size="small"
             inputProps={{ 'aria-label': 'Filter by Status' }}
             fullWidth
-            sx={{ minWidth: 60 }}
+            sx={{ minWidth: 120 }}
           >
             <MenuItem value="">All Statuses</MenuItem>
             <MenuItem value="A">Active</MenuItem>
             <MenuItem value="D">Inactive</MenuItem>
           </Select>
         </Stack>
-      </Card>
 
-      {/* Table Section */}
-      <Card>
-        <TableContainer>
+        {/* Table Section */}
+        {/* <TableContainer> */}
+        <StyledTableContainer>
           <Table>
             <TableHead>
               <TableRow>
@@ -224,7 +244,7 @@ export default function SubscriptionView() {
                     >
                       <TableCell>{customer.subscriber_id}</TableCell>
                       <TableCell>{customer.msisdn}</TableCell>
-                      <TableCell>{customer.language}</TableCell>
+                      <TableCell>{languageMapping[customer.language]}</TableCell>
                       <TableCell>
                         <Label
                           variant="soft"
@@ -243,7 +263,9 @@ export default function SubscriptionView() {
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </StyledTableContainer>
+
+        {/* Pagination */}
         <TablePagination
           rowsPerPageOptions={[10, 15, 25]}
           component="div"

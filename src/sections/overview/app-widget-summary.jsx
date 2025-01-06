@@ -30,7 +30,7 @@ export default function AppWidgetSummary({ title, dev, icon, color = 'primary', 
     {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>}
 
     <Stack spacing={0.5}>
-      <Typography variant="h5">{title}</Typography>
+      <Typography variant="h6">{title}</Typography>
       <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
         {dev}
       </Typography>

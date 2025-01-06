@@ -21,8 +21,7 @@ import {
   Collapse,
 } from '@mui/material';
 import config from 'src/config'; // Import the config file
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import Iconify from 'src/components/iconify'; // Import Iconify component
 
 export default function CustomerDetail() {
   const { id } = useParams();
@@ -64,7 +63,38 @@ export default function CustomerDetail() {
   const subscriptionHistory = customer[0]?.subscriptionHistory || [];
   const triviaParticipationHistory = customer[0]?.triviaParticipationHistory || [];
 
-  // import { useState } from 'react';
+  // Language Mapping
+  const languageMap = {
+    1: 'English',
+    2: 'Amharic',
+    3: 'Somali',
+    4: 'Tigrinya',
+    5: 'Afaan Oromo',
+  };
+
+  // Helper function to format microseconds to a readable time (including hours)
+  const formatTime = (microseconds) => {
+    if (!microseconds) return 'N/A'; // If there's no value, return 'N/A'
+
+    // Convert microseconds to milliseconds
+    const ms = microseconds / 1000;
+
+    const hours = Math.floor(ms / 3600000); // 3,600,000 ms in an hour
+    const minutes = Math.floor((ms % 3600000) / 60000); // Remaining minutes
+    const seconds = Math.floor((ms % 60000) / 1000); // Remaining seconds
+    const milliseconds = ms % 1000; // Remaining milliseconds
+
+    // Format the time as hours:minutes:seconds:milliseconds
+    if (hours > 0) {
+      return `${hours} hr ${minutes} min ${seconds} sec ${milliseconds} ms`;
+    } else if (minutes > 0) {
+      return `${minutes} min ${seconds} sec ${milliseconds} ms`;
+    } else if (seconds > 0) {
+      return `${seconds} sec ${milliseconds} ms`;
+    } else {
+      return `${milliseconds} ms`;
+    }
+  };
 
   // CollapsibleSection Component
   const CollapsibleSection = ({ title, children }) => {
@@ -73,7 +103,11 @@ export default function CustomerDetail() {
       <Card sx={{ mb: 3 }}>
         <CardHeader
           title={title}
-          action={<IconButton onClick={() => setOpen(!open)}>{open ? '^' : 'v'}</IconButton>}
+          action={
+            <IconButton onClick={() => setOpen(!open)}>
+              <Iconify icon={open ? 'eva:chevron-up-fill' : 'eva:chevron-down-fill'} />
+            </IconButton>
+          }
         />
         <Collapse in={open} timeout="auto" unmountOnExit>
           {children}
@@ -87,12 +121,72 @@ export default function CustomerDetail() {
     <TableContainer component={Card} sx={{ maxHeight: 300, overflow: 'auto', boxShadow: 1 }}>
       <Table>
         <TableHead>
-          <TableRow>{/* Add Table Headers */}</TableRow>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Old Status</TableCell>
+            <TableCell>New Status</TableCell>
+            <TableCell>Change Date</TableCell>
+          </TableRow>
         </TableHead>
         <TableBody>{children}</TableBody>
       </Table>
     </TableContainer>
   );
+
+  // ScrollableTable2 Component with Sorting
+  const ScrollableTable2 = ({ children }) => {
+    const [sortConfig, setSortConfig] = useState({ key: 'participation_game_id', direction: 'asc' });
+
+    const handleSort = (key) => {
+      let direction = 'asc';
+      if (sortConfig.key === key && sortConfig.direction === 'asc') {
+        direction = 'desc';
+      }
+      setSortConfig({ key, direction });
+    };
+
+    const sortedChildren = [...children].sort((a, b) => {
+      const aValue = a.props.children[0].props.children[0]; // accessing participation_game_id or other columns
+      const bValue = b.props.children[0].props.children[0]; // accessing participation_game_id or other columns
+
+      if (sortConfig.direction === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+
+    return (
+      <TableContainer component={Card} sx={{ maxHeight: 300, overflow: 'auto', boxShadow: 1 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <IconButton onClick={() => handleSort('participation_game_id')}>
+                  <Iconify icon={sortConfig.key === 'participation_game_id' && sortConfig.direction === 'asc' ? 'eva:arrow-upward-fill' : 'eva:arrow-downward-fill'} />
+                </IconButton>
+                Participant ID
+              </TableCell>
+              <TableCell>
+                <IconButton onClick={() => handleSort('trivia_id')}>
+                  <Iconify icon={sortConfig.key === 'trivia_id' && sortConfig.direction === 'asc' ? 'eva:arrow-upward-fill' : 'eva:arrow-downward-fill'} />
+                </IconButton>
+                Game Id
+              </TableCell>
+              <TableCell>Current Question</TableCell>
+              <TableCell>Questions Left</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Start Time</TableCell>
+              <TableCell>End Time</TableCell>
+              <TableCell>Completion Time</TableCell>
+              <TableCell>Score</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{sortedChildren}</TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -101,9 +195,6 @@ export default function CustomerDetail() {
       </Button>
 
       <Card sx={{ p: 4, boxShadow: 3, backgroundColor: '#ffffff' }}>
-        {/* <Typography variant="h4" gutterBottom>
-          Customer Details
-        </Typography> */}
         <Divider sx={{ mb: 3 }} />
 
         <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
@@ -113,7 +204,7 @@ export default function CustomerDetail() {
           {[
             { label: 'ID', value: customer[0].subscriber_id },
             { label: 'MSISDN', value: customer[0].msisdn },
-            { label: 'Language', value: customer[0].language },
+            { label: 'Language', value: languageMap[customer[0].language] },
             { label: 'Current Status', value: customer[0].status === 'A' ? 'Active' : 'Inactive' },
             { label: 'Shortcode', value: customer[0].shortcode },
             { label: 'Offer Code', value: customer[0].offercode },
@@ -156,7 +247,7 @@ export default function CustomerDetail() {
         </CollapsibleSection>
 
         <CollapsibleSection title="Trivia Participation History">
-          <ScrollableTable>
+          <ScrollableTable2>
             {triviaParticipationHistory.map((participation) => (
               <TableRow key={participation.participation_game_id} hover>
                 <TableCell>{participation.participation_game_id}</TableCell>
@@ -185,13 +276,13 @@ export default function CustomerDetail() {
                 </TableCell>
                 <TableCell>
                   {participation.average_completion_time
-                    ? `${participation.average_completion_time} mins`
+                    ? formatTime(participation.average_completion_time)
                     : 'N/A'}
                 </TableCell>
                 <TableCell>{participation.score !== null ? participation.score : 'N/A'}</TableCell>
               </TableRow>
             ))}
-          </ScrollableTable>
+          </ScrollableTable2>
         </CollapsibleSection>
       </Card>
     </Container>

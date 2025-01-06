@@ -167,184 +167,186 @@ const QuestionBuilder = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-  <Box
-    sx={{
-      p: 4,
-      // background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
-      minHeight: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <Paper
-      elevation={6}
-      sx={{
-        p: 6,
-        // maxWidth: '900px',
-        width: '80%',
-        borderRadius: '16px',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-        backgroundColor: 'white',
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
-        sx={{ fontWeight: 'bold', color: '#1976d2', textShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+      <Box
+        sx={{
+          p: 4,
+          // background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
       >
-        Create New Question
-      </Typography>
-      <br /> <br />
-      <Grid container spacing={4}>
-        {/* Question (English) */}
-        <Grid item xs={12}>
-          <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Question (English)
-          </FormLabel>
-          <TextareaAutosize
-            minRows={3}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: '1px solid #1976d2',
-              fontSize: '1rem',
-            }}
-            value={question.englishText}
-            onChange={(e) => handleQuestionChange(e, 'englishText')}
-          />
-          {errors.englishText && <Alert severity="error">{errors.englishText}</Alert>}
-        </Grid>
-
-        {/* Question (Amharic) */}
-        <Grid item xs={12}>
-          <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Question (Amharic)
-          </FormLabel>
-          <TextareaAutosize
-            minRows={3}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: '1px solid #1976d2',
-              fontSize: '1rem',
-            }}
-            value={question.amharicText}
-            onChange={(e) => handleQuestionChange(e, 'amharicText')}
-          />
-          {errors.amharicText && <Alert severity="error">{errors.amharicText}</Alert>}
-        </Grid>
-
-        {/* Options */}
-        {['A', 'B', 'C'].map((option) => (
-          <React.Fragment key={option}>
-            <Grid item xs={6}>
-              <TextField
-                label={`Option ${option} (English)`}
-                variant="outlined"
-                fullWidth
-                value={options[option].english}
-                onChange={(e) => handleOptionChange(e, option, 'english')}
-                sx={{ borderColor: '#1976d2' }}
-                required
-              />
-              {errors[`${option}English`] && (
-                <Alert severity="error">{errors[`${option}English`]}</Alert>
-              )}
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label={`Option ${option} (Amharic)`}
-                variant="outlined"
-                fullWidth
-                value={options[option].amharic}
-                onChange={(e) => handleOptionChange(e, option, 'amharic')}
-                sx={{ borderColor: '#1976d2' }}
-                required
-              />
-              {errors[`${option}Amharic`] && (
-                <Alert severity="error">{errors[`${option}Amharic`]}</Alert>
-              )}
-            </Grid>
-          </React.Fragment>
-        ))}
-
-        {/* Correct Answer */}
-        <Grid item xs={6}>
-          <FormControl component="fieldset">
-            <FormLabel component="legend" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-              Select the Correct Answer
-            </FormLabel>
-            <RadioGroup row value={correctAnswer} onChange={handleCorrectAnswerChange}>
-              {['A', 'B', 'C'].map((option) => (
-                <FormControlLabel
-                  key={option}
-                  value={option}
-                  control={<Radio />}
-                  label={`Option ${option}`}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-
-        {/* Date Picker */}
-        <Grid item xs={6}>
-          <DatePicker
-            label="Select Date"
-            value={date}
-            onChange={handleDateChange}
-            renderInput={(params) => <TextField {...params} fullWidth />}
-            disablePast
-          />
-        
-        </Grid>
-        <br />
-        {questionCount !== null && (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              {`There are ${questionCount} questions scheduled for this date.`}
-            </Alert>
-          )}
-      </Grid>
-
-      {/* Action Buttons */}
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <Button
-          variant="outlined"
-          onClick={() => navigate(-1)}
+        <Paper
+          elevation={6}
           sx={{
-            mr: 2,
-            px: 3,
-            py: 1,
-            fontSize: '1rem',
-            borderColor: '#1976d2',
-            '&:hover': { backgroundColor: '#e3f2fd' },
+            p: 6,
+            // maxWidth: '900px',
+            width: '80%',
+            borderRadius: '16px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+            backgroundColor: 'white',
           }}
         >
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          sx={{
-            px: 3,
-            py: 1,
-            fontSize: '1rem',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-            '&:hover': { backgroundColor: '#1565c0' },
-          }}
-        >
-          Submit Question
-        </Button>
+          <Typography
+            variant="h4"
+            gutterBottom
+            align="center"
+            sx={{
+              fontWeight: 'bold',
+              color: '#1976d2',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            Create New Question
+          </Typography>
+          <br />
+          <Grid container spacing={3}>
+            {/* Question (English) */}
+            <Grid item xs={12}>
+              <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
+                Question (English)
+              </FormLabel>
+              <TextareaAutosize
+                minRows={3}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #1976d2',
+                  fontSize: '1rem',
+                }}
+                value={question.englishText}
+                onChange={(e) => handleQuestionChange(e, 'englishText')}
+              />
+              {errors.englishText && <Alert severity="error">{errors.englishText}</Alert>}
+            </Grid>
+
+            {/* Question (Amharic) */}
+            <Grid item xs={12}>
+              <FormLabel component="legend" sx={{ fontWeight: 'bold', mb: 1 }}>
+                Question (Amharic)
+              </FormLabel>
+              <TextareaAutosize
+                minRows={3}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #1976d2',
+                  fontSize: '1rem',
+                }}
+                value={question.amharicText}
+                onChange={(e) => handleQuestionChange(e, 'amharicText')}
+              />
+              {errors.amharicText && <Alert severity="error">{errors.amharicText}</Alert>}
+            </Grid>
+
+            {/* Options */}
+            {['A', 'B', 'C'].map((option) => (
+              <React.Fragment key={option}>
+                <Grid item xs={6}>
+                  <TextField
+                    label={`Option ${option} (English)`}
+                    variant="outlined"
+                    fullWidth
+                    value={options[option].english}
+                    onChange={(e) => handleOptionChange(e, option, 'english')}
+                    sx={{ borderColor: '#1976d2' }}
+                    required
+                  />
+                  {errors[`${option}English`] && (
+                    <Alert severity="error">{errors[`${option}English`]}</Alert>
+                  )}
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label={`Option ${option} (Amharic)`}
+                    variant="outlined"
+                    fullWidth
+                    value={options[option].amharic}
+                    onChange={(e) => handleOptionChange(e, option, 'amharic')}
+                    sx={{ borderColor: '#1976d2' }}
+                    required
+                  />
+                  {errors[`${option}Amharic`] && (
+                    <Alert severity="error">{errors[`${option}Amharic`]}</Alert>
+                  )}
+                </Grid>
+              </React.Fragment>
+            ))}
+
+            {/* Correct Answer */}
+            <Grid item xs={6}>
+              <FormControl component="fieldset">
+                <FormLabel component="legend" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                  Select the Correct Answer
+                </FormLabel>
+                <RadioGroup row value={correctAnswer} onChange={handleCorrectAnswerChange}>
+                  {['A', 'B', 'C'].map((option) => (
+                    <FormControlLabel
+                      key={option}
+                      value={option}
+                      control={<Radio />}
+                      label={`Option ${option}`}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+
+            {/* Date Picker */}
+            <Grid item xs={6}>
+              <DatePicker
+                label="Select Date"
+                value={date}
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} fullWidth />}
+                disablePast
+              />
+              {/* <br /> */}
+              {questionCount !== null && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  {`There are ${questionCount} questions scheduled for this date.`}
+                </Alert>
+              )}
+            </Grid>
+          </Grid>
+          {/* Action Buttons */}
+          <Box sx={{ mt: 4, textAlign: 'center' }}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate(-1)}
+              sx={{
+                mr: 2,
+                px: 3,
+                py: 1,
+                fontSize: '1rem',
+                borderColor: '#1976d2',
+                '&:hover': { backgroundColor: '#e3f2fd' },
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              sx={{
+                px: 3,
+                py: 1,
+                fontSize: '1rem',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                '&:hover': { backgroundColor: '#1565c0' },
+              }}
+            >
+              Submit Question
+            </Button>
+          </Box>
+        </Paper>
+        <ToastContainer />
       </Box>
-    </Paper>
-    <ToastContainer />
-  </Box>
-</LocalizationProvider>
+    </LocalizationProvider>
   );
 };
 

@@ -16,6 +16,7 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
+import Swal from 'sweetalert2';
 
 // ----------------------------------------------------------------------
 
@@ -54,32 +55,77 @@ export default function SettingsPage() {
   };
 
   const handleSaveClick = (keyName) => {
-    const updatedValue = document.getElementById(`value-${keyName}`).value;
-
-    // Send updated value to the API
-    fetch(`${config.BASE_URL}/api/misc_settings`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ keyName, value: updatedValue }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.code === 1000) {
-          // Update the settings state with the new value
-          setSettings((prevSettings) =>
-            prevSettings.map((setting) =>
-              setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
-            )
-          );
-          setIsEditing(null);
-        } else {
-          console.error('Failed to update setting');
-        }
-      })
-      .catch((error) => console.error('Error updating setting:', error));
+    // Ask for user confirmation using SweetAlert2
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to save these changes? This might have huge Impact on Platform.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, save it!',
+      cancelButtonText: 'No, cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedValue = document.getElementById(`value-${keyName}`).value;
+  
+        // Send updated value to the API
+        fetch(`${config.BASE_URL}/api/misc_settings`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ keyName, value: updatedValue }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 1000) {
+              // Update the settings state with the new value
+              setSettings((prevSettings) =>
+                prevSettings.map((setting) =>
+                  setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
+                )
+              );
+              setIsEditing(null);
+              Swal.fire('Saved!', 'Your changes have been saved.', 'success'); // Success alert
+            } else {
+              console.error('Failed to update setting');
+              Swal.fire('Error', 'Failed to save the settings.', 'error'); // Error alert
+            }
+          })
+          .catch((error) => {
+            console.error('Error updating setting:', error);
+            Swal.fire('Error', 'There was an error saving the settings.', 'error'); // Error alert
+          });
+      }
+    });
   };
+  
+  // const handleSaveClick = (keyName) => {
+  //   const updatedValue = document.getElementById(`value-${keyName}`).value;
+
+  //   // Send updated value to the API
+  //   fetch(`${config.BASE_URL}/api/misc_settings`, {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ keyName, value: updatedValue }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.code === 1000) {
+  //         // Update the settings state with the new value
+  //         setSettings((prevSettings) =>
+  //           prevSettings.map((setting) =>
+  //             setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
+  //           )
+  //         );
+  //         setIsEditing(null);
+  //       } else {
+  //         console.error('Failed to update setting');
+  //       }
+  //     })
+  //     .catch((error) => console.error('Error updating setting:', error));
+  // };
 
   return (
     <Container
@@ -213,7 +259,7 @@ export default function SettingsPage() {
                         variant="contained"
                         color="primary"
                         size="small"
-                        sx={{ mr: 1 }}
+                        sx={{ mb: 1 }}
                       >
                         Save
                       </Button>
@@ -268,107 +314,5 @@ export default function SettingsPage() {
       </Box>
     </Container>
 
-    // <Container>
-    //   <Box
-    //     sx={{
-    //       py: 12,
-    //       maxWidth: 900, // Increase max width of the container
-    //       mx: 'auto',
-    //       minHeight: '100vh',
-    //       textAlign: 'center',
-    //     }}
-    //   >
-    //     <Typography variant="h3" sx={{ mb: 5, fontWeight: 'bold' }}>
-    //       Settings
-    //     </Typography>
-
-    //     <Box sx={{ width: '100%' }}>
-    //       {settings.map((setting) => (
-    //         <Box
-    //           key={setting.keyName}
-    //           sx={{
-    //             mb: 3,
-    //             p: 3,
-    //             display: 'flex',
-    //             alignItems: 'center',
-    //             justifyContent: 'space-between',
-    //             borderRadius: 1,
-    //             backgroundColor: 'background.default',
-    //             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-    //           }}
-    //         >
-    //           <Box sx={{ flexBasis: '50%', fontWeight: 'bold', textAlign: 'left', pr: 2 }}>
-    //             {setting.keyName}
-    //           </Box>
-    //           <Box sx={{ flexBasis: '40%', textAlign: 'left', pr: 2 }}>
-    //             {isEditing === setting.keyName ? (
-    //               <TextField
-    //                 id={`value-${setting.keyName}`}
-    //                 defaultValue={setting.value}
-    //                 variant="outlined"
-    //                 fullWidth
-    //                 multiline
-    //                 minRows={3}
-    //                 size="small"
-    //               />
-    //             ) : (
-    //               <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
-    //                 {setting.value}
-    //               </Typography>
-    //             )}
-    //           </Box>
-    //           <Box sx={{ flexBasis: '10%', display: 'flex', justifyContent: 'flex-end' }}>
-    //             {userRoles.length > 0 && isEditing !== setting.keyName && (
-    //               <Button
-    //                 onClick={() => handleEditClick(setting.keyName)}
-    //                 variant="outlined"
-    //                 color="primary"
-    //                 size="small"
-    //               >
-    //                 Edit
-    //               </Button>
-    //             )}
-    //             {isEditing === setting.keyName && (
-    //               <>
-    //                 <Button
-    //                   onClick={() => handleSaveClick(setting.keyName)}
-    //                   variant="contained"
-    //                   color="primary"
-    //                   size="small"
-    //                   sx={{ mr: 1 }}
-    //                 >
-    //                   Save
-    //                 </Button>
-    //                 <Button
-    //                   onClick={() => setIsEditing(null)}
-    //                   variant="outlined"
-    //                   color="secondary"
-    //                   size="small"
-    //                 >
-    //                   Cancel
-    //                 </Button>
-    //               </>
-    //             )}
-    //           </Box>
-    //         </Box>
-    //       ))}
-    //     </Box>
-
-    //     <Button
-    //       href="/"
-    //       size="large"
-    //       variant="contained"
-    //       component={RouterLink}
-    //       sx={{
-    //         mt: 6,
-    //         px: 4,
-    //         py: 1.5,
-    //         fontSize: '1rem',
-    //       }}
-    //     >
-    //       Go to Home
-    //     </Button>
-    //   </Box>
-    // </Container>
   );
 }

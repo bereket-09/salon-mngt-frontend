@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-
+import Iconify from 'src/components/iconify';
 import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
@@ -40,6 +40,16 @@ export default function AppView() {
   }
 
   const { overview, weeklyParticipation, todaysParticipation, subscriptionRate } = overviewData;
+  const iconStyles = (bgColor) => ({
+    width: 64,
+    height: 64,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: bgColor,
+    transform: 'scale(1.2)',
+  });
 
   return (
     <Container maxWidth="xl">
@@ -48,7 +58,77 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
+      <Container maxWidth="100%">
+  <Grid container spacing={3}>
+    <Grid item xs={12} sm={6} md={6} lg={6} xl={3}>
+      <AppWidgetSummary
+        title="Active Subscriptions"
+        dev={overview.totalActiveSubscriptions}
+        icon={
+          <div style={iconStyles('#00796B')}>
+            <Iconify
+              icon="fa6-solid:users-viewfinder"
+              style={{ fontSize: '36px', color: '#fff', transform: 'scale(1.8)' }}
+            />
+          </div>
+        }
+        color="info"
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6} md={6} lg={6} xl={3}>
+      <AppWidgetSummary
+        title="Total Questions"
+        dev={overview.totalActiveQuestions}
+        icon={
+          <div style={iconStyles('#FFA000')}>
+            <Iconify
+              icon="gravity-ui:bucket"
+              style={{ fontSize: '36px', color: '#fff', transform: 'scale(1.8)' }}
+            />
+          </div>
+        }
+        color="warning"
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6} md={6} lg={6} xl={3}>
+      <AppWidgetSummary
+        title="Today's Questions"
+        dev={overview.totalTodayQuestions}
+        icon={
+          <div style={iconStyles('#6A1B9A')}>
+            <Iconify
+              icon="carbon:question-answering"
+              style={{ fontSize: '36px', color: '#fff', transform: 'scale(1.8)' }}
+            />
+          </div>
+        }
+        color="error"
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6} md={6} lg={6} xl={3}>
+      <AppWidgetSummary
+        title="Participants Today"
+        dev={overview.totalParticipants}
+        icon={
+          <div style={iconStyles('#1976D2')}>
+            <Iconify
+              icon="fluent:group-return-24-filled"
+              style={{ fontSize: '36px', color: '#fff', transform: 'scale(1.8)' }}
+            />
+          </div>
+        }
+        color="success"
+      />
+    </Grid>
+  </Grid>
+</Container>
+
+
+
+        {/* <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Total Subscriptions"
             dev={overview.totalActiveSubscriptions}
@@ -82,7 +162,7 @@ export default function AppView() {
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits

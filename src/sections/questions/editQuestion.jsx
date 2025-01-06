@@ -14,7 +14,7 @@ import {
   FormControl,
   RadioGroup,
   FormControlLabel,
-  Radio,
+  Radio
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -36,6 +36,7 @@ const EditQuestion = () => {
   });
   const [correctAnswer, setCorrectAnswer] = useState('A');
   const [date, setDate] = useState(dayjs());
+  const [questionCount, setQuestionCount] = useState(null);
   const [status, setStatus] = useState('active'); // Add state for status
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -100,6 +101,21 @@ const EditQuestion = () => {
 
   const handleStatusChange = (e) => {
     setStatus(e.target.value); // Update status state
+  };
+
+  const handleDateChange = async (newDate) => {
+    setDate(newDate);
+
+    try {
+      const formattedDate = newDate.format('YYYY-MM-DD');
+      const response = await axios.get(
+        `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`
+      );
+      setQuestionCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching question count:', error);
+      setQuestionCount(null);
+    }
   };
 
   const handleSubmit = async () => {
@@ -212,7 +228,7 @@ const EditQuestion = () => {
               </React.Fragment>
             ))}
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <FormControl component="fieldset">
                 <Typography variant="h6" gutterBottom>
                   Select Correct Answer
@@ -230,17 +246,24 @@ const EditQuestion = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <DatePicker
                 label="Select Date"
                 value={date}
-                onChange={(newDate) => setDate(newDate)}
+                // onChange={(newDate) => setDate(newDate)}
+                onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} fullWidth />}
                 disablePast
               />
+                  <br />
+                      {questionCount !== null && (
+                          <Alert severity="info" sx={{ mt: 2 }}>
+                            {`There are ${questionCount} questions scheduled for this date.`}
+                          </Alert>
+                            )}
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select value={status} onChange={handleStatusChange} label="Status">

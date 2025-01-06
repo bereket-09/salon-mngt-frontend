@@ -31,6 +31,7 @@ import TableEmptyRows from '../user/table-empty-rows';
 import { useNavigate } from 'react-router-dom';
 import EditQuestionForm from './editQuestion';
 import config from 'src/config'; // Import the config file
+import { styled } from '@mui/system';
 
 export default function QuestionsTable() {
   const [page, setPage] = useState(0);
@@ -156,16 +157,29 @@ export default function QuestionsTable() {
     ['admin', 'trivia-admin', 'trivia-questions-admin'].includes(role)
   );
 
+    
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  maxHeight: '70vh', // Set table container height to 80% of the viewport height
+  overflowY: 'auto', // Enable vertical scrolling
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: '10px',
+  },
+}));
+
   return (
     <Container maxWidth="xl">
       {' '}
       {/* Wider container for better table visibility */}
       {/* Header Section */}
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-        <Typography variant="h4" fontWeight="bold">
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
+        <Typography variant="h5" fontWeight="bold">
           Manage Questions
         </Typography>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={3}>
           <Button
             variant="contained"
             color="primary"
@@ -185,7 +199,7 @@ export default function QuestionsTable() {
         </Stack>
       </Stack>
       {/* Filter Section */}
-      <Card sx={{ mb: 3, p: 3, borderRadius: 2, boxShadow: 1 }}>
+      <Card sx={{ mb: 1, p: 2, borderRadius: 1, boxShadow: 0 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={8}>
             <TextField
@@ -201,27 +215,38 @@ export default function QuestionsTable() {
             />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Select
-              value={filterDate}
-              onChange={handleFilterByDate}
-              displayEmpty
-              size="small"
-              fullWidth
-              sx={{ minWidth: 120 }}
-            >
-              <MenuItem value="">All Dates</MenuItem>
-              {dates.map((date) => (
-                <MenuItem key={date} value={date}>
-                  {date}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
+  <Select
+    value={filterDate}
+    onChange={handleFilterByDate}
+    displayEmpty
+    size="small"
+    fullWidth
+    sx={{ minWidth: 120 }}
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          maxHeight: 400, // Set a max height for the dropdown
+          overflowY: 'auto', // Allow scrolling if content exceeds maxHeight
+        },
+      },
+    }}
+  >
+    <MenuItem value="">All Dates</MenuItem>
+    {dates.map((date) => (
+      <MenuItem key={date} value={date}>
+        {date}
+      </MenuItem>
+    ))}
+  </Select>
+</Grid>
+
+
+
         </Grid>
       </Card>
       {/* Table Section */}
       <Card sx={{ borderRadius: 2, boxShadow: 1, overflow: 'hidden' }}>
-        <TableContainer>
+        <StyledTableContainer>
           <Table>
             <TableHead sx={{ backgroundColor: 'primary.light' }}>
               <TableRow>
@@ -327,7 +352,7 @@ export default function QuestionsTable() {
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </StyledTableContainer>
         <TablePagination
           rowsPerPageOptions={[15, 30, 45]}
           component="div"
