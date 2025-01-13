@@ -206,7 +206,7 @@ export default function TriviaList() {
                     Participants Pushed
                   </TableSortLabel>
                 </StyledTableCell>
-                <StyledTableCell>
+                {/* <StyledTableCell>
                   <TableSortLabel
                     active={orderBy === 'participants_completed'}
                     direction={orderBy === 'participants_completed' ? order : 'asc'}
@@ -214,7 +214,7 @@ export default function TriviaList() {
                   >
                     Participants Completed
                   </TableSortLabel>
-                </StyledTableCell>
+                </StyledTableCell> */}
                 <StyledTableCell>
                   <TableSortLabel
                     active={orderBy === 'status'}
