@@ -55,6 +55,11 @@ const navConfig = [
         title: 'Games List',
         path: '/trivia', // Clarified as a list of games
       },
+      {
+        title: 'Winner Times',
+        path: '/trivia/winnertimes', // Clarified as a list of games
+      },
+      
     ],
   },
   

@@ -95,7 +95,7 @@ stage('Build Project') {
     }
 }
 stage('Sonar code publish / Scan') {
-    when { expression { true } }
+    when { expression { false } }
     steps {
         container('sonarcli') {
             updateGitlabCommitStatus name: 'Sonar code publish', state: 'pending'

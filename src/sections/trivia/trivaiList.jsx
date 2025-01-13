@@ -21,9 +21,7 @@ import Label from 'src/components/label';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import config from 'src/config'; // Import the config file
 import { styled } from '@mui/system';
-// import SearchIcon from '@mui/icons-material/Search'; // Icon for search
 
-// Styled components for table
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   fontWeight: 'bold',
@@ -39,8 +37,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  maxHeight: '70vh', // Set table container height to 80% of the viewport height
-  overflowY: 'auto', // Enable vertical scrolling
+  maxHeight: '70vh',
+  overflowY: 'auto',
   '&::-webkit-scrollbar': {
     width: '8px',
   },
@@ -69,7 +67,7 @@ export default function TriviaList() {
         const result = await response.json();
         if (result.code === 1000) {
           setTriviaData(result.data);
-          setFilteredData(result.data); // Set filtered data initially
+          setFilteredData(result.data);
         } else {
           console.error('Error fetching trivia data:', result.message);
         }
@@ -84,10 +82,9 @@ export default function TriviaList() {
   }, []);
 
   useEffect(() => {
-    // Filter the trivia data based on the search date
     if (searchDate) {
-      const filtered = triviaData.filter((trivia) =>
-        trivia.execution_date === searchDate // Compare exact date match (YYYY-MM-DD)
+      const filtered = triviaData.filter(
+        (trivia) => trivia.execution_date.includes(searchDate) // Compare partial date match (YYYY-MM-DD)
       );
       setFilteredData(filtered);
     } else {
@@ -115,7 +112,21 @@ export default function TriviaList() {
   };
 
   const handleViewClick = (triviaId) => {
-    navigate(`/ismlar/${triviaId}`); // Navigate to the new ismlar page
+    navigate(`/ismlar/${triviaId}`);
+  };
+
+  // Update the formatDate function to handle the 'YYYY-MM-DD HH:mm:ss' format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      weekday: 'short', // Optional: e.g., "Mon"
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
   };
 
   const sortedData = filteredData.sort((a, b) => {
@@ -134,7 +145,7 @@ export default function TriviaList() {
     <Container maxWidth="xl">
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
         <Typography variant="h4">Trivia Games List</Typography>
-        
+
         {/* Search Section */}
         <Stack direction="row" spacing={2}>
           <TextField
@@ -147,11 +158,7 @@ export default function TriviaList() {
             }}
             size="small"
           />
-          <IconButton
-            onClick={() => setSearchDate('')}
-            color="primary"
-            disabled={!searchDate} // Disable when there's no search value
-          >
+          <IconButton onClick={() => setSearchDate('')} color="primary" disabled={!searchDate}>
             {/* <SearchIcon /> */}
           </IconButton>
         </Stack>
@@ -201,6 +208,15 @@ export default function TriviaList() {
                 </StyledTableCell>
                 <StyledTableCell>
                   <TableSortLabel
+                    active={orderBy === 'participants_completed'}
+                    direction={orderBy === 'participants_completed' ? order : 'asc'}
+                    onClick={() => handleRequestSort('participants_completed')}
+                  >
+                    Participants Completed
+                  </TableSortLabel>
+                </StyledTableCell>
+                <StyledTableCell>
+                  <TableSortLabel
                     active={orderBy === 'status'}
                     direction={orderBy === 'status' ? order : 'asc'}
                     onClick={() => handleRequestSort('status')}
@@ -246,11 +262,16 @@ export default function TriviaList() {
                 sortedData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((trivia) => (
-                    <StyledTableRow key={trivia.trivia_id} onDoubleClick={() => handleRowClick(trivia.trivia_id)}>
+                    <StyledTableRow
+                      key={trivia.trivia_id}
+                      onDoubleClick={() => handleRowClick(trivia.trivia_id)}
+                    >
                       <TableCell>{trivia.trivia_id}</TableCell>
-                      <TableCell>{trivia.execution_date}</TableCell> {/* Display as YYYY-MM-DD */}
+                      <TableCell>{formatDate(trivia.execution_date)}</TableCell>{' '}
+                      {/* Format the execution date */}
                       <TableCell>{trivia.total_questions_count}</TableCell>
                       <TableCell>{trivia.total_participants_pushed_count}</TableCell>
+                      {/* <TableCell>{trivia.participants_completed}</TableCell> */}
                       <TableCell>
                         <Label
                           variant="soft"
@@ -267,8 +288,10 @@ export default function TriviaList() {
                           {trivia.status.toUpperCase()}
                         </Label>
                       </TableCell>
-                      <TableCell>{new Date(trivia.created_at).toLocaleString()}</TableCell>
-                      <TableCell>{new Date(trivia.updated_at).toLocaleString()}</TableCell>
+                      <TableCell>{formatDate(trivia.created_at)}</TableCell>{' '}
+                      {/* Format Created At */}
+                      <TableCell>{formatDate(trivia.updated_at)}</TableCell>{' '}
+                      {/* Format Updated At */}
                       <TableCell>
                         <Button
                           variant="contained"

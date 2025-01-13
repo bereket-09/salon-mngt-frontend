@@ -8,6 +8,7 @@ import ImportQuestions from 'src/sections/questions/upload';
 import ApplicationPage from 'src/sections/questions/apps-view';
 import TriviaLosersList from 'src/sections/trivia/lossersList';
 import TriviaWinnersList from 'src/sections/trivia/winnersList';
+import WinnerTimes from 'src/sections/trivia/WinnersTimeTable';
 import EditQuestionForm from 'src/sections/questions/editQuestion';
 import TriviaDetailView from 'src/sections/trivia/triviaDetailView';
 import QuestionBuilder from 'src/sections/questions/create-question';
@@ -63,6 +64,7 @@ export default function Router() {
         { path: '/customerDetail/:id', element: <CustomerDetail /> },
         { path: '/triviaDetail/:trivia_id', element: <TriviaDetailView /> },
         { path: '/trivia/:trivia_id', element: <TriviaDetailView /> },
+        { path: '/trivia/WinnerTimes', element: <WinnerTimes /> },
         { path: '/triviawinners/:trivia_id', element: <TriviaWinnersList /> },
         { path: '/trivialosers/:trivia_id', element: <TriviaLosersList /> },
       ],
