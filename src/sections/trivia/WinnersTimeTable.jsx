@@ -205,6 +205,7 @@ const handleExport = () => {
             }}
             size="small"
           />
+          
           <Button variant="outlined" color="secondary" onClick={handleClearFilter}>
             Clear
           </Button>
