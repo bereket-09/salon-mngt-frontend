@@ -18,33 +18,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import config from 'src/config'; // Import the config file
+import * as XLSX from 'xlsx';
 
-// Styled components for table
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  fontWeight: 'bold',
-  color: theme.palette.text.primary,
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-    cursor: 'pointer',
-  },
-}));
-
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  maxHeight: '70vh', // Set table container height to 80% of the viewport height
-  overflowY: 'auto', // Enable vertical scrolling
-  '&::-webkit-scrollbar': {
-    width: '8px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: '10px',
-  },
-}));
 
 export default function WinnerTimes() {
   const [page, setPage] = useState(0);
@@ -78,6 +54,63 @@ export default function WinnerTimes() {
 
     fetchWinnerData();
   }, []);
+
+
+  // Styled components for table
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  fontWeight: 'bold',
+  color: theme.palette.text.primary,
+  borderBottom: `1px solid ${theme.palette.divider}`,
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+    cursor: 'pointer',
+  },
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  maxHeight: '70vh', // Set table container height to 80% of the viewport height
+  overflowY: 'auto', // Enable vertical scrolling
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: '10px',
+  },
+}));
+
+const handleExport = () => {
+  if (!filteredData || filteredData.length === 0) {
+    console.error('No data available to export');
+    return;
+  }
+
+  const formattedData = filteredData.map((row) => ({
+    'Winner ID': row.winner_id,
+    'Trivia Execution Date': formatDate(row.trivia_execution_date),
+    'Trivia ID': row.trivia_id,
+    'Average Completion Time': row.average_completion_time,
+    MSISDN: row.msisdn,
+    Score: `${row.score} / ${row.totalQuestion}`,
+    Language: row.language === '1' ? 'English' : 'Amharic',
+    'Activation Status': row.activation_status === 'A' ? 'ACTIVE' : 'INACTIVE',
+    'Start Time': new Date(row.start_time).toLocaleString(),
+    'End Time': new Date(row.end_time).toLocaleString(),
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Winners');
+
+  const fileName = `Trivia_Winners_${new Date().toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+};
+
+
 
   useEffect(() => {
     // Filter the winner data based on the selected date range
@@ -141,6 +174,10 @@ export default function WinnerTimes() {
 
   const isEmpty = !sortedData.length && !loading;
 
+  //button i used is
+
+  
+
   return (
     <Container maxWidth="xl">
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
@@ -170,6 +207,9 @@ export default function WinnerTimes() {
           />
           <Button variant="outlined" color="secondary" onClick={handleClearFilter}>
             Clear
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleExport} disabled={!filteredData.length}>
+            Export to Excel
           </Button>
         </Stack>
       </Stack>
@@ -295,7 +335,7 @@ export default function WinnerTimes() {
                       <TableCell>{winner.trivia_id}</TableCell>
                       <TableCell>
                         {/* {calculateAvgCompletionTime(winner.start_time, winner.end_time)} */}
-                        
+
                         {winner.average_completion_time}
                       </TableCell>
                       <TableCell>{winner.msisdn}</TableCell>
