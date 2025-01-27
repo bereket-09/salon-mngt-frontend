@@ -18,6 +18,22 @@ export default function TriviaDetailView() {
   const navigate = useNavigate(); // For navigation
   const [triviaData, setTriviaData] = useState(null);
 
+  const [executionDate, setExecutionDate] = useState(null);
+
+  // Update the formatDate function to handle the 'YYYY-MM-DD HH:mm:ss' format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      weekday: 'short', // Optional: e.g., "Mon"
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      // hour: '2-digit',
+      // minute: '2-digit',
+      // second: '2-digit',
+    });
+  };
+
   useEffect(() => {
     // Fetch data from the new endpoint using trivia_id
     const fetchData = async () => {
@@ -27,6 +43,7 @@ export default function TriviaDetailView() {
 
         if (data.code === 1000) {
           setTriviaData(data.data);
+          setExecutionDate(data.executionDate);
         } else {
           console.error('Failed to fetch trivia data:', data.message);
         }
@@ -55,7 +72,9 @@ export default function TriviaDetailView() {
         <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
           Back
         </Button>
-        <Typography variant="h4">Trivia Detail Dashboard - ({trivia_id})</Typography>
+        <Typography variant="h5">
+          Trivia Detail Dashboard - ({formatDate(executionDate)}-   Trivia_ID :{trivia_id})
+        </Typography>
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
@@ -109,9 +128,14 @@ export default function TriviaDetailView() {
             color="success"
           />
         </Grid>
-
         <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits title={todaysParticipation.title} chart={todaysParticipation.chart} />
+          <AppCurrentVisits
+            title={todaysParticipation.title}
+            chart={{
+              ...todaysParticipation.chart, // Spread existing chart data
+              colors: ['#00c04a', '#8810de', '#4040ff', '#d80000', '#ffd700'], // Updated custom colors
+            }}
+          />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>

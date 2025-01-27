@@ -1,7 +1,9 @@
 /* eslint-disable perfectionist/sort-imports */
+/* eslint-disable perfectionist/sort-imports */
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
+import ProfilePage from 'src/sections/setting/profile';
 import SettingsPage from 'src/sections/setting/setting';
 import TriviaList from 'src/sections/trivia/trivaiList';
 import ImportQuestions from 'src/sections/questions/upload';
@@ -24,12 +26,23 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 /* eslint-disable react/prop-types */
 const PrivateRoute = ({ children }) => {
-  // Check if userData and authToken exist in localStorage
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userData = localStorage.getItem('userData');
   const authToken = localStorage.getItem('authToken');
+  const currentTime = Math.floor(Date.now() / 1000); // Get the current time in seconds
+
+  if (userData && authToken) {
+    const parsedUserData = JSON.parse(userData);
+    // Check if token has expired
+    if (parsedUserData.exp && parsedUserData.exp < currentTime) {
+      // Token has expired, clear the localStorage and redirect to login page
+      localStorage.removeItem('userData');
+      localStorage.removeItem('authToken');
+      return <Navigate to="/login" replace />;
+    }
+  }
 
   if (!userData || !authToken) {
-    // Clear localStorage
+    // Token or userData not found, clear localStorage and redirect to login page
     localStorage.removeItem('userData');
     localStorage.removeItem('authToken');
     return <Navigate to="/login" replace />;
@@ -58,6 +71,7 @@ export default function Router() {
         { path: 'subscriptions', element: <SubscriptionView /> },
         { path: 'trivia', element: <TriviaList /> },
         { path: 'setting', element: <SettingsPage /> },
+        { path: 'profile', element: <ProfilePage /> },
         { path: 'create-question', element: <QuestionBuilder /> },
         { path: 'upload-question', element: <ImportQuestions /> },
         { path: 'edit-question/:id', element: <EditQuestionForm /> },
@@ -85,3 +99,94 @@ export default function Router() {
 
   return routes;
 }
+
+
+// import { lazy, Suspense } from 'react';
+// import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+// import DashboardLayout from 'src/layouts/dashboard';
+// import ProfilePage from 'src/sections/setting/profile';
+// import SettingsPage from 'src/sections/setting/setting';
+// import TriviaList from 'src/sections/trivia/trivaiList';
+// import ImportQuestions from 'src/sections/questions/upload';
+// import ApplicationPage from 'src/sections/questions/apps-view';
+// import TriviaLosersList from 'src/sections/trivia/lossersList';
+// import TriviaWinnersList from 'src/sections/trivia/winnersList';
+// import WinnerTimes from 'src/sections/trivia/WinnersTimeTable';
+// import EditQuestionForm from 'src/sections/questions/editQuestion';
+// import TriviaDetailView from 'src/sections/trivia/triviaDetailView';
+// import QuestionBuilder from 'src/sections/questions/create-question';
+// import CustomerDetail from 'src/sections/subscription/customerDetail';
+// import SubscriptionView from 'src/sections/subscription/subscription-view';
+
+// export const IndexPage = lazy(() => import('src/pages/app'));
+// export const BlogPage = lazy(() => import('src/pages/blog'));
+// export const UserPage = lazy(() => import('src/pages/user'));
+// export const LoginPage = lazy(() => import('src/pages/login'));
+// export const ProductsPage = lazy(() => import('src/pages/products'));
+// export const Page404 = lazy(() => import('src/pages/page-not-found'));
+
+// /* eslint-disable react/prop-types */
+// const PrivateRoute = ({ children }) => {
+//   // Check if userData and authToken exist in localStorage
+//   const userData = JSON.parse(localStorage.getItem('userData'));
+//   const authToken = localStorage.getItem('authToken');
+
+//   if (!userData || !authToken) {
+//     // Clear localStorage
+//     localStorage.removeItem('userData');
+//     localStorage.removeItem('authToken');
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   return children;
+// };
+
+// export default function Router() {
+//   const routes = useRoutes([
+//     {
+//       element: (
+//         <PrivateRoute>
+//           <DashboardLayout>
+//             <Suspense fallback={<div>Loading...</div>}>
+//               <Outlet />
+//             </Suspense>
+//           </DashboardLayout>
+//         </PrivateRoute>
+//       ),
+//       children: [
+//         { element: <IndexPage />, index: true },
+//         { path: 'products', element: <ProductsPage /> },
+//         { path: 'blog', element: <BlogPage /> },
+//         { path: 'questions', element: <ApplicationPage /> },
+//         { path: 'subscriptions', element: <SubscriptionView /> },
+//         { path: 'trivia', element: <TriviaList /> },
+//         { path: 'setting', element: <SettingsPage /> },
+//         { path: 'profile', element: <ProfilePage /> },
+        
+//         { path: 'create-question', element: <QuestionBuilder /> },
+//         { path: 'upload-question', element: <ImportQuestions /> },
+//         { path: 'edit-question/:id', element: <EditQuestionForm /> },
+//         { path: '/customerDetail/:id', element: <CustomerDetail /> },
+//         { path: '/triviaDetail/:trivia_id', element: <TriviaDetailView /> },
+//         { path: '/trivia/:trivia_id', element: <TriviaDetailView /> },
+//         { path: '/trivia/WinnerTimes', element: <WinnerTimes /> },
+//         { path: '/triviawinners/:trivia_id', element: <TriviaWinnersList /> },
+//         { path: '/trivialosers/:trivia_id', element: <TriviaLosersList /> },
+//       ],
+//     },
+//     {
+//       path: 'login',
+//       element: <LoginPage />,
+//     },
+//     {
+//       path: '404',
+//       element: <Page404 />,
+//     },
+//     {
+//       path: '*',
+//       element: <Navigate to="/404" replace />,
+//     },
+//   ]);
+
+//   return routes;
+// }

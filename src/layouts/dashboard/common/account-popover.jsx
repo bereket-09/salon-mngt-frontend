@@ -22,10 +22,15 @@ const MENU_OPTIONS = [
     route: '/',
   },
   {
-    label: 'Settings',
+    label: 'Profile Settings',
+    icon: 'material-symbols:person-pin-outline-sharp',
+    route: '/profile',
+  },
+  {
+    label: 'General Settings',
     icon: 'eva:settings-2-fill',
     route: '/setting',
-  },
+  }
 ];
 
 export default function AccountPopover() {

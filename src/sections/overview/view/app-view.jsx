@@ -24,6 +24,7 @@ export default function AppView() {
 
         if (data.code === 1000) {
           setOverviewData(data.data);
+          
         } else {
           console.error('Failed to fetch overview data:', data.message);
         }
@@ -39,7 +40,12 @@ export default function AppView() {
     return <Typography variant="h6">Loading...</Typography>;
   }
 
-  const { overview, weeklyParticipation, todaysParticipation, subscriptionRate } = overviewData;
+  const { overview, weeklyParticipation, todaysParticipation, subscriptionRate,miscSettings,todayTrivia } = overviewData;
+  // console.log("🚀 ~ AppView ~ weeklyParticipation:", weeklyParticipation)
+
+  const userData = JSON.parse(localStorage.getItem('userData')) || {};
+
+  
   const iconStyles = (bgColor) => ({
     width: 64,
     height: 64,
@@ -54,7 +60,7 @@ export default function AppView() {
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back 👋
+        Hi <strong sx={{ color: 'primary.main' }}>{userData.given_name || 'User'}</strong>, Welcome to SMS Trivia  👋
       </Typography>
 
       <Grid container spacing={3}>
@@ -168,9 +174,16 @@ export default function AppView() {
           <AppWebsiteVisits
             title={weeklyParticipation.title}
             subheader={weeklyParticipation.subheader}
-            chart={weeklyParticipation.chart}
+            // chart={weeklyParticipation.chart}
+
+            chart={{
+              ...weeklyParticipation.chart, // Spread existing chart data
+              type: ['area','area','area','area','area'],
+              colors: ['#8810de', '#00c04a', '#ffd700','#4040ff', '#d80000'], // Updated custom colors
+            }}
           />
         </Grid>
+
 
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentVisits title={todaysParticipation.title} chart={todaysParticipation.chart} />
@@ -184,7 +197,7 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppOrderTimeline
             title="Trivia Daily Timeline"
             list={[...Array(5)].map((_, index) => ({
@@ -200,7 +213,27 @@ export default function AppView() {
               time: faker.date.past(),
             }))}
           />
-        </Grid>
+        </Grid> */}
+<Grid xs={12} md={6} lg={4}>
+  <AppOrderTimeline
+    title="Trivia Daily Timeline"
+    list={[
+      { title: `Trivia Status: ${todayTrivia[0]?.status}`, time: `Current status ${todayTrivia[0]?.status}, Id ${todayTrivia[0]?.trivia_id}` },
+      { title: `Trivia Start Time: ${miscSettings.trivia_start_time}`, time: 'When to send first Question' },
+      { title: `Trivia End Time: ${miscSettings.trivia_end_time}`, time: 'When to close daily trivia game' },
+      { title: `Daily Winners Calculation Start Time: ${miscSettings.weekly_winner_calc_end_time}`, time: 'When to calculate who is winner and who is loser' },
+      { title: `Trivia Winner Regret Notification Start Time: ${miscSettings.trivia_winner_regret_notification_start_time}`, time: 'When to send the winner and regret notification' },
+      
+    ].map((item, index) => ({
+      id: faker.string.uuid(),
+      title: item.title,
+      type: `order${index + 1}`,
+      time: item.time,
+    }))}
+  />
+</Grid>
+
+
       </Grid>
     </Container>
   );

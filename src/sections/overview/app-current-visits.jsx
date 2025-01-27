@@ -58,7 +58,7 @@ export default function AppCurrentVisits({ title, subheader, chart, ...other }) 
       },
     },
     tooltip: {
-      fillSeriesColor: false,
+      fillSeriesColor: true,
       y: {
         formatter: (value) => fNumber(value),
         title: {
