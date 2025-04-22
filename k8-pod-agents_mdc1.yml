@@ -89,7 +89,6 @@ spec:
         - cat
       tty: true
       imagePullPolicy: Always
-      restartPolicy: Never
       resources:
         requests:
           memory: "256Mi"
