@@ -342,10 +342,13 @@ const ImportQuestions = () => {
         status: 'active',
       }));
 
+      const token = localStorage.getItem('authToken');
+
       fetch(`${config.BASE_URL}/api/questions/bulk-question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formattedQuestions),
       })
@@ -376,10 +379,10 @@ const ImportQuestions = () => {
     <div>
       {!file && (
         <Box sx={{ mb: 3 }}>
-              <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
-                  Back
-                </Button>
-                <br />
+          <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
+            Back
+          </Button>
+          <br />
           <Typography variant="h5" gutterBottom>
             Import Questions
           </Typography>

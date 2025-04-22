@@ -36,9 +36,16 @@ export default function SettingsPage() {
         setUserRoles(userData.roles); // Set roles if they have necessary permissions
       }
     }
+    const token = localStorage.getItem('authToken');
+
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
     // Fetch settings from API
-    fetch(`${config.BASE_URL}/api/misc_settings`)
+    fetch(`${config.BASE_URL}/api/misc_settings`, headers)
       .then((response) => response.json())
       .then((data) => {
         if (data.code === 1000) {
@@ -66,7 +73,7 @@ export default function SettingsPage() {
     }).then((result) => {
       if (result.isConfirmed) {
         const updatedValue = document.getElementById(`value-${keyName}`).value;
-  
+
         // Send updated value to the API
         fetch(`${config.BASE_URL}/api/misc_settings`, {
           method: 'PUT',
@@ -98,34 +105,8 @@ export default function SettingsPage() {
       }
     });
   };
-  
-  // const handleSaveClick = (keyName) => {
-  //   const updatedValue = document.getElementById(`value-${keyName}`).value;
 
-  //   // Send updated value to the API
-  //   fetch(`${config.BASE_URL}/api/misc_settings`, {
-  //     method: 'PUT',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ keyName, value: updatedValue }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (data.code === 1000) {
-  //         // Update the settings state with the new value
-  //         setSettings((prevSettings) =>
-  //           prevSettings.map((setting) =>
-  //             setting.keyName === keyName ? { ...setting, value: updatedValue } : setting
-  //           )
-  //         );
-  //         setIsEditing(null);
-  //       } else {
-  //         console.error('Failed to update setting');
-  //       }
-  //     })
-  //     .catch((error) => console.error('Error updating setting:', error));
-  // };
+  
 
   return (
     <Container
@@ -313,6 +294,5 @@ export default function SettingsPage() {
         </Button>
       </Box>
     </Container>
-
   );
 }

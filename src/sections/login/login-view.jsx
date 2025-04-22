@@ -1,9 +1,12 @@
+import jwtEncode from 'jwt-encode'; // Import jwt-encode
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'src/routes/hooks';
 import config from 'src/config';
 import { ToastContainer, toast } from 'react-toastify'; // Import Toastify components
 import 'react-toastify/dist/ReactToastify.css'; // Import the CSS
 import './styles.css';
+
+const SECRET_KEY = '1trivia-sms-secret_key'; // Use the same secret key on backend
 
 export default function LoginView() {
   const router = useRouter();
@@ -23,13 +26,17 @@ export default function LoginView() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const response = await fetch(`${config.PORTAL_URL}/api/users/login`, {
+      // Encrypt the password using jwt-encode
+      const encryptedPassword = jwtEncode({ password }, SECRET_KEY);
+
+      const response = await fetch(`${config.BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password: encryptedPassword }),
       });
       const result = await response.json();
       if (response.ok && result.code === 1000) {

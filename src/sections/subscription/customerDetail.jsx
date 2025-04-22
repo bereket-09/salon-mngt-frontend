@@ -30,11 +30,19 @@ export default function CustomerDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     const fetchCustomerDetail = async () => {
       const url = `${config.BASE_URL}/api/customers/${id}`;
       console.log(url);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setCustomer(result.data);
@@ -135,7 +143,10 @@ export default function CustomerDetail() {
 
   // ScrollableTable2 Component with Sorting
   const ScrollableTable2 = ({ children }) => {
-    const [sortConfig, setSortConfig] = useState({ key: 'participation_game_id', direction: 'asc' });
+    const [sortConfig, setSortConfig] = useState({
+      key: 'participation_game_id',
+      direction: 'asc',
+    });
 
     const handleSort = (key) => {
       let direction = 'asc';
@@ -163,13 +174,25 @@ export default function CustomerDetail() {
             <TableRow>
               <TableCell>
                 <IconButton onClick={() => handleSort('participation_game_id')}>
-                  <Iconify icon={sortConfig.key === 'participation_game_id' && sortConfig.direction === 'asc' ? 'eva:arrow-upward-fill' : 'eva:arrow-downward-fill'} />
+                  <Iconify
+                    icon={
+                      sortConfig.key === 'participation_game_id' && sortConfig.direction === 'asc'
+                        ? 'eva:arrow-upward-fill'
+                        : 'eva:arrow-downward-fill'
+                    }
+                  />
                 </IconButton>
                 Participant ID
               </TableCell>
               <TableCell>
                 <IconButton onClick={() => handleSort('trivia_id')}>
-                  <Iconify icon={sortConfig.key === 'trivia_id' && sortConfig.direction === 'asc' ? 'eva:arrow-upward-fill' : 'eva:arrow-downward-fill'} />
+                  <Iconify
+                    icon={
+                      sortConfig.key === 'trivia_id' && sortConfig.direction === 'asc'
+                        ? 'eva:arrow-upward-fill'
+                        : 'eva:arrow-downward-fill'
+                    }
+                  />
                 </IconButton>
                 Game Id
               </TableCell>

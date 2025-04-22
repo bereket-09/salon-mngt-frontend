@@ -38,7 +38,15 @@ export default function TriviaDetailView() {
     // Fetch data from the new endpoint using trivia_id
     const fetchData = async () => {
       try {
-        const response = await fetch(`${config.BASE_URL}/api/trivia/${trivia_id}`);
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await fetch(`${config.BASE_URL}/api/trivia/${trivia_id}`, headers);
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -73,7 +81,7 @@ export default function TriviaDetailView() {
           Back
         </Button>
         <Typography variant="h5">
-          Trivia Detail Dashboard - ({formatDate(executionDate)}-   Trivia_ID :{trivia_id})
+          Trivia Detail Dashboard - ({formatDate(executionDate)}- Trivia_ID :{trivia_id})
         </Typography>
         <Stack direction="row" spacing={2}>
           <Button

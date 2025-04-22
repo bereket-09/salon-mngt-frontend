@@ -62,9 +62,17 @@ export default function QuestionsTable() {
     }
 
     const fetchQuestions = async () => {
+      const token = localStorage.getItem('authToken');
+
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const url = `${config.BASE_URL}/api/questions`;
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setQuestions(result.data);
@@ -157,18 +165,17 @@ export default function QuestionsTable() {
     ['admin', 'trivia-admin', 'trivia-questions-admin'].includes(role)
   );
 
-    
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  maxHeight: '70vh', // Set table container height to 80% of the viewport height
-  overflowY: 'auto', // Enable vertical scrolling
-  '&::-webkit-scrollbar': {
-    width: '8px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: '10px',
-  },
-}));
+  const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+    maxHeight: '70vh', // Set table container height to 80% of the viewport height
+    overflowY: 'auto', // Enable vertical scrolling
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '10px',
+    },
+  }));
 
   return (
     <Container maxWidth="xl">
@@ -215,33 +222,30 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
             />
           </Grid>
           <Grid item xs={12} md={4}>
-  <Select
-    value={filterDate}
-    onChange={handleFilterByDate}
-    displayEmpty
-    size="small"
-    fullWidth
-    sx={{ minWidth: 120 }}
-    MenuProps={{
-      PaperProps: {
-        sx: {
-          maxHeight: 400, // Set a max height for the dropdown
-          overflowY: 'auto', // Allow scrolling if content exceeds maxHeight
-        },
-      },
-    }}
-  >
-    <MenuItem value="">All Dates</MenuItem>
-    {dates.map((date) => (
-      <MenuItem key={date} value={date}>
-        {date}
-      </MenuItem>
-    ))}
-  </Select>
-</Grid>
-
-
-
+            <Select
+              value={filterDate}
+              onChange={handleFilterByDate}
+              displayEmpty
+              size="small"
+              fullWidth
+              sx={{ minWidth: 120 }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 400, // Set a max height for the dropdown
+                    overflowY: 'auto', // Allow scrolling if content exceeds maxHeight
+                  },
+                },
+              }}
+            >
+              <MenuItem value="">All Dates</MenuItem>
+              {dates.map((date) => (
+                <MenuItem key={date} value={date}>
+                  {date}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
         </Grid>
       </Card>
       {/* Table Section */}

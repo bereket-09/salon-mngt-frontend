@@ -14,7 +14,7 @@ import {
   FormControl,
   RadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -44,7 +44,18 @@ const EditQuestion = () => {
   useEffect(() => {
     const fetchQuestionDetails = async () => {
       try {
-        const response = await axios.get(`${config.BASE_URL}/api/questions/editQuestion/${id}`);
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get(
+          `${config.BASE_URL}/api/questions/editQuestion/${id}`,
+          headers
+        );
         if (response.data.code === 1000) {
           const questionData = response.data.data[0];
           setQuestion({
@@ -108,8 +119,17 @@ const EditQuestion = () => {
 
     try {
       const formattedDate = newDate.format('YYYY-MM-DD');
+      const token = localStorage.getItem('authToken');
+
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const response = await axios.get(
-        `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`
+        `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`,
+        headers
       );
       setQuestionCount(response.data.count);
     } catch (error) {
@@ -130,9 +150,12 @@ const EditQuestion = () => {
     };
 
     try {
+      const token = localStorage.getItem('authToken');
+
       const response = await axios.put(`${config.BASE_URL}/api/questions/${id}`, formattedData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -151,7 +174,6 @@ const EditQuestion = () => {
   };
 
   return (
-    
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box
         sx={{
@@ -163,7 +185,7 @@ const EditQuestion = () => {
           alignItems: 'center',
         }}
       >
-        <Paper elevation={6} sx={{ p: 4,  width: '80%', borderRadius: '12px' }}>
+        <Paper elevation={6} sx={{ p: 4, width: '80%', borderRadius: '12px' }}>
           <Typography
             variant="h4"
             gutterBottom
@@ -187,7 +209,7 @@ const EditQuestion = () => {
                 onChange={(e) => handleQuestionChange(e, 'englishText')}
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextareaAutosize
                 minRows={4}
@@ -255,12 +277,12 @@ const EditQuestion = () => {
                 renderInput={(params) => <TextField {...params} fullWidth />}
                 disablePast
               />
-                  <br />
-                      {questionCount !== null && (
-                          <Alert severity="info" sx={{ mt: 2 }}>
-                            {`There are ${questionCount} questions scheduled for this date.`}
-                          </Alert>
-                            )}
+              <br />
+              {questionCount !== null && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  {`There are ${questionCount} questions scheduled for this date.`}
+                </Alert>
+              )}
             </Grid>
 
             <Grid item xs={3}>
@@ -275,9 +297,9 @@ const EditQuestion = () => {
           </Grid>
 
           <Box sx={{ mt: 4, textAlign: 'center' }}>
-             <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
-        Back
-      </Button>
+            <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mr: 4 }}>
+              Back
+            </Button>
 
             <Button variant="contained" color="primary" onClick={handleSubmit}>
               Save Changes

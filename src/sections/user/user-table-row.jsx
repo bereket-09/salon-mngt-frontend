@@ -60,9 +60,21 @@ export default function UserTableRow({
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`${config.BASE_URL}/api/users/delete/${rowData.id}`, {
-          method: 'DELETE',
-        });
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await fetch(
+          `${config.BASE_URL}/api/users/delete/${rowData.id}`,
+          {
+            method: 'DELETE',
+          },
+          headers
+        );
 
         if (response.ok) {
           Swal.fire({
@@ -95,10 +107,13 @@ export default function UserTableRow({
       : `${config.BASE_URL}/api/users`;
     const method = selectedRow ? 'PUT' : 'POST';
 
+    const token = localStorage.getItem('authToken');
+
     const response = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });

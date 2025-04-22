@@ -32,9 +32,17 @@ export default function TriviaLosersList() {
 
   useEffect(() => {
     const fetchLosers = async () => {
+      const token = localStorage.getItem('authToken');
+
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const url = `${config.BASE_URL}/api/trivia/losers/${trivia_id}`;
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setLosersData(result.data);

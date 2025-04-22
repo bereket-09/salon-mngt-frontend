@@ -49,7 +49,15 @@ export default function UserPage() {
     const fetchUsers = async () => {
       const url = `${config.BASE_URL}/api/users`;
       try {
-        const response = await fetch(url);
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setUsers(result.data); // Update state with fetched data

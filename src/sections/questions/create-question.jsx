@@ -66,9 +66,18 @@ const QuestionBuilder = () => {
     setDate(newDate);
 
     try {
+      const token = localStorage.getItem('authToken');
+
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const formattedDate = newDate.format('YYYY-MM-DD');
       const response = await axios.get(
-        `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`
+        `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`,
+        headers
       );
       setQuestionCount(response.data.count);
     } catch (error) {
@@ -82,8 +91,17 @@ const QuestionBuilder = () => {
     const fetchInitialQuestionCount = async () => {
       try {
         const formattedDate = date.format('YYYY-MM-DD');
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
         const response = await axios.get(
-          `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`
+          `${config.BASE_URL}/api/questions/checkQuestionCount?date=${formattedDate}`,
+          headers
         );
         setQuestionCount(response.data.count);
       } catch (error) {
@@ -134,9 +152,12 @@ const QuestionBuilder = () => {
     };
 
     try {
+      const token = localStorage.getItem('authToken');
+
       const response = await axios.post(`${config.BASE_URL}/api/questions`, formattedData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 

@@ -63,7 +63,15 @@ export default function TriviaList() {
     const fetchTrivia = async () => {
       const url = `${config.BASE_URL}/api/trivia`;
       try {
-        const response = await fetch(url);
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setTriviaData(result.data);

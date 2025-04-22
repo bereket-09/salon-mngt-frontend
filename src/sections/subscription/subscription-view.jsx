@@ -44,10 +44,18 @@ export default function SubscriptionView() {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     const fetchCustomers = async () => {
       const url = `${config.BASE_URL}/api/customers`;
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, headers);
         const result = await response.json();
         if (result.code === 1000) {
           setCustomers(result.data);
@@ -109,18 +117,17 @@ export default function SubscriptionView() {
     navigate(`/customerDetail/${id}`); // Navigate to the detail page
   };
 
-  
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  maxHeight: '70vh', // Set table container height to 80% of the viewport height
-  overflowY: 'auto', // Enable vertical scrolling
-  '&::-webkit-scrollbar': {
-    width: '8px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: '10px',
-  },
-}));
+  const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+    maxHeight: '70vh', // Set table container height to 80% of the viewport height
+    overflowY: 'auto', // Enable vertical scrolling
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '10px',
+    },
+  }));
 
   return (
     <Container maxWidth="xl">
