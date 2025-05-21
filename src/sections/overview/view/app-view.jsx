@@ -21,13 +21,13 @@ export default function AppView() {
       try {
         const token = localStorage.getItem('authToken');
 
-        const headers = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        const response = await fetch(`${config.BASE_URL}/api/dashboard/overview`, headers);
+          const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+        const url = `${config.BASE_URL}/api/dashboard/overview`;
+        const response = await fetch(url, headers);
         const data = await response.json();
 
         if (data.code === 1000) {
