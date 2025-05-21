@@ -27,7 +27,7 @@ export default function AppView() {
           },
         };
 
-        const response = await fetch(`${config.BASE_URL}/api/dashboard/overview`);
+        const response = await fetch(`${config.BASE_URL}/api/dashboard/overview`, headers);
         const data = await response.json();
 
         if (data.code === 1000) {
