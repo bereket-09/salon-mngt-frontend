@@ -73,12 +73,15 @@ export default function SettingsPage() {
     }).then((result) => {
       if (result.isConfirmed) {
         const updatedValue = document.getElementById(`value-${keyName}`).value;
+        const token = localStorage.getItem('authToken');
 
         // Send updated value to the API
         fetch(`${config.BASE_URL}/api/misc_settings`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ keyName, value: updatedValue }),
         })
@@ -105,8 +108,6 @@ export default function SettingsPage() {
       }
     });
   };
-
-  
 
   return (
     <Container
