@@ -51,6 +51,7 @@ export function overrides(theme) {
       styleOverrides: {
         root: {
           backgroundColor: alpha(theme.palette.grey[900], 0.8),
+          backdropFilter: 'blur(4px)',
         },
         invisible: {
           background: 'transparent',
@@ -59,6 +60,11 @@ export function overrides(theme) {
     },
     MuiButton: {
       styleOverrides: {
+        root: {
+          borderRadius: 50,
+          fontWeight: 700,
+          textTransform: 'none',
+        },
         containedInherit: {
           color: theme.palette.common.white,
           backgroundColor: theme.palette.grey[800],
@@ -69,16 +75,19 @@ export function overrides(theme) {
         },
         sizeLarge: {
           minHeight: 48,
+          fontSize: '1rem',
+          padding: '0 32px',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: theme.customShadows.card,
-          borderRadius: Number(theme.shape.borderRadius) * 2,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+          borderRadius: 24,
           position: 'relative',
           zIndex: 0, // Fix Safari overflow: hidden with border radius
+          border: '1px solid rgba(255,255,255,0.6)',
         },
       },
     },
@@ -96,6 +105,7 @@ export function overrides(theme) {
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
+          borderRadius: 12,
           [`& .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: alpha(theme.palette.grey[500], 0.24),
           },
@@ -106,12 +116,18 @@ export function overrides(theme) {
       defaultProps: {
         elevation: 0,
       },
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
     },
     MuiTableCell: {
       styleOverrides: {
         head: {
           color: theme.palette.text.secondary,
           backgroundColor: theme.palette.background.neutral,
+          fontWeight: 700,
         },
       },
     },
@@ -139,6 +155,16 @@ export function overrides(theme) {
       styleOverrides: {
         root: {
           ...theme.typography.body2,
+          borderRadius: 8,
+          margin: '0 8px',
+          padding: '8px 12px',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: theme.palette.background.sidebar,
         },
       },
     },

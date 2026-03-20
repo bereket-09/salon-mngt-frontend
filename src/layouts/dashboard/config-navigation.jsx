@@ -1,76 +1,112 @@
-/* eslint-disable perfectionist/sort-imports */
-// Navigation configuration for the side menu.
+// Navigation configuration for the side menu with simple labels.
 
 const navConfig = [
-  // Main category: Overview
+  // ----------------------------------------------------------------------
+  // OVERVIEW
+  // ----------------------------------------------------------------------
   {
     title: 'Overview',
-    icon: 'icomoon-free:stats-bars',
+    icon: 'solar:chart-bold-duotone',
+    path: '/analytics',
+    roles: ['admin'],
+  },
+
+  // ----------------------------------------------------------------------
+  // DAILY OPERATIONS
+  // ----------------------------------------------------------------------
+  {
+    title: 'Operations',
+    icon: 'solar:calendar-minimalistic-bold-duotone',
+    roles: ['admin', 'receptionist'],
     children: [
       {
-        title: 'Dashboard',
-        path: '/', // More descriptive route
+        title: 'Check-In',
+        path: '/check-in',
+      },
+      {
+        title: 'Bookings',
+        path: '/bookings',
+      },
+      {
+        title: 'Active Customers',
+        path: '/customers',
+      },
+      {
+        title: 'Specialist Status',
+        path: '/specialist-board',
       },
     ],
   },
-  
-  // Main category: Questions
+
+  // ----------------------------------------------------------------------
+  // MANAGEMENT
+  // ----------------------------------------------------------------------
   {
-    title: 'Questions Bank',
-    icon: 'mdi:frequently-asked-questions',
+    title: 'Management',
+    icon: 'solar:settings-bold-duotone',
+    roles: ['admin'],
     children: [
       {
-        title: 'Question List',
-        path: '/questions', // Reflects hierarchical structure
+        title: 'Employees',
+        path: '/user-mngt',
       },
       {
-        title: 'Add Question',
-        path: '/create-question', // Simplified wording
+        title: 'Services',
+        path: '/services',
       },
       {
-        title: 'Bulk Upload',
-        path: '/upload-question', // Shortened for clarity
+        title: 'Branches',
+        path: '/service-type',
+      },
+      {
+        title: 'Gallery',
+        path: '/manage-gallery',
       },
     ],
   },
-  
-  // Main category: Subscriptions
+
+  // ----------------------------------------------------------------------
+  // FINANCIALS
+  // ----------------------------------------------------------------------
   {
-    title: 'Subscription Hub',
-    icon: 'mdi:account-group',
+    title: 'Financials',
+    icon: 'solar:wallet-money-bold-duotone',
+    roles: ['admin'],
     children: [
       {
-        title: 'All Subscriptions',
-        path: '/subscriptions', // Explicitly describes content
+        title: 'Invoices & Billing',
+        path: '/invoiceslist',
+      },
+      {
+        title: 'Staff Commissions',
+        path: '/commissionsMgr',
+      },
+      {
+        title: 'Attendance & Payroll',
+        path: '/attendance-report',
       },
     ],
   },
-  
-  // Main category: Trivia
+
+  // ----------------------------------------------------------------------
+  // PERSONAL WORKSPACE
+  // ----------------------------------------------------------------------
   {
-    title: 'Trivia Games Center',
-    icon: 'material-symbols:toys-and-games-outline',
+    title: 'My Workspace',
+    icon: 'solar:user-circle-bold-duotone',
+    roles: ['admin', 'receptionist', 'barber', 'hairdresser', 'nail_specialist', 'spa_therapist', 'employee'],
     children: [
       {
-        title: 'Games List',
-        path: '/trivia', // Clarified as a list of games
+        title: 'My Daily Jobs',
+        path: '/my-assignments',
       },
       {
-        title: 'Winner Times',
-        path: '/trivia/winnertimes', // Clarified as a list of games
+        title: 'My Attendance',
+        path: '/my-attendance',
       },
-      
-    ],
-  },
-  
-  // Main category: Settings
-  {
-    title: 'Settings',
-    icon: 'tdesign:chat-setting',
-    children: [
       {
-        title: 'General Settings',
-        path: '/setting', // Simplified path
+        title: 'My Earnings',
+        path: '/my-earnings',
       },
     ],
   },

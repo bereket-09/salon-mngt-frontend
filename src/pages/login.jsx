@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | VAS Trivia Manager </title>
+        <title> Login | Salon Manager </title>
       </Helmet>
 
       <LoginView />

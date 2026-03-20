@@ -179,6 +179,10 @@ form.sign-in-form {
   transition: transform 1.1s ease-in-out;
   transition-delay: 0.4s;
 }
+.image:hover {
+  transform: scale(1.05); /* optional hover effect */
+}
+
 
 .panel {
   display: flex;
@@ -436,7 +440,7 @@ a:hover {
 .logo {
   position: absolute;
   /* left: 20px; */
-  width: 160px;
+  width: 100px;
   height: auto;
 }
 .top-left {

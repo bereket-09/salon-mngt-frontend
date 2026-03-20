@@ -1,40 +1,49 @@
-/* eslint-disable perfectionist/sort-imports */
-/* eslint-disable perfectionist/sort-imports */
+/* eslint-disable */
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+
 import DashboardLayout from 'src/layouts/dashboard';
+
+// Import sections
 import ProfilePage from 'src/sections/setting/profile';
 import SettingsPage from 'src/sections/setting/setting';
-import TriviaList from 'src/sections/trivia/trivaiList';
-import ImportQuestions from 'src/sections/questions/upload';
-import ApplicationPage from 'src/sections/questions/apps-view';
-import TriviaLosersList from 'src/sections/trivia/lossersList';
-import TriviaWinnersList from 'src/sections/trivia/winnersList';
-import WinnerTimes from 'src/sections/trivia/WinnersTimeTable';
-import EditQuestionForm from 'src/sections/questions/editQuestion';
-import TriviaDetailView from 'src/sections/trivia/triviaDetailView';
-import QuestionBuilder from 'src/sections/questions/create-question';
-import CustomerDetail from 'src/sections/subscription/customerDetail';
-import SubscriptionView from 'src/sections/subscription/subscription-view';
+import BranchesTable from 'src/sections/branches/manageBranches';
+import ServicesPage from 'src/sections/salon-services/manage-service';
+import CustomersPage from 'src/sections/customers/curstomersPage';
+import InvoicesList from 'src/sections/customers/Invoices';
+import Attendance from 'src/sections/customers/Attendance';
+import UserManagement from 'src/sections/customers/UserManagment';
+import CustomersManagePage from 'src/sections/customers/CustomerManagmet';
+import CommissionReport from 'src/sections/customers/commistion';
+import CommissionManager from 'src/sections/customers/CommissionManager';
+import ManageGallery from 'src/sections/gallery/manage-gallery';
 
+// New Milana Salon Views
+import AnalyticsView from 'src/sections/analytics/analytics-view';
+import CheckInView from 'src/sections/reception/check-in-view';
+import MyAssignmentsView from 'src/sections/employee/my-assignments-view';
+import MyEarningsView from 'src/sections/employee/my-earnings-view';
+import SpecialistBoard from 'src/sections/employee/specialist-board';
+import { BookingsView } from 'src/sections/bookings/view';
+
+// Lazy load pages
 export const IndexPage = lazy(() => import('src/pages/app'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
-export const UserPage = lazy(() => import('src/pages/user'));
+export const LandingPage = lazy(() => import('src/pages/landing'));
 export const LoginPage = lazy(() => import('src/pages/login'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const BookingsPage = lazy(() => import('src/pages/bookings'));
+
+// ----------------------------------------------------------------------
 
 /* eslint-disable react/prop-types */
 const PrivateRoute = ({ children }) => {
   const userData = localStorage.getItem('userData');
   const authToken = localStorage.getItem('authToken');
-  const currentTime = Math.floor(Date.now() / 1000); // Get the current time in seconds
+  const currentTime = Math.floor(Date.now() / 1000);
 
   if (userData && authToken) {
     const parsedUserData = JSON.parse(userData);
-    // Check if token has expired
     if (parsedUserData.exp && parsedUserData.exp < currentTime) {
-      // Token has expired, clear the localStorage and redirect to login page
       localStorage.removeItem('userData');
       localStorage.removeItem('authToken');
       return <Navigate to="/login" replace />;
@@ -42,7 +51,6 @@ const PrivateRoute = ({ children }) => {
   }
 
   if (!userData || !authToken) {
-    // Token or userData not found, clear localStorage and redirect to login page
     localStorage.removeItem('userData');
     localStorage.removeItem('authToken');
     return <Navigate to="/login" replace />;
@@ -51,37 +59,68 @@ const PrivateRoute = ({ children }) => {
   return children;
 };
 
+const IndexPageRoleRedirect = () => {
+  const userStr = localStorage.getItem('userData');
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (['admin', 'manager'].includes(user.role)) {
+    return <Navigate to="/analytics" replace />;
+  }
+
+  return <Navigate to="/my-assignments" replace />;
+};
+
 export default function Router() {
   const routes = useRoutes([
     {
       element: (
         <PrivateRoute>
           <DashboardLayout>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>Loading...</Box>}>
               <Outlet />
             </Suspense>
           </DashboardLayout>
         </PrivateRoute>
       ),
       children: [
-        { element: <IndexPage />, index: true },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-        { path: 'questions', element: <ApplicationPage /> },
-        { path: 'subscriptions', element: <SubscriptionView /> },
-        { path: 'trivia', element: <TriviaList /> },
+
+        // Operations
+        { path: 'analytics', element: <AnalyticsView /> },
+        { path: 'bookings', element: <BookingsPage /> },
+        { path: 'customers', element: <CustomersPage /> },
+        { path: 'specialist-board', element: <SpecialistBoard /> },
+
+        // Administration
+        { path: 'user-mngt', element: <UserManagement /> },
+        { path: 'services', element: <ServicesPage /> },
+        { path: 'service-type', element: <BranchesTable /> },
+        { path: 'manage-gallery', element: <ManageGallery /> },
+
+        // Financials
+        { path: 'commissionsMgr', element: <CommissionManager /> },
+        { path: 'commissions/:userId', element: <CommissionReport /> },
+        { path: 'invoiceslist', element: <InvoicesList /> },
+        { path: 'attendance-report', element: <Attendance /> },
+
+        // Reception
+        { path: 'check-in', element: <CheckInView /> },
+        { path: 'attendance', element: <Attendance /> },
+
+        // Employee
+        { path: 'my-assignments', element: <MyAssignmentsView /> },
+        { path: 'my-attendance', element: <Attendance /> },
+        { path: 'my-earnings', element: <MyEarningsView /> },
+
+        // Settings
         { path: 'setting', element: <SettingsPage /> },
         { path: 'profile', element: <ProfilePage /> },
-        { path: 'create-question', element: <QuestionBuilder /> },
-        { path: 'upload-question', element: <ImportQuestions /> },
-        { path: 'edit-question/:id', element: <EditQuestionForm /> },
-        { path: '/customerDetail/:id', element: <CustomerDetail /> },
-        { path: '/triviaDetail/:trivia_id', element: <TriviaDetailView /> },
-        { path: '/trivia/:trivia_id', element: <TriviaDetailView /> },
-        { path: '/trivia/WinnerTimes', element: <WinnerTimes /> },
-        { path: '/triviawinners/:trivia_id', element: <TriviaWinnersList /> },
-        { path: '/trivialosers/:trivia_id', element: <TriviaLosersList /> },
       ],
+    },
+    {
+      path: '/',
+      element: <LandingPage />,
     },
     {
       path: 'login',
@@ -100,93 +139,4 @@ export default function Router() {
   return routes;
 }
 
-
-// import { lazy, Suspense } from 'react';
-// import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-// import DashboardLayout from 'src/layouts/dashboard';
-// import ProfilePage from 'src/sections/setting/profile';
-// import SettingsPage from 'src/sections/setting/setting';
-// import TriviaList from 'src/sections/trivia/trivaiList';
-// import ImportQuestions from 'src/sections/questions/upload';
-// import ApplicationPage from 'src/sections/questions/apps-view';
-// import TriviaLosersList from 'src/sections/trivia/lossersList';
-// import TriviaWinnersList from 'src/sections/trivia/winnersList';
-// import WinnerTimes from 'src/sections/trivia/WinnersTimeTable';
-// import EditQuestionForm from 'src/sections/questions/editQuestion';
-// import TriviaDetailView from 'src/sections/trivia/triviaDetailView';
-// import QuestionBuilder from 'src/sections/questions/create-question';
-// import CustomerDetail from 'src/sections/subscription/customerDetail';
-// import SubscriptionView from 'src/sections/subscription/subscription-view';
-
-// export const IndexPage = lazy(() => import('src/pages/app'));
-// export const BlogPage = lazy(() => import('src/pages/blog'));
-// export const UserPage = lazy(() => import('src/pages/user'));
-// export const LoginPage = lazy(() => import('src/pages/login'));
-// export const ProductsPage = lazy(() => import('src/pages/products'));
-// export const Page404 = lazy(() => import('src/pages/page-not-found'));
-
-// /* eslint-disable react/prop-types */
-// const PrivateRoute = ({ children }) => {
-//   // Check if userData and authToken exist in localStorage
-//   const userData = JSON.parse(localStorage.getItem('userData'));
-//   const authToken = localStorage.getItem('authToken');
-
-//   if (!userData || !authToken) {
-//     // Clear localStorage
-//     localStorage.removeItem('userData');
-//     localStorage.removeItem('authToken');
-//     return <Navigate to="/login" replace />;
-//   }
-
-//   return children;
-// };
-
-// export default function Router() {
-//   const routes = useRoutes([
-//     {
-//       element: (
-//         <PrivateRoute>
-//           <DashboardLayout>
-//             <Suspense fallback={<div>Loading...</div>}>
-//               <Outlet />
-//             </Suspense>
-//           </DashboardLayout>
-//         </PrivateRoute>
-//       ),
-//       children: [
-//         { element: <IndexPage />, index: true },
-//         { path: 'products', element: <ProductsPage /> },
-//         { path: 'blog', element: <BlogPage /> },
-//         { path: 'questions', element: <ApplicationPage /> },
-//         { path: 'subscriptions', element: <SubscriptionView /> },
-//         { path: 'trivia', element: <TriviaList /> },
-//         { path: 'setting', element: <SettingsPage /> },
-//         { path: 'profile', element: <ProfilePage /> },
-        
-//         { path: 'create-question', element: <QuestionBuilder /> },
-//         { path: 'upload-question', element: <ImportQuestions /> },
-//         { path: 'edit-question/:id', element: <EditQuestionForm /> },
-//         { path: '/customerDetail/:id', element: <CustomerDetail /> },
-//         { path: '/triviaDetail/:trivia_id', element: <TriviaDetailView /> },
-//         { path: '/trivia/:trivia_id', element: <TriviaDetailView /> },
-//         { path: '/trivia/WinnerTimes', element: <WinnerTimes /> },
-//         { path: '/triviawinners/:trivia_id', element: <TriviaWinnersList /> },
-//         { path: '/trivialosers/:trivia_id', element: <TriviaLosersList /> },
-//       ],
-//     },
-//     {
-//       path: 'login',
-//       element: <LoginPage />,
-//     },
-//     {
-//       path: '404',
-//       element: <Page404 />,
-//     },
-//     {
-//       path: '*',
-//       element: <Navigate to="/404" replace />,
-//     },
-//   ]);
-
-//   return routes;
-// }
+import { Box } from '@mui/material';

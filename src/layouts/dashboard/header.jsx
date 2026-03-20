@@ -15,6 +15,7 @@ import { bgBlur } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 
 import Searchbar from './common/searchbar';
+import BranchSwitcher from './common/branch-switcher';
 import { NAV, HEADER } from './config-layout';
 import AccountPopover from './common/account-popover';
 // import LanguagePopover from './common/language-popover';
@@ -42,6 +43,7 @@ export default function Header({ onOpenNav }) {
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* <LanguagePopover /> */}
         {/* <NotificationsPopover /> */}
+        <BranchSwitcher />
         <AccountPopover />
       </Stack>
     </>

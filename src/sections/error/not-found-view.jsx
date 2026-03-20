@@ -2,72 +2,94 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 
 import { RouterLink } from 'src/routes/components';
-
-import Logo from 'src/components/logo';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export default function NotFoundView() {
-  const renderHeader = (
+  return (
     <Box
-      component="header"
       sx={{
-        top: 0,
-        left: 0,
-        width: 1,
-        lineHeight: 0,
-        position: 'fixed',
-        p: (theme) => ({ xs: theme.spacing(3, 3, 0), sm: theme.spacing(5, 5, 0) }),
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: '#05060A',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'radial-gradient(circle at 50% 50%, rgba(200, 151, 42, 0.05) 0%, transparent 70%)',
+          zIndex: 1
+        }
       }}
     >
-      <Logo />
-    </Box>
-  );
+      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2 }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Box sx={{ mb: 5, display: 'inline-flex', position: 'relative', width: '100%', justifyContent: 'center' }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '8rem', md: '12rem' },
+                fontWeight: 900,
+                color: alpha('#fff', 0.03),
+                lineHeight: 1,
+                letterSpacing: -10
+              }}
+            >
+              404
+            </Typography>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100%',
+              zIndex: 5
+            }}>
+              <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: -2, color: 'white' }}>
+                Lost in <Box component="span" sx={{ color: '#C8972A' }}>Style</Box>
+              </Typography>
+              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 700, mt: 2, opacity: 0.8 }}>
+                The page you are looking for has been moved or doesn't exist.
+              </Typography>
+            </Box>
+          </Box>
 
-  return (
-    <>
-      {renderHeader}
+          <Box sx={{ mt: 8 }}>
+            <Button
+              href="/"
+              variant="contained"
+              component={RouterLink}
+              size="large"
+              startIcon={<Iconify icon="solar:home-2-bold-duotone" />}
+              sx={{
+                height: 60,
+                px: 6,
+                borderRadius: 1.5,
+                fontWeight: 900,
+                fontSize: '1.1rem',
+                bgcolor: '#C8972A',
+                color: 'white',
+                boxShadow: '0 10px 40px rgba(200, 151, 42, 0.2)',
+                '&:hover': { bgcolor: '#b08425', transform: 'translateY(-2px)' },
+                transition: '0.3s'
+              }}
+            >
+              Return to Dashboard
+            </Button>
+          </Box>
 
-      <Container>
-        <Box
-          sx={{
-            py: 12,
-            maxWidth: 480,
-            mx: 'auto',
-            display: 'flex',
-            minHeight: '100vh',
-            textAlign: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}
-        >
-          <Typography variant="h3" sx={{ mb: 3 }}>
-            Sorry, page not found!
+          <Typography variant="caption" sx={{ display: 'block', mt: 10, color: 'text.disabled', fontWeight: 800, letterSpacing: 3 }}>
+            MILANA BOUTIQUE SALON • ADDIS ABABA
           </Typography>
-
-          <Typography sx={{ color: 'text.secondary' }}>
-            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
-            sure to check your spelling.
-          </Typography>
-
-          <Box
-            component="img"
-            src="/assets/illustrations/illustration_404.svg"
-            sx={{
-              mx: 'auto',
-              height: 260,
-              my: { xs: 5, sm: 10 },
-            }}
-          />
-
-          <Button href="/" size="large" variant="contained" component={RouterLink}>
-            Go to Home
-          </Button>
         </Box>
       </Container>
-    </>
+    </Box>
   );
 }

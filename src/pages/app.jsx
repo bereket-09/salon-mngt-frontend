@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | Trivia Manager </title>
+        <title> Dashboard | Salon Manager </title>
       </Helmet>
 
       <AppView />

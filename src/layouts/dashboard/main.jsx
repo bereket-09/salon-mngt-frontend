@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -32,6 +33,11 @@ export default function Main({ children, sx, ...other }) {
       {...other}
     >
       {children}
+      <Box sx={{ mt: 'auto', textAlign: 'center', py: 5, borderTop: '0px solid', borderColor: 'divider', pb: 2 }}>
+        <Typography variant="caption" sx={{ color: 'text.disabled', letterSpacing: 1, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem' }}>
+          Developed by <Box component="span" sx={{ color: 'secondary.main' }}>BZ Solutions</Box>
+        </Typography>
+      </Box>
     </Box>
   );
 }

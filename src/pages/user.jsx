@@ -8,7 +8,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Trivia Manager </title>
+        <title> User | Salon Manager </title>
       </Helmet>
 
       <UserView />
