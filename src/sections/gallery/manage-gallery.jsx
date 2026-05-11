@@ -18,15 +18,28 @@ import {
   Alert,
   Tooltip,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import config from 'src/config';
+
+const resolveImageUrl = (img) => {
+  if (!img) return '';
+  if (img.url) {
+    return img.url.startsWith('/') ? `${config.BASE_URL}${img.url}` : img.url;
+  }
+  return `${config.BASE_URL}/gallery/${img.id}/image`;
+};
+
+const isLocalUpload = (img) => !img?.url || img.url.startsWith('/');
 
 export default function ManageGallery() {
   const theme = useTheme();
   const [images, setImages] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [file, setFile] = useState(null);
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
@@ -40,12 +53,15 @@ export default function ManageGallery() {
   }, []);
 
   const fetchImages = async () => {
+    setFetching(true);
     try {
-      const res = await fetch(`${config.BASE_URL}/gallery`);
+      const res = await fetch(`${config.BASE_URL}/gallery`, { cache: 'no-store' });
       const data = await res.json();
       setImages(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -95,6 +111,7 @@ export default function ManageGallery() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this image?')) return;
+    setDeletingId(id);
     try {
       const res = await fetch(`${config.BASE_URL}/gallery/${id}`, {
         method: 'DELETE',
@@ -102,10 +119,12 @@ export default function ManageGallery() {
       });
       if (res.ok) {
         setNotification({ open: true, message: 'Image deleted', severity: 'success' });
-        fetchImages();
+        await fetchImages();
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -116,14 +135,24 @@ export default function ManageGallery() {
           <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Gallery Management</Typography>
           <Typography variant="body1" color="text.secondary" fontWeight={600}>Manage portraits and portfolio images for the landing page.</Typography>
         </Box>
-        <Button
-          variant="contained" color="secondary"
-          startIcon={<Iconify icon="solar:add-circle-bold" />}
-          onClick={() => setOpen(true)}
-          sx={{ fontWeight: 900, height: 48, px: 3, borderRadius: 1.5 }}
-        >
-          Add New Image
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined" color="inherit"
+            onClick={fetchImages} disabled={fetching}
+            startIcon={fetching ? <CircularProgress size={16} /> : <Iconify icon="solar:restart-bold-duotone" />}
+            sx={{ fontWeight: 800, height: 48, px: 3, borderRadius: 1.5 }}
+          >
+            Refresh
+          </Button>
+          <Button
+            variant="contained" color="secondary"
+            startIcon={<Iconify icon="solar:add-circle-bold" />}
+            onClick={() => setOpen(true)}
+            sx={{ fontWeight: 900, height: 48, px: 3, borderRadius: 1.5 }}
+          >
+            Add New Image
+          </Button>
+        </Stack>
       </Stack>
 
       <Grid container spacing={3}>
