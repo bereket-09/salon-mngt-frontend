@@ -1,7 +1,7 @@
 {
-  "name": "@sms-trivia-step",
+  "name": "salon-management-frontend",
   "author": "minimals.cc",
-  "licence": "MIT",
+  "license": "MIT",
   "version": "1.8.0",
   "private": false,
   "scripts": {
