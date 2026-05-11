@@ -8,6 +8,7 @@ import Crosshairs from '../Crosshairs'
 import Grid from '../axes/Grid'
 import Graphics from '../Graphics'
 import Exports from '../Exports'
+import Fill from '../Fill.js'
 import Options from '../settings/Options'
 import Responsive from '../Responsive'
 import Series from '../Series'
@@ -48,6 +49,7 @@ export default class InitCtxVariables {
       'appendData',
       'appendSeries',
       'isSeriesHidden',
+      'highlightSeries',
       'toggleSeries',
       'showSeries',
       'hideSeries',
@@ -63,7 +65,7 @@ export default class InitCtxVariables {
       'clearAnnotations',
       'removeAnnotation',
       'paper',
-      'destroy'
+      'destroy',
     ]
 
     this.ctx.eventList = [
@@ -75,7 +77,7 @@ export default class InitCtxVariables {
       'touchmove',
       'touchleave',
       'mouseup',
-      'touchend'
+      'touchend',
     ]
 
     this.ctx.animations = new Animations(this.ctx)
@@ -89,6 +91,7 @@ export default class InitCtxVariables {
     this.ctx.crosshairs = new Crosshairs(this.ctx)
     this.ctx.events = new Events(this.ctx)
     this.ctx.exports = new Exports(this.ctx)
+    this.ctx.fill = new Fill(this.ctx)
     this.ctx.localization = new Localization(this.ctx)
     this.ctx.options = new Options()
     this.ctx.responsive = new Responsive(this.ctx)

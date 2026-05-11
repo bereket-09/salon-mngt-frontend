@@ -59,8 +59,8 @@ export default function UserManagement() {
     try {
       const auth = { headers: { Authorization: `Bearer ${token}` } };
       const [uRes, bRes] = await Promise.all([
-        fetch(`${config.BASE_URL}/users`, auth),
-        fetch(`${config.BASE_URL}/branches`, auth),
+        fetch(`${config.BASE_URL}/users`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/branches`, { ...auth, cache: 'no-store' }),
       ]);
       setUsers(await uRes.json() || []);
       setBranches(await bRes.json() || []);

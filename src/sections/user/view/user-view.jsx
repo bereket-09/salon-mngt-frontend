@@ -57,7 +57,10 @@ export default function UserPage() {
           },
         };
 
-        const response = await fetch(url, headers);
+        const response = await fetch(url, {
+          ...headers,
+          cache: 'no-store',
+        });
         const result = await response.json();
         if (result.code === 1000) {
           setUsers(result.data); // Update state with fetched data

@@ -138,17 +138,12 @@ export default class Tooltip {
     const tooltipEl = this.getElTooltip()
     for (let i = 0; i < ttItemsCnt; i++) {
       let gTxt = document.createElement('div')
-      gTxt.classList.add('apexcharts-tooltip-series-group')
+
+      gTxt.classList.add(
+        'apexcharts-tooltip-series-group',
+        `apexcharts-tooltip-series-group-${i}`
+      )
       gTxt.style.order = w.config.tooltip.inverseOrder ? ttItemsCnt - i : i + 1
-      if (
-        this.tConfig.shared &&
-        this.tConfig.enabledOnSeries &&
-        Array.isArray(this.tConfig.enabledOnSeries)
-      ) {
-        if (this.tConfig.enabledOnSeries.indexOf(i) < 0) {
-          gTxt.classList.add('apexcharts-tooltip-series-group-hidden')
-        }
-      }
 
       let point = document.createElement('span')
       point.classList.add('apexcharts-tooltip-marker')
@@ -437,7 +432,7 @@ export default class Tooltip {
 
   seriesHoverByContext({ chartCtx, ttCtx, opt, e }) {
     let w = chartCtx.w
-    const tooltipEl = this.getElTooltip()
+    const tooltipEl = this.getElTooltip(chartCtx)
 
     if (!tooltipEl) return
 
@@ -520,6 +515,12 @@ export default class Tooltip {
     const tooltipEl = this.getElTooltip()
     const xcrosshairs = this.getElXCrosshairs()
 
+    let syncedCharts = []
+    if (w.config.chart.group) {
+      // we need to fallback to sticky tooltip in case charts are synced
+      syncedCharts = this.ctx.getSyncedCharts()
+    }
+
     let isStickyTooltip =
       w.globals.xyCharts ||
       (w.config.chart.type === 'bar' &&
@@ -553,7 +554,10 @@ export default class Tooltip {
         this.ycrosshairs.classList.add('apexcharts-active')
       }
 
-      if (isStickyTooltip && !this.showOnIntersect) {
+      if (
+        (isStickyTooltip && !this.showOnIntersect) ||
+        syncedCharts.length > 1
+      ) {
         this.handleStickyTooltip(e, clientX, clientY, opt)
       } else {
         if (
@@ -598,6 +602,7 @@ export default class Tooltip {
         }
       }
 
+      w.globals.dom.baseEl.classList.add('apexcharts-tooltip-active')
       opt.tooltipEl.classList.add('apexcharts-active')
     } else if (e.type === 'mouseout' || e.type === 'touchend') {
       this.handleMouseOut(opt)
@@ -614,6 +619,7 @@ export default class Tooltip {
     let seriesBound = w.globals.dom.elWrap.getBoundingClientRect()
 
     if (e.type === 'mousemove' || e.type === 'touchmove') {
+      w.globals.dom.baseEl.classList.add('apexcharts-tooltip-active')
       tooltipEl.classList.add('apexcharts-active')
 
       this.tooltipLabels.drawSeriesTexts({
@@ -645,6 +651,7 @@ export default class Tooltip {
       }
     } else if (e.type === 'mouseout' || e.type === 'touchend') {
       tooltipEl.classList.remove('apexcharts-active')
+      w.globals.dom.baseEl.classList.remove('apexcharts-tooltip-active')
       if (w.config.legend.tooltipHoverFormatter) {
         this.legendLabels.forEach((l) => {
           const defaultText = l.getAttribute('data:default-text')
@@ -735,6 +742,7 @@ export default class Tooltip {
     const w = this.w
 
     const xcrosshairs = this.getElXCrosshairs()
+    w.globals.dom.baseEl.classList.remove('apexcharts-tooltip-active')
 
     opt.tooltipEl.classList.remove('apexcharts-active')
     this.deactivateHoverFilter()

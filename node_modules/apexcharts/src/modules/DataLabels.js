@@ -81,6 +81,7 @@ class DataLabels {
     // this method handles line, area, bubble, scatter charts as those charts contains markers/points which have pre-defined x/y positions
     // all other charts like radar / bars / heatmaps will define their own drawDataLabel routine
     let w = this.w
+
     const graphics = new Graphics(this.ctx)
 
     let dataLabelsConfig = w.config.dataLabels
@@ -92,7 +93,9 @@ class DataLabels {
 
     let elDataLabelsWrap = null
 
-    if (!dataLabelsConfig.enabled || !Array.isArray(pos.x)) {
+    const seriesCollapsed = w.globals.collapsedSeriesIndices.indexOf(i) !== -1
+
+    if (seriesCollapsed || !dataLabelsConfig.enabled || !Array.isArray(pos.x)) {
       return elDataLabelsWrap
     }
 
@@ -148,6 +151,18 @@ class DataLabels {
           }
         }
 
+        let textAnchor = w.config.dataLabels.textAnchor
+
+        if (w.globals.isSlopeChart) {
+          if (dataPointIndex === 0) {
+            textAnchor = 'end'
+          } else if (dataPointIndex === w.config.series[i].data.length - 1) {
+            textAnchor = 'start'
+          } else {
+            textAnchor = 'middle'
+          }
+        }
+
         this.plotDataLabelsText({
           x,
           y,
@@ -157,6 +172,7 @@ class DataLabels {
           parent: elDataLabelsWrap,
           offsetCorrection: true,
           dataLabelsConfig: w.config.dataLabels,
+          textAnchor,
         })
       }
     }
@@ -180,11 +196,13 @@ class DataLabels {
       color,
       alwaysDrawDataLabel,
       offsetCorrection,
+      className,
     } = opts
 
+    let dataLabelText = null
     if (Array.isArray(w.config.dataLabels.enabledOnSeries)) {
       if (w.config.dataLabels.enabledOnSeries.indexOf(i) < 0) {
-        return
+        return dataLabelText
       }
     }
 
@@ -217,8 +235,8 @@ class DataLabels {
     if (correctedLabels.textRects) {
       // fixes #2264
       if (
-        x < -10 - correctedLabels.textRects.width ||
-        x > w.globals.gridWidth + correctedLabels.textRects.width + 10
+        x < -20 - correctedLabels.textRects.width ||
+        x > w.globals.gridWidth + correctedLabels.textRects.width + 30
       ) {
         // datalabels fall outside drawing area, so draw a blank label
         text = ''
@@ -256,8 +274,17 @@ class DataLabels {
       offY = 0
     }
 
+    if (w.globals.isSlopeChart) {
+      if (j !== 0) {
+        offX = dataLabelsConfig.offsetX * -2 + 5
+      }
+      if (j !== 0 && j !== w.config.series[i].data.length - 1) {
+        offX = 0
+      }
+    }
+
     if (correctedLabels.drawnextLabel) {
-      let dataLabelText = graphics.drawText({
+      dataLabelText = graphics.drawText({
         width: 100,
         height: parseInt(dataLabelsConfig.style.fontSize, 10),
         x: x + offX,
@@ -271,7 +298,7 @@ class DataLabels {
       })
 
       dataLabelText.attr({
-        class: 'apexcharts-datalabel',
+        class: className || 'apexcharts-datalabel',
         cx: x,
         cy: y,
       })
@@ -290,6 +317,8 @@ class DataLabels {
 
       w.globals.lastDrawnDataLabelsIndexes[i].push(j)
     }
+
+    return dataLabelText
   }
 
   addBackgroundToDataLabel(el, coords) {
@@ -309,7 +338,7 @@ class DataLabels {
       width + paddingH * 2,
       height + paddingV,
       bCnf.borderRadius,
-      w.config.chart.background === 'transparent'
+      w.config.chart.background === 'transparent' || !w.config.chart.background
         ? '#fff'
         : w.config.chart.background,
       bCnf.opacity,

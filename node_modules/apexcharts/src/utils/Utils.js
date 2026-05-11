@@ -346,6 +346,15 @@ class Utils {
       }
     }
   }
+  // prevents JS prevision errors when adding
+  static preciseAddition(a, b) {
+    let aDecimals = (String(a).split('.')[1] || '').length
+    let bDecimals = (String(b).split('.')[1] || '').length
+
+    let factor = Math.pow(10, Math.max(aDecimals, bDecimals))
+
+    return (Math.round(a * factor) + Math.round(b * factor)) / factor
+  }
 
   static isNumber(value) {
     return (
@@ -367,30 +376,8 @@ class Utils {
     return navigator.userAgent.toLowerCase().indexOf('firefox') > -1
   }
 
-  static isIE11() {
-    if (
-      window.navigator.userAgent.indexOf('MSIE') !== -1 ||
-      window.navigator.appVersion.indexOf('Trident/') > -1
-    ) {
-      return true
-    }
-  }
-
-  static isIE() {
+  static isMsEdge() {
     let ua = window.navigator.userAgent
-
-    let msie = ua.indexOf('MSIE ')
-    if (msie > 0) {
-      // IE 10 or older => return version number
-      return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10)
-    }
-
-    let trident = ua.indexOf('Trident/')
-    if (trident > 0) {
-      // IE 11 => return version number
-      let rv = ua.indexOf('rv:')
-      return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10)
-    }
 
     let edge = ua.indexOf('Edge/')
     if (edge > 0) {
@@ -400,6 +387,44 @@ class Utils {
 
     // other browser
     return false
+  }
+  //
+  // Find the Greatest Common Divisor of two numbers
+  //
+  static getGCD(a, b, p = 7) {
+    let big = Math.pow(10, p - Math.floor(Math.log10(Math.max(a, b))))
+    a = Math.round(Math.abs(a) * big)
+    b = Math.round(Math.abs(b) * big)
+
+    while (b) {
+      let t = b
+      b = a % b
+      a = t
+    }
+    return a / big
+  }
+
+  static getPrimeFactors(n) {
+    const factors = []
+    let divisor = 2
+
+    while (n >= 2) {
+      if (n % divisor == 0) {
+        factors.push(divisor)
+        n = n / divisor
+      } else {
+        divisor++
+      }
+    }
+    return factors
+  }
+
+  static mod(a, b, p = 7) {
+    let big = Math.pow(10, p - Math.floor(Math.log10(Math.max(a, b))))
+    a = Math.round(Math.abs(a) * big)
+    b = Math.round(Math.abs(b) * big)
+
+    return (a % b) / big
   }
 }
 

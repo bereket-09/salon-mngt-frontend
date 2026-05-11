@@ -219,6 +219,77 @@ export default class Defaults {
     return Utils.extend(defaults, ret)
   }
 
+  slope() {
+    this.hideYAxis()
+
+    return {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: true,
+        formatter(val, opts) {
+          const seriesName = opts.w.config.series[opts.seriesIndex].name
+          return val !== null ? seriesName + ': ' + val : ''
+        },
+        background: {
+          enabled: false,
+        },
+        offsetX: -5,
+      },
+      grid: {
+        xaxis: {
+          lines: {
+            show: true,
+          },
+        },
+        yaxis: {
+          lines: {
+            show: false,
+          },
+        },
+      },
+      xaxis: {
+        position: 'top',
+        labels: {
+          style: {
+            fontSize: 14,
+            fontWeight: 900,
+          },
+        },
+        tooltip: {
+          enabled: false,
+        },
+        crosshairs: {
+          show: false,
+        },
+      },
+      markers: {
+        size: 8,
+        hover: {
+          sizeOffset: 1,
+        },
+      },
+      legend: {
+        show: false,
+      },
+      tooltip: {
+        shared: false,
+        intersect: true,
+        followCursor: true,
+      },
+      stroke: {
+        width: 5,
+        curve: 'straight',
+      },
+    }
+  }
+
   bar() {
     return {
       chart: {
@@ -252,8 +323,6 @@ export default class Defaults {
       legend: {
         markers: {
           shape: 'square',
-          radius: 2,
-          size: 8,
         },
       },
       tooltip: {
@@ -398,7 +467,7 @@ export default class Defaults {
         },
       },
       markers: {
-        size: 5,
+        size: 7,
         strokeWidth: 1,
         strokeColors: '#111',
       },
@@ -801,8 +870,6 @@ export default class Defaults {
         position: 'top',
         markers: {
           shape: 'square',
-          size: 10,
-          offsetY: 2,
         },
       },
       grid: {
@@ -836,6 +903,7 @@ export default class Defaults {
         show: false,
       },
       fill: {
+        opacity: 1,
         gradient: {
           stops: [0, 100],
         },
@@ -910,6 +978,14 @@ export default class Defaults {
       legend: {
         position: 'right',
       },
+      grid: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
     }
   }
 
@@ -954,14 +1030,18 @@ export default class Defaults {
       legend: {
         position: 'right',
       },
+      grid: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
     }
   }
 
   polarArea() {
-    this.opts.yaxis[0].tickAmount = this.opts.yaxis[0].tickAmount
-      ? this.opts.yaxis[0].tickAmount
-      : 6
-
     return {
       chart: {
         toolbar: {
@@ -988,6 +1068,14 @@ export default class Defaults {
       legend: {
         position: 'right',
       },
+      grid: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
     }
   }
 
@@ -1007,7 +1095,7 @@ export default class Defaults {
         width: 2,
       },
       markers: {
-        size: 3,
+        size: 5,
         strokeWidth: 1,
         strokeOpacity: 1,
       },
@@ -1021,6 +1109,12 @@ export default class Defaults {
       },
       grid: {
         show: false,
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
       },
       xaxis: {
         labels: {
@@ -1071,6 +1165,14 @@ export default class Defaults {
       tooltip: {
         enabled: false,
         fillSeriesColor: true,
+      },
+      grid: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
       },
     }
   }

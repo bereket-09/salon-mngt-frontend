@@ -45,10 +45,10 @@ export default function CustomersPage() {
       const auth = { headers: { Authorization: `Bearer ${token}` } };
       
       const [custRes, branchRes, empRes, serviceRes] = await Promise.all([
-        fetch(`${config.BASE_URL}/customers`, auth),
-        fetch(`${config.BASE_URL}/branches`, auth),
-        fetch(`${config.BASE_URL}/users?role=employee&status=active${branchQuery ? `&${branchQuery}` : ''}`, auth),
-        fetch(`${config.BASE_URL}/services?${branchQuery}`, auth),
+        fetch(`${config.BASE_URL}/customers`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/branches`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/users?role=employee&status=active${branchQuery ? `&${branchQuery}` : ''}`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/services?${branchQuery}`, { ...auth, cache: 'no-store' }),
       ]);
 
       setCustomers(await custRes.json() || []);

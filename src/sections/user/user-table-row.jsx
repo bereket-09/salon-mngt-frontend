@@ -72,8 +72,10 @@ export default function UserTableRow({
           `${config.BASE_URL}/api/users/delete/${rowData.id}`,
           {
             method: 'DELETE',
-          },
-          headers
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.ok) {

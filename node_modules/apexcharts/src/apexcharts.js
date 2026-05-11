@@ -73,25 +73,28 @@ export default class ApexCharts {
         window.addEventListener('resize', this.windowResizeHandler)
         addResizeListener(this.el.parentNode, this.parentResizeHandler)
 
-        // Add CSS if not already added
-        if (!this.css) {
-          let rootNode = this.el.getRootNode && this.el.getRootNode()
-          let inShadowRoot = Utils.is('ShadowRoot', rootNode)
-          let doc = this.el.ownerDocument
-          let globalCSS = doc.getElementById('apexcharts-css')
+        let rootNode = this.el.getRootNode && this.el.getRootNode()
+        let inShadowRoot = Utils.is('ShadowRoot', rootNode)
+        let doc = this.el.ownerDocument
+        let css = inShadowRoot
+          ? rootNode.getElementById('apexcharts-css')
+          : doc.getElementById('apexcharts-css')
 
-          if (inShadowRoot || !globalCSS) {
-            this.css = document.createElement('style')
-            this.css.id = 'apexcharts-css'
-            this.css.textContent = apexCSS
+        if (!css) {
+          css = document.createElement('style')
+          css.id = 'apexcharts-css'
+          css.textContent = apexCSS
+          const nonce = this.opts.chart?.nonce || this.w.config.chart.nonce
+          if (nonce) {
+            css.setAttribute('nonce', nonce)
+          }
 
-            if (inShadowRoot) {
-              // We are in Shadow DOM, add to shadow root
-              rootNode.prepend(this.css)
-            } else {
-              // Add to <head> of element's document
-              doc.head.appendChild(this.css)
-            }
+          if (inShadowRoot) {
+            // We are in Shadow DOM, add to shadow root
+            rootNode.prepend(css)
+          } else {
+            // Add to <head> of element's document
+            doc.head.appendChild(css)
           }
         }
 
@@ -151,20 +154,32 @@ export default class ApexCharts {
       return null
     }
 
-    const combo = CoreUtils.checkComboSeries(ser)
+    let series = ser
+    ser.forEach((s, realIndex) => {
+      if (s.hidden) {
+        series = this.legend.legendHelpers.getSeriesAfterCollapsing({
+          realIndex,
+        })
+      }
+    })
+
+    const combo = CoreUtils.checkComboSeries(series, w.config.chart.type)
     gl.comboCharts = combo.comboCharts
     gl.comboBarCount = combo.comboBarCount
 
-    const allSeriesAreEmpty = ser.every((s) => s.data && s.data.length === 0)
+    const allSeriesAreEmpty = series.every((s) => s.data && s.data.length === 0)
 
-    if (ser.length === 0 || allSeriesAreEmpty) {
+    if (
+      series.length === 0 ||
+      (allSeriesAreEmpty && gl.collapsedSeries.length < 1)
+    ) {
       this.series.handleNoData()
     }
 
     this.events.setupEventHandlers()
 
     // Handle the data inputted by user and set some of the global variables (for eg, if data is datetime / numeric / category). Don't calculate the range / min / max at this time
-    this.data.parseData(ser)
+    this.data.parseData(series)
 
     // this is a good time to set theme colors first
     this.theme.init()
@@ -216,7 +231,7 @@ export default class ApexCharts {
 
     this.grid.createGridMask()
 
-    const elGraph = this.core.plotChartType(ser, xyRatios)
+    const elGraph = this.core.plotChartType(series, xyRatios)
 
     const dataLabels = new DataLabels(this)
     dataLabels.bringForward()
@@ -629,8 +644,12 @@ export default class ApexCharts {
     this.series.hideSeries(seriesName)
   }
 
+  highlightSeries(seriesName) {
+    this.series.highlightSeries(seriesName)
+  }
+
   isSeriesHidden(seriesName) {
-    this.series.isSeriesHidden(seriesName);
+    this.series.isSeriesHidden(seriesName)
   }
 
   resetSeries(shouldUpdateChart = true, shouldResetZoom = true) {

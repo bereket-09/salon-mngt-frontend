@@ -86,7 +86,7 @@ export default class TreemapChart {
           y1,
           x2 - x1,
           y2 - y1,
-          0,
+          w.config.plotOptions.treemap.borderRadius,
           '#fff',
           1,
           this.strokeWidth,
@@ -188,16 +188,20 @@ export default class TreemapChart {
             y2
           )
         }
-        let dataLabels = this.helpers.calculateDataLabels({
-          text: formattedText,
-          x: (x1 + x2) / 2,
-          y: (y1 + y2) / 2 + this.strokeWidth / 2 + fontSize / 3,
-          i,
-          j,
-          colorProps,
-          fontSize,
-          series,
-        })
+        let dataLabels = null
+
+        if (w.globals.series[i][j]) {
+          dataLabels = this.helpers.calculateDataLabels({
+            text: formattedText,
+            x: (x1 + x2) / 2,
+            y: (y1 + y2) / 2 + this.strokeWidth / 2 + fontSize / 3,
+            i,
+            j,
+            colorProps,
+            fontSize,
+            series,
+          })
+        }
         if (w.config.dataLabels.enabled && dataLabels) {
           this.rotateToFitLabel(
             dataLabels,

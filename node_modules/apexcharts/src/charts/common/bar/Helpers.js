@@ -37,6 +37,8 @@ export default class Helpers {
       }
     }
 
+    this.arrBorderRadius = this.createBorderRadiusArr(w.globals.series)
+
     if (this.barCtx.seriesLen === 0) {
       // A small adjustment when combo charts are used
       this.barCtx.seriesLen = 1
@@ -104,9 +106,7 @@ export default class Helpers {
       if (w.globals.isXNumeric) {
         // max barwidth should be equal to minXDiff to avoid overlap
         let xRatio = this.barCtx.xRatio
-        if (w.config.xaxis.convertedCatToNumeric) {
-          xRatio = this.barCtx.initialXRatio
-        }
+
         if (
           w.globals.minXDiff &&
           w.globals.minXDiff !== 0.5 &&
@@ -130,16 +130,19 @@ export default class Helpers {
 
       zeroH =
         w.globals.gridHeight -
-        this.barCtx.baseLineY[this.barCtx.yaxisIndex] -
+        this.barCtx.baseLineY[this.barCtx.translationsIndex] -
         (this.barCtx.isReversed ? w.globals.gridHeight : 0) +
         (this.barCtx.isReversed
-          ? this.barCtx.baseLineY[this.barCtx.yaxisIndex] * 2
+          ? this.barCtx.baseLineY[this.barCtx.translationsIndex] * 2
           : 0)
 
       x =
         w.globals.padHorizontal +
         (xDivision - barWidth * this.barCtx.seriesLen) / 2
     }
+
+    w.globals.barHeight = barHeight
+    w.globals.barWidth = barWidth
 
     return {
       x,
@@ -155,54 +158,36 @@ export default class Helpers {
 
   initializeStackedPrevVars(ctx) {
     const w = ctx.w
-    if (w.globals.hasSeriesGroups) {
-      w.globals.seriesGroups.forEach((group) => {
-        if (!ctx[group]) ctx[group] = {}
+    w.globals.seriesGroups.forEach((group) => {
+      if (!ctx[group]) ctx[group] = {}
 
-        ctx[group].prevY = []
-        ctx[group].prevX = []
-        ctx[group].prevYF = []
-        ctx[group].prevXF = []
-        ctx[group].prevYVal = []
-        ctx[group].prevXVal = []
-      })
-    } else {
-      ctx.prevY = [] // y position on chart (in columns)
-      ctx.prevX = [] // x position on chart (in horz bars)
-      ctx.prevYF = [] // starting y and ending y (height) in columns
-      ctx.prevXF = [] // starting x and ending x (width) in bars
-      ctx.prevYVal = [] // y values (series[i][j]) in columns
-      ctx.prevXVal = [] // x values (series[i][j]) in bars
-    }
+      ctx[group].prevY = []
+      ctx[group].prevX = []
+      ctx[group].prevYF = []
+      ctx[group].prevXF = []
+      ctx[group].prevYVal = []
+      ctx[group].prevXVal = []
+    })
   }
 
   initializeStackedXYVars(ctx) {
     const w = ctx.w
 
-    if (w.globals.hasSeriesGroups) {
-      w.globals.seriesGroups.forEach((group) => {
-        if (!ctx[group]) ctx[group] = {}
+    w.globals.seriesGroups.forEach((group) => {
+      if (!ctx[group]) ctx[group] = {}
 
-        ctx[group].xArrj = []
-        ctx[group].xArrjF = []
-        ctx[group].xArrjVal = []
-        ctx[group].yArrj = []
-        ctx[group].yArrjF = []
-        ctx[group].yArrjVal = []
-      })
-    } else {
-      ctx.xArrj = [] // xj indicates x position on graph in bars
-      ctx.xArrjF = [] // xjF indicates bar's x position + x2 positions in bars
-      ctx.xArrjVal = [] // x val means the actual series's y values in horizontal/bars
-      ctx.yArrj = [] // yj indicates y position on graph in columns
-      ctx.yArrjF = [] // yjF indicates bar's y position + y2 positions in columns
-      ctx.yArrjVal = [] // y val means the actual series's y values in columns
-    }
+      ctx[group].xArrj = []
+      ctx[group].xArrjF = []
+      ctx[group].xArrjVal = []
+      ctx[group].yArrj = []
+      ctx[group].yArrjF = []
+      ctx[group].yArrjVal = []
+    })
   }
 
   getPathFillColor(series, i, j, realIndex) {
     const w = this.w
-    let fill = new Fill(this.barCtx.ctx)
+    let fill = this.barCtx.ctx.fill
 
     let fillColor = null
     let seriesNumber = this.barCtx.barOptions.distributed ? j : i
@@ -216,7 +201,7 @@ export default class Helpers {
       })
     }
 
-    if (w.config.series[i].data[j] && w.config.series[i].data[j].fillColor) {
+    if (w.config.series[i].data[j]?.fillColor) {
       fillColor = w.config.series[i].data[j].fillColor
     }
 
@@ -230,6 +215,8 @@ export default class Helpers {
       fillConfig: w.config.series[i].data[j]?.fill,
       fillType: w.config.series[i].data[j]?.fill?.type
         ? w.config.series[i].data[j]?.fill.type
+        : Array.isArray(w.config.fill.type)
+        ? w.config.fill.type[realIndex]
         : w.config.fill.type,
     })
 
@@ -255,24 +242,105 @@ export default class Helpers {
     return strokeWidth
   }
 
-  shouldApplyRadius(realIndex) {
+  createBorderRadiusArr(series) {
     const w = this.w
-    let applyRadius = false
 
-    if (w.config.plotOptions.bar.borderRadius > 0) {
-      if (w.config.chart.stacked) {
-        if (w.config.plotOptions.bar.borderRadiusWhenStacked === 'last') {
-          if (this.barCtx.lastActiveBarSerieIndex === realIndex) {
-            applyRadius = true
-          }
-        } else {
-          applyRadius = true
+    const alwaysApplyRadius =
+      !this.w.config.chart.stacked ||
+      w.config.plotOptions.bar.borderRadiusWhenStacked !== 'last' ||
+      w.config.plotOptions.bar.borderRadius <= 0
+
+    const numSeries = series.length
+    const numColumns = series[0].length
+    const output = Array.from({ length: numSeries }, () =>
+      Array(numColumns).fill(alwaysApplyRadius ? 'top' : 'none')
+    )
+
+    if (alwaysApplyRadius) return output
+
+    for (let j = 0; j < numColumns; j++) {
+      let positiveIndices = []
+      let negativeIndices = []
+      let nonZeroCount = 0
+
+      // Collect positive and negative indices
+      for (let i = 0; i < numSeries; i++) {
+        const value = series[i][j]
+        if (value > 0) {
+          positiveIndices.push(i)
+          nonZeroCount++
+        } else if (value < 0) {
+          negativeIndices.push(i)
+          nonZeroCount++
         }
-      } else {
-        applyRadius = true
+      }
+
+      if (positiveIndices.length > 0 && negativeIndices.length === 0) {
+        // Only positive values in this column
+        if (positiveIndices.length === 1) {
+          // Single positive value
+          output[positiveIndices[0]][j] = 'both'
+        } else {
+          // Multiple positive values
+          const firstPositiveIndex = positiveIndices[0]
+          const lastPositiveIndex = positiveIndices[positiveIndices.length - 1]
+          for (let i of positiveIndices) {
+            if (i === firstPositiveIndex) {
+              output[i][j] = 'bottom'
+            } else if (i === lastPositiveIndex) {
+              output[i][j] = 'top'
+            } else {
+              output[i][j] = 'none'
+            }
+          }
+        }
+      } else if (negativeIndices.length > 0 && positiveIndices.length === 0) {
+        // Only negative values in this column
+        if (negativeIndices.length === 1) {
+          // Single negative value
+          output[negativeIndices[0]][j] = 'both'
+        } else {
+          // Multiple negative values
+          const firstNegativeIndex = negativeIndices[0]
+          const lastNegativeIndex = negativeIndices[negativeIndices.length - 1]
+          for (let i of negativeIndices) {
+            if (i === firstNegativeIndex) {
+              output[i][j] = 'bottom'
+            } else if (i === lastNegativeIndex) {
+              output[i][j] = 'top'
+            } else {
+              output[i][j] = 'none'
+            }
+          }
+        }
+      } else if (positiveIndices.length > 0 && negativeIndices.length > 0) {
+        // Mixed positive and negative values
+        // Assign 'top' to the last positive bar
+        const lastPositiveIndex = positiveIndices[positiveIndices.length - 1]
+        for (let i of positiveIndices) {
+          if (i === lastPositiveIndex) {
+            output[i][j] = 'top'
+          } else {
+            output[i][j] = 'none'
+          }
+        }
+        // Assign 'bottom' to the last negative bar (closest to axis)
+        const lastNegativeIndex = negativeIndices[negativeIndices.length - 1]
+        for (let i of negativeIndices) {
+          if (i === lastNegativeIndex) {
+            output[i][j] = 'bottom'
+          } else {
+            output[i][j] = 'none'
+          }
+        }
+      } else if (nonZeroCount === 1) {
+        // Only one non-zero value (either positive or negative)
+        const index = positiveIndices[0] || negativeIndices[0]
+        output[index][j] = 'both'
       }
     }
-    return applyRadius
+
+    return output
   }
 
   barBackground({ j, i, x1, x2, y1, y2, elSeries }) {
@@ -311,6 +379,8 @@ export default class Helpers {
     y1,
     y2,
     strokeWidth,
+    isReversed,
+    series,
     seriesGroup,
     realIndex,
     i,
@@ -332,17 +402,22 @@ export default class Helpers {
       bW = barWidth + w.config.series[realIndex].data[j].columnWidthOffset
     }
 
-    const x1 = bXP
-    const x2 = bXP + bW
+    // Center the stroke on the coordinates
+    let strokeCenter = strokeWidth / 2
+    
+    const x1 = bXP + strokeCenter
+    const x2 = bXP + bW - strokeCenter
 
+    let direction = (series[i][j] >= 0 ? 1 : -1) * (isReversed ? -1 : 1)
+    
     // append tiny pixels to avoid exponentials (which cause issues in border-radius)
-    y1 += 0.001
-    y2 += 0.001
+    y1 += 0.001 - strokeCenter * direction
+    y2 += 0.001 + strokeCenter * direction
 
     let pathTo = graphics.move(x1, y1)
     let pathFrom = graphics.move(x1, y1)
 
-    const sl = graphics.line(x2 - strokeWidth, y1)
+    const sl = graphics.line(x2, y1)
     if (w.globals.previousPaths.length > 0) {
       pathFrom = this.barCtx.getPreviousPath(realIndex, j, false)
     }
@@ -350,9 +425,10 @@ export default class Helpers {
     pathTo =
       pathTo +
       graphics.line(x1, y2) +
-      graphics.line(x2 - strokeWidth, y2) +
-      graphics.line(x2 - strokeWidth, y1) +
-      (w.config.plotOptions.bar.borderRadiusApplication === 'around'
+      graphics.line(x2, y2) +
+      sl +
+      (w.config.plotOptions.bar.borderRadiusApplication === 'around' ||
+      this.arrBorderRadius[realIndex][j] === 'both'
         ? ' Z'
         : ' z')
 
@@ -367,11 +443,12 @@ export default class Helpers {
       sl +
       sl +
       graphics.line(x1, y1) +
-      (w.config.plotOptions.bar.borderRadiusApplication === 'around'
+      (w.config.plotOptions.bar.borderRadiusApplication === 'around' ||
+      this.arrBorderRadius[realIndex][j] === 'both'
         ? ' Z'
         : ' z')
 
-    if (this.shouldApplyRadius(realIndex)) {
+    if (this.arrBorderRadius[realIndex][j] !== 'none') {
       pathTo = graphics.roundPathCorners(
         pathTo,
         w.config.plotOptions.bar.borderRadius
@@ -380,11 +457,9 @@ export default class Helpers {
 
     if (w.config.chart.stacked) {
       let _ctx = this.barCtx
-      if (w.globals.hasSeriesGroups && seriesGroup) {
-        _ctx = this.barCtx[seriesGroup]
-      }
-      _ctx.yArrj.push(y2)
-      _ctx.yArrjF.push(Math.abs(y1 - y2))
+      _ctx = this.barCtx[seriesGroup]
+      _ctx.yArrj.push(y2 - strokeCenter * direction)
+      _ctx.yArrjF.push(Math.abs(y1 - y2 + strokeWidth * direction))
       _ctx.yArrjVal.push(this.barCtx.series[i][j])
     }
 
@@ -400,6 +475,8 @@ export default class Helpers {
     x1,
     x2,
     strokeWidth,
+    isReversed,
+    series,
     seriesGroup,
     realIndex,
     i,
@@ -421,12 +498,17 @@ export default class Helpers {
       bH = barHeight + w.config.series[realIndex].data[j].barHeightOffset
     }
 
-    const y1 = bYP
-    const y2 = bYP + bH
+    // Center the stroke on the coordinates
+    let strokeCenter = strokeWidth / 2
+
+    const y1 = bYP + strokeCenter
+    const y2 = bYP + bH - strokeCenter
+
+    let direction = (series[i][j] >= 0 ? 1 : -1) * (isReversed ? -1 : 1)
 
     // append tiny pixels to avoid exponentials (which cause issues in border-radius)
-    x1 += 0.001
-    x2 += 0.001
+    x1 += 0.001 + strokeCenter * direction
+    x2 += 0.001 - strokeCenter * direction
 
     let pathTo = graphics.move(x1, y1)
     let pathFrom = graphics.move(x1, y1)
@@ -435,13 +517,14 @@ export default class Helpers {
       pathFrom = this.barCtx.getPreviousPath(realIndex, j, false)
     }
 
-    const sl = graphics.line(x1, y2 - strokeWidth)
+    const sl = graphics.line(x1, y2)
     pathTo =
       pathTo +
       graphics.line(x2, y1) +
-      graphics.line(x2, y2 - strokeWidth) +
+      graphics.line(x2, y2) +
       sl +
-      (w.config.plotOptions.bar.borderRadiusApplication === 'around'
+      (w.config.plotOptions.bar.borderRadiusApplication === 'around' ||
+      this.arrBorderRadius[realIndex][j] === 'both'
         ? ' Z'
         : ' z')
 
@@ -454,11 +537,12 @@ export default class Helpers {
       sl +
       sl +
       graphics.line(x1, y1) +
-      (w.config.plotOptions.bar.borderRadiusApplication === 'around'
+      (w.config.plotOptions.bar.borderRadiusApplication === 'around' ||
+      this.arrBorderRadius[realIndex][j] === 'both'
         ? ' Z'
         : ' z')
 
-    if (this.shouldApplyRadius(realIndex)) {
+    if (this.arrBorderRadius[realIndex][j] !== 'none') {
       pathTo = graphics.roundPathCorners(
         pathTo,
         w.config.plotOptions.bar.borderRadius
@@ -467,12 +551,9 @@ export default class Helpers {
 
     if (w.config.chart.stacked) {
       let _ctx = this.barCtx
-      if (w.globals.hasSeriesGroups && seriesGroup) {
-        _ctx = this.barCtx[seriesGroup]
-      }
-
-      _ctx.xArrj.push(x2)
-      _ctx.xArrjF.push(Math.abs(x1 - x2))
+      _ctx = this.barCtx[seriesGroup]
+      _ctx.xArrj.push(x2 + strokeCenter * direction)
+      _ctx.xArrjF.push(Math.abs(x1 - x2 - strokeWidth * direction))
       _ctx.xArrjVal.push(this.barCtx.series[i][j])
     }
     return {
@@ -509,21 +590,21 @@ export default class Helpers {
     return xForVal
   }
 
-  getYForValue(value, zeroH, zeroPositionForNull = true) {
+  getYForValue(value, zeroH, translationsIndex, zeroPositionForNull = true) {
     let yForVal = zeroPositionForNull ? zeroH : null
     if (typeof value !== 'undefined' && value !== null) {
       yForVal =
         zeroH -
-        value / this.barCtx.yRatio[this.barCtx.yaxisIndex] +
+        value / this.barCtx.yRatio[translationsIndex] +
         (this.barCtx.isReversed
-          ? value / this.barCtx.yRatio[this.barCtx.yaxisIndex]
+          ? value / this.barCtx.yRatio[translationsIndex]
           : 0) *
           2
     }
     return yForVal
   }
 
-  getGoalValues(type, zeroW, zeroH, i, j) {
+  getGoalValues(type, zeroW, zeroH, i, j, translationsIndex) {
     const w = this.w
 
     let goals = []
@@ -533,7 +614,7 @@ export default class Helpers {
         [type]:
           type === 'x'
             ? this.getXForValue(value, zeroW, false)
-            : this.getYForValue(value, zeroH, false),
+            : this.getYForValue(value, zeroH, translationsIndex, false),
         attrs,
       })
     }
@@ -594,45 +675,51 @@ export default class Helpers {
     if (this.barCtx.isHorizontal) {
       if (Array.isArray(goalX)) {
         goalX.forEach((goal) => {
-          let sHeight =
-            typeof goal.attrs.strokeHeight !== 'undefined'
-              ? goal.attrs.strokeHeight
-              : barHeight / 2
-          let y = barYPosition + sHeight + barHeight / 2
+          // Need a tiny margin of 1 each side so goals don't disappear at extremeties
+          if (goal.x >= -1 && goal.x <= graphics.w.globals.gridWidth + 1) {
+            let sHeight =
+              typeof goal.attrs.strokeHeight !== 'undefined'
+                ? goal.attrs.strokeHeight
+                : barHeight / 2
+            let y = barYPosition + sHeight + barHeight / 2
 
-          line = graphics.drawLine(
-            goal.x,
-            y - sHeight * 2,
-            goal.x,
-            y,
-            goal.attrs.strokeColor ? goal.attrs.strokeColor : undefined,
-            goal.attrs.strokeDashArray,
-            goal.attrs.strokeWidth ? goal.attrs.strokeWidth : 2,
-            goal.attrs.strokeLineCap
-          )
-          lineGroup.add(line)
+            line = graphics.drawLine(
+              goal.x,
+              y - sHeight * 2,
+              goal.x,
+              y,
+              goal.attrs.strokeColor ? goal.attrs.strokeColor : undefined,
+              goal.attrs.strokeDashArray,
+              goal.attrs.strokeWidth ? goal.attrs.strokeWidth : 2,
+              goal.attrs.strokeLineCap
+            )
+            lineGroup.add(line)
+          }
         })
       }
     } else {
       if (Array.isArray(goalY)) {
         goalY.forEach((goal) => {
-          let sWidth =
-            typeof goal.attrs.strokeWidth !== 'undefined'
-              ? goal.attrs.strokeWidth
-              : barWidth / 2
-          let x = barXPosition + sWidth + barWidth / 2
+          // Need a tiny margin of 1 each side so goals don't disappear at extremeties
+          if (goal.y >= -1 && goal.y <= graphics.w.globals.gridHeight + 1) {
+            let sWidth =
+              typeof goal.attrs.strokeWidth !== 'undefined'
+                ? goal.attrs.strokeWidth
+                : barWidth / 2
+            let x = barXPosition + sWidth + barWidth / 2
 
-          line = graphics.drawLine(
-            x - sWidth * 2,
-            goal.y,
-            x,
-            goal.y,
-            goal.attrs.strokeColor ? goal.attrs.strokeColor : undefined,
-            goal.attrs.strokeDashArray,
-            goal.attrs.strokeHeight ? goal.attrs.strokeHeight : 2,
-            goal.attrs.strokeLineCap
-          )
-          lineGroup.add(line)
+            line = graphics.drawLine(
+              x - sWidth * 2,
+              goal.y,
+              x,
+              goal.y,
+              goal.attrs.strokeColor ? goal.attrs.strokeColor : undefined,
+              goal.attrs.strokeDashArray,
+              goal.attrs.strokeHeight ? goal.attrs.strokeHeight : 2,
+              goal.attrs.strokeLineCap
+            )
+            lineGroup.add(line)
+          }
         })
       }
     }
@@ -656,7 +743,8 @@ export default class Helpers {
       graphics.line(currX2, currY1) +
       graphics.line(currX1, currY1) +
       graphics.line(prevX1, prevY2) +
-      (w.config.plotOptions.bar.borderRadiusApplication === 'around'
+      (w.config.plotOptions.bar.borderRadiusApplication === 'around' ||
+      this.arrBorderRadius[realIndex][j] === 'both'
         ? ' Z'
         : ' z')
 
@@ -675,12 +763,16 @@ export default class Helpers {
 
     let nonZeroColumns = 0
     let zeroEncounters = 0
-    w.globals.seriesPercent.forEach((_s, _si) => {
-      if (_s[j]) {
+    let seriesIndices = w.config.plotOptions.bar.horizontal
+      ? w.globals.series.map((_, _i) => _i)
+      : w.globals.columnSeries?.i.map((_i) => _i) || []
+
+    seriesIndices.forEach((_si) => {
+      let val = w.globals.seriesPercent[_si][j]
+      if (val) {
         nonZeroColumns++
       }
-
-      if (_si < i && _s[j] === 0) {
+      if (_si < i && val === 0) {
         zeroEncounters++
       }
     })
@@ -689,5 +781,26 @@ export default class Helpers {
       nonZeroColumns,
       zeroEncounters,
     }
+  }
+
+  getGroupIndex(seriesIndex) {
+    const w = this.w
+    // groupIndex is the index of group buckets (group1, group2, ...)
+    let groupIndex = w.globals.seriesGroups.findIndex(
+      (group) =>
+        // w.config.series[i].name may be undefined, so use
+        // w.globals.seriesNames[i], which has default names for those
+        // series. w.globals.seriesGroups[] uses the same default naming.
+        group.indexOf(w.globals.seriesNames[seriesIndex]) > -1
+    )
+    // We need the column groups to be indexable as 0,1,2,... for their
+    // positioning relative to each other.
+    let cGI = this.barCtx.columnGroupIndices
+    let columnGroupIndex = cGI.indexOf(groupIndex)
+    if (columnGroupIndex < 0) {
+      cGI.push(groupIndex)
+      columnGroupIndex = cGI.length - 1
+    }
+    return { groupIndex, columnGroupIndex }
   }
 }

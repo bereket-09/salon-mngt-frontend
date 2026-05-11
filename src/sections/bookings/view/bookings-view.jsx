@@ -69,11 +69,11 @@ export default function BookingsView() {
 
     useEffect(() => {
         fetchData();
-        fetch(`${config.BASE_URL}/branches`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${config.BASE_URL}/branches`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
             .then(r => r.json()).then(setBranches).catch(console.error);
-        fetch(`${config.BASE_URL}/services`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${config.BASE_URL}/services`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
             .then(r => r.json()).then(setServices).catch(console.error);
-        fetch(`${config.BASE_URL}/users`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${config.BASE_URL}/users`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
             .then(r => r.json()).then(setEmployees).catch(console.error);
     }, [status]);
 
@@ -83,7 +83,8 @@ export default function BookingsView() {
         const url = `${config.BASE_URL}/bookings?status=${status === 'all' ? '' : status}${branchParam}`;
         try {
             const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${token}` },
+                cache: 'no-store'
             });
             const result = await res.json();
             setData(Array.isArray(result) ? result : []);

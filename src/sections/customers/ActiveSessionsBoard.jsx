@@ -39,6 +39,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
             const branchQuery = (branchId && branchId !== 'all') ? `?branchId=${branchId}` : '';
             const res = await fetch(`${config.BASE_URL}/sessions/active${branchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store'
             });
             const activeSessions = await res.json();
             if (!Array.isArray(activeSessions)) {
