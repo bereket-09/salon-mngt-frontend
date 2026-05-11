@@ -42,7 +42,7 @@ export default function ServicesPage() {
     gender: 'both',
     estimatedDuration: 30,
     commissionEnabled: false,
-    commissionRate: 0.10,
+    commissionRate: 10,
     code: '',
   });
   const [editService, setEditService] = useState(null);
@@ -81,10 +81,11 @@ export default function ServicesPage() {
     if (!form.name || !form.price) return;
     setCreating(true);
     try {
+      const rate = Math.max(1, Math.min(99, Math.round(Number(form.commissionRate || 10))));
       const payload = {
         ...form,
         price: parseFloat(form.price),
-        commissionRate: parseFloat(form.commissionRate),
+        commissionRate: form.commissionEnabled ? rate : null,
         estimatedDuration: parseInt(form.estimatedDuration, 10),
       };
       await fetch(`${config.BASE_URL}/services`, {
@@ -92,7 +93,7 @@ export default function ServicesPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
-      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 0.10, code: '' });
+      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 10, code: '' });
       await fetchData();
     } catch (err) {
       console.error(err);
@@ -105,10 +106,11 @@ export default function ServicesPage() {
     if (!editService) return;
     setSaving(true);
     try {
+      const rate = Math.max(1, Math.min(99, Math.round(Number(editService.commissionRate || 10))));
       const payload = {
         ...editService,
         price: parseFloat(editService.price),
-        commissionRate: parseFloat(editService.commissionRate),
+        commissionRate: editService.commissionEnabled ? rate : null,
         estimatedDuration: parseInt(editService.estimatedDuration, 10),
         BranchId: editService.BranchId || null,
       };
@@ -269,12 +271,15 @@ export default function ServicesPage() {
                 />
                 {form.commissionEnabled && (
                   <TextField
-                    label="Commission Rate"
-                    type="number" fullWidth size="small" sx={{ mt: 2, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: 1, fontWeight: 800 } }}
-                    placeholder="e.g. 0.1 for 10%"
+                    label="Commission Percent"
+                    type="number" fullWidth size="small"
+                    sx={{ mt: 2, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: 1, fontWeight: 800 } }}
+                    placeholder="10"
+                    helperText="Whole number between 1 and 99 (e.g. 10 means 10%)"
+                    inputProps={{ min: 1, max: 99, step: 1 }}
                     value={form.commissionRate}
                     onChange={(e) => setForm({ ...form, commissionRate: e.target.value })}
-                    InputProps={{ endAdornment: <InputAdornment position="end"><Typography variant="caption" fontWeight={800}>% Rate</Typography></InputAdornment> }}
+                    InputProps={{ endAdornment: <InputAdornment position="end"><Typography variant="caption" fontWeight={800}>%</Typography></InputAdornment> }}
                   />
                 )}
               </Box>
@@ -391,7 +396,16 @@ export default function ServicesPage() {
                   label={<Typography variant="caption" fontWeight={800} color="#C8972A">Enable Commission</Typography>}
                 />
                 {editService.commissionEnabled && (
-                  <TextField label="Commission %" type="number" fullWidth size="small" sx={{ mt: 2, bgcolor: 'background.paper' }} value={editService.commissionRate} onChange={(e) => setEditService({ ...editService, commissionRate: e.target.value })} />
+                  <TextField
+                    label="Commission Percent"
+                    type="number" fullWidth size="small"
+                    sx={{ mt: 2, bgcolor: 'background.paper' }}
+                    placeholder="10"
+                    helperText="Whole number between 1 and 99"
+                    inputProps={{ min: 1, max: 99, step: 1 }}
+                    value={editService.commissionRate ?? ''}
+                    onChange={(e) => setEditService({ ...editService, commissionRate: e.target.value })}
+                  />
                 )}
               </Box>
             </Stack>

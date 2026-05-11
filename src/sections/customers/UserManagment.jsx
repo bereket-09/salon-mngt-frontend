@@ -24,6 +24,8 @@ import {
   Grid,
   alpha,
   Tooltip,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
@@ -37,7 +39,7 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [form, setForm] = useState({
+  const emptyForm = {
     name: '',
     username: '',
     phone: '',
@@ -45,8 +47,12 @@ export default function UserManagement() {
     role: 'employee',
     status: 'active',
     branchIds: [],
-    commissionRate: 0.10,
-  });
+    commissionEnabled: false,
+    commissionRate: 10,
+  };
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const token = localStorage.getItem('authToken');
 
@@ -73,12 +79,16 @@ export default function UserManagement() {
 
   const handleSave = async () => {
     if (!form.name || !form.username) return;
+    setSaving(true);
     try {
       const url = editingUser ? `${config.BASE_URL}/users/${editingUser.id}` : `${config.BASE_URL}/auth/register`;
       const method = editingUser ? 'PUT' : 'POST';
+      const rate = Math.max(1, Math.min(99, Math.round(Number(form.commissionRate || 10))));
       const body = {
         ...form,
         branchIds: form.branchIds,
+        commissionEnabled: !!form.commissionEnabled,
+        commissionRate: form.commissionEnabled ? rate : null,
         password: (form.password && form.password.trim() !== '') ? form.password : (editingUser ? undefined : 'Milan@123')
       };
 
@@ -89,12 +99,14 @@ export default function UserManagement() {
       });
 
       if (res.ok) {
-        setForm({ name: '', username: '', phone: '', password: '', role: 'employee', status: 'active', branchIds: [], commissionRate: 0.10 });
+        setForm(emptyForm);
         setEditingUser(null);
-        fetchData();
+        await fetchData();
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -118,10 +130,12 @@ export default function UserManagement() {
       name: u.name,
       username: u.username,
       phone: u.phone || '',
+      password: '',
       role: u.role,
       status: u.status,
       branchIds: u.Branches ? u.Branches.map(b => b.id) : (u.BranchId ? [u.BranchId] : []),
-      commissionRate: u.commissionRate || 0.10,
+      commissionEnabled: !!u.commissionEnabled,
+      commissionRate: u.commissionRate ? Math.round(Number(u.commissionRate)) : 10,
     });
   };
 
@@ -133,14 +147,17 @@ export default function UserManagement() {
   const executeDelete = async () => {
     setConfirmOpen(false);
     if (!deleteId) return;
+    setDeleting(true);
     try {
       await fetch(`${config.BASE_URL}/users/${deleteId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error(err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -244,34 +261,55 @@ export default function UserManagement() {
               </FormControl>
 
               <Box sx={{ p: 2, bgcolor: alpha(theme.palette.secondary.main, 0.02), borderRadius: 1.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
-                <Typography variant="overline" color="secondary.main" fontWeight={800} sx={{ letterSpacing: 1 }}>Commission Rate</Typography>
-                <TextField
-                  type="number"
-                  fullWidth
-                  size="small"
-                  value={form.commissionRate}
-                  onChange={(e) => setForm({ ...form, commissionRate: e.target.value })}
-                  InputProps={{
-                    endAdornment: <Typography variant="caption" fontWeight={800} color="text.disabled">%</Typography>,
-                    sx: { borderRadius: 1, fontWeight: 700, bgcolor: 'background.paper' }
-                  }}
-                  sx={{ mt: 1 }}
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!!form.commissionEnabled}
+                      color="secondary"
+                      onChange={(e) => setForm({ ...form, commissionEnabled: e.target.checked })}
+                    />
+                  }
+                  label={<Typography variant="overline" color="secondary.main" fontWeight={800} sx={{ letterSpacing: 1 }}>Eligible for Commission</Typography>}
                 />
+                {form.commissionEnabled && (
+                  <TextField
+                    type="number"
+                    fullWidth
+                    size="small"
+                    label="Commission Percent"
+                    placeholder="10"
+                    helperText="Whole number between 1 and 99"
+                    inputProps={{ min: 1, max: 99, step: 1 }}
+                    value={form.commissionRate}
+                    onChange={(e) => setForm({ ...form, commissionRate: e.target.value })}
+                    InputProps={{
+                      endAdornment: <Typography variant="caption" fontWeight={800} color="text.disabled">%</Typography>,
+                      sx: { borderRadius: 1, fontWeight: 700, bgcolor: 'background.paper' }
+                    }}
+                    sx={{ mt: 1.5 }}
+                  />
+                )}
               </Box>
 
               <Stack direction="row" spacing={2} pt={2}>
                 {editingUser && (
-                  <Button variant="soft" color="error" fullWidth onClick={() => { setEditingUser(null); fetchData(); }} sx={{ borderRadius: 1.5, fontWeight: 800 }}>
+                  <Button
+                    variant="soft" color="error" fullWidth
+                    disabled={saving}
+                    onClick={() => { setEditingUser(null); setForm(emptyForm); }}
+                    sx={{ borderRadius: 1.5, fontWeight: 800 }}
+                  >
                     Cancel
                   </Button>
                 )}
                 <Button
                   variant="contained" color="secondary" fullWidth
                   onClick={handleSave}
+                  disabled={saving}
                   sx={{ height: 60, fontWeight: 900, borderRadius: 1.5, fontSize: '1rem' }}
-                  startIcon={<Iconify icon="solar:verified-check-bold-duotone" width={24} />}
+                  startIcon={saving ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:verified-check-bold-duotone" width={24} />}
                 >
-                  {editingUser ? 'Save Changes' : 'Add Staff'}
+                  {saving ? 'Saving…' : (editingUser ? 'Save Changes' : 'Add Staff')}
                 </Button>
               </Stack>
             </Stack>

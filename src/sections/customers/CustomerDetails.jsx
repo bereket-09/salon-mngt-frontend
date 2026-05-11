@@ -49,6 +49,10 @@ export default function CustomerDetails({
   const [session, setSession] = useState(null);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false); // check-in / cancel / delete-assignment
+  const [addingService, setAddingService] = useState(false);
+  const [statusBusyId, setStatusBusyId] = useState(null); // per-assignment Start/Done
+  const [deleteAssignmentId, setDeleteAssignmentId] = useState(null);
   const [confirm, setConfirm] = useState({ open: false, type: '', data: null });
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
@@ -189,6 +193,8 @@ export default function CustomerDetails({
   const executeAction = async () => {
     const { type, data } = confirm;
     setConfirm({ ...confirm, open: false });
+    setActionBusy(true);
+    if (type === 'delete-assignment') setDeleteAssignmentId(data);
 
     try {
       let url = '';
@@ -214,11 +220,14 @@ export default function CustomerDetails({
         body: method === 'POST' && body !== null ? JSON.stringify(body) : undefined,
       });
 
-      fetchLatestSession();
-      fetchHistory();
+      await fetchLatestSession();
+      await fetchHistory();
       refreshCustomers();
     } catch (err) {
       console.error(err);
+    } finally {
+      setActionBusy(false);
+      setDeleteAssignmentId(null);
     }
   };
 
@@ -262,6 +271,7 @@ export default function CustomerDetails({
 
   const createAssignment = async () => {
     if (!newAssignment.serviceId || !newAssignment.employeeId) return;
+    setAddingService(true);
     try {
       // 1. Create the assignment
       const aRes = await fetch(`${config.BASE_URL}/assignments`, {
@@ -282,9 +292,11 @@ export default function CustomerDetails({
       });
 
       setNewAssignment({ serviceId: '', employeeId: '' });
-      fetchAssignments(session.id);
+      await fetchAssignments(session.id);
     } catch (err) {
       console.error(err);
+    } finally {
+      setAddingService(false);
     }
   };
 
@@ -316,15 +328,18 @@ export default function CustomerDetails({
   };
 
   const updateAssignmentStatus = async (assignmentId, newStatus) => {
+    setStatusBusyId(assignmentId);
     try {
       await fetch(`${config.BASE_URL}/assignments/${assignmentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus }),
       });
-      fetchAssignments(session.id);
+      await fetchAssignments(session.id);
     } catch (err) {
       console.error(err);
+    } finally {
+      setStatusBusyId(null);
     }
   };
 
@@ -411,16 +426,20 @@ export default function CustomerDetails({
                   <Button
                     fullWidth variant="contained" color="success" size="large"
                     onClick={() => handleAction('check-in')}
+                    disabled={actionBusy}
                     sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
-                    startIcon={<Iconify icon="solar:play-bold-duotone" />}
+                    startIcon={actionBusy
+                      ? <CircularProgress size={20} sx={{ color: 'inherit' }} />
+                      : <Iconify icon="solar:play-bold-duotone" />}
                   >
-                    Check In
+                    {actionBusy ? 'Checking in…' : 'Check In'}
                   </Button>
                 ) : (
                   <>
                     <Button
                       fullWidth variant="contained" color="secondary" size="large"
                       onClick={openPayDialog}
+                      disabled={actionBusy}
                       sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
                       startIcon={<Iconify icon="solar:verified-check-bold-duotone" />}
                     >
@@ -430,9 +449,11 @@ export default function CustomerDetails({
                       <Button
                         fullWidth variant="soft" color="error"
                         onClick={() => handleAction('cancel-session')}
+                        disabled={actionBusy}
+                        startIcon={actionBusy ? <CircularProgress size={16} sx={{ color: 'inherit' }} /> : null}
                         sx={{ height: 44, fontWeight: 700, borderRadius: 1 }}
                       >
-                        Cancel Visit
+                        {actionBusy ? 'Working…' : 'Cancel Visit'}
                       </Button>
                     ) : (
                       <Typography variant="caption" color="text.disabled" textAlign="center" sx={{ fontStyle: 'italic' }}>
@@ -549,11 +570,13 @@ export default function CustomerDetails({
                       <Button
                         fullWidth variant="contained" color="secondary"
                         onClick={createAssignment}
-                        disabled={!newAssignment.employeeId || !newAssignment.serviceId}
+                        disabled={!newAssignment.employeeId || !newAssignment.serviceId || addingService}
                         sx={{ height: 56, fontWeight: 900, borderRadius: 1.5 }}
-                        startIcon={<Iconify icon="solar:bolt-circle-bold-duotone" />}
+                        startIcon={addingService
+                          ? <CircularProgress size={18} sx={{ color: 'inherit' }} />
+                          : <Iconify icon="solar:bolt-circle-bold-duotone" />}
                       >
-                        Add Now
+                        {addingService ? 'Adding…' : 'Add Now'}
                       </Button>
                     </Grid>
                   </Grid>
@@ -642,17 +665,34 @@ export default function CustomerDetails({
                             <Stack direction="row" spacing={1} justifyContent="flex-end">
                               {a.status !== 'completed' && (
                                 <>
-                                  <Button size="small" color="secondary" onClick={() => updateAssignmentStatus(a.id, 'in_progress')} disabled={a.status === 'in_progress'}>
+                                  <Button
+                                    size="small" color="secondary"
+                                    onClick={() => updateAssignmentStatus(a.id, 'in_progress')}
+                                    disabled={a.status === 'in_progress' || statusBusyId === a.id}
+                                    startIcon={statusBusyId === a.id ? <CircularProgress size={12} sx={{ color: 'inherit' }} /> : null}
+                                  >
                                     Start
                                   </Button>
-                                  <Button size="small" color="success" onClick={() => updateAssignmentStatus(a.id, 'completed')}>
+                                  <Button
+                                    size="small" color="success"
+                                    onClick={() => updateAssignmentStatus(a.id, 'completed')}
+                                    disabled={statusBusyId === a.id}
+                                    startIcon={statusBusyId === a.id ? <CircularProgress size={12} sx={{ color: 'inherit' }} /> : null}
+                                  >
                                     Done
                                   </Button>
                                 </>
                               )}
                               <Tooltip title="Remove Job">
-                                <IconButton color="error" onClick={() => handleAction('delete-assignment', a.id)} size="small" disabled={a.status === 'completed'}>
-                                  <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />
+                                <IconButton
+                                  color="error"
+                                  onClick={() => handleAction('delete-assignment', a.id)}
+                                  size="small"
+                                  disabled={a.status === 'completed' || deleteAssignmentId === a.id}
+                                >
+                                  {deleteAssignmentId === a.id
+                                    ? <CircularProgress size={16} />
+                                    : <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />}
                                 </IconButton>
                               </Tooltip>
                             </Stack>

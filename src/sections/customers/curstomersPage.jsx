@@ -80,7 +80,7 @@ export default function CustomersPage() {
       {/* Header Info */}
       <Stack direction={{ xs: 'column', sm: 'row' }} alignItems="center" justifyContent="space-between" mb={6} spacing={2}>
         <Box sx={{ mb: { xs: 3, sm: 0 } }}>
-          <Typography variant="h3" sx={{ fontWeight: 950, letterSpacing: -2, fontSize: { xs: '2rem', lg: '3rem' } }}>
+          <Typography variant="h3" sx={{ fontWeight: 950, letterSpacing: -2, fontSize: { xs: '1.6rem', md: '2rem', lg: '2.25rem' } }}>
             Manage <Box component="span" sx={{ color: '#C8972A' }}>Customers</Box>
           </Typography>
           <Typography variant="body2" color="text.secondary" fontWeight={700}>View and manage your customer list and active sessions.</Typography>
