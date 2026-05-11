@@ -23,6 +23,13 @@ import {
   DialogActions,
   Autocomplete,
   TextField,
+  Menu,
+  ListItemAvatar,
+  ListItemText,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  CircularProgress,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
@@ -57,12 +64,61 @@ export default function CustomerDetails({
   const [tab, setTab] = useState('active'); // active | history
   const [history, setHistory] = useState([]);
 
+  const [reassignAnchor, setReassignAnchor] = useState(null);
+  const [reassignTarget, setReassignTarget] = useState(null);
+  const [reassignSaving, setReassignSaving] = useState(false);
+
+  // Payment & confirmation state for Finish & Pay
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [payOpen, setPayOpen] = useState(false);
+  const [payStep, setPayStep] = useState(1); // 1 = pick method, 2 = final confirm
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState('');
+  const [finishing, setFinishing] = useState(false);
+
+  const currentUser = (() => {
+    try { return JSON.parse(localStorage.getItem('userData') || 'null'); }
+    catch (_e) { return null; }
+  })();
+  const canReassign = currentUser?.role === 'admin' || currentUser?.role === 'receptionist';
+
   useEffect(() => {
     if (customer?.id) {
       fetchLatestSession();
       fetchHistory();
     }
   }, [customer]);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const res = await fetch(`${config.BASE_URL}/payment-methods?activeOnly=1`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      });
+      const data = await res.json();
+      setPaymentMethods(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('fetchPaymentMethods error:', err);
+      setPaymentMethods([]);
+    }
+  };
+
+  const reassignEmployee = async (assignmentId, newEmployeeId) => {
+    setReassignSaving(true);
+    try {
+      await fetch(`${config.BASE_URL}/assignments/${assignmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ employeeId: newEmployeeId }),
+      });
+      await fetchAssignments(session.id);
+    } catch (err) {
+      console.error('reassignEmployee error:', err);
+    } finally {
+      setReassignSaving(false);
+      setReassignAnchor(null);
+      setReassignTarget(null);
+    }
+  };
 
   const fetchHistory = async () => {
     try {
@@ -144,8 +200,6 @@ export default function CustomerDetails({
         url = `${config.BASE_URL}/customers/${customer.id}/check-in`;
         method = 'POST';
         body = { branchId };
-      } else if (type === 'finish-session') {
-        url = `${config.BASE_URL}/sessions/${session.id}/complete`;
       } else if (type === 'cancel-session') {
         url = `${config.BASE_URL}/sessions/${session.id}`;
         method = 'DELETE';
@@ -154,28 +208,55 @@ export default function CustomerDetails({
         method = 'DELETE';
       }
 
-      const res = await fetch(url, {
+      await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: method === 'POST' && body !== null ? JSON.stringify(body) : undefined,
       });
-
-      if (type === 'finish-session' && res.ok) {
-        setReceiptData({
-          customer,
-          session,
-          assignments,
-          total: totalEstimation,
-          date: new Date()
-        });
-        setReceiptOpen(true);
-      }
 
       fetchLatestSession();
       fetchHistory();
       refreshCustomers();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const openPayDialog = () => {
+    setSelectedPaymentMethodId('');
+    setPayStep(1);
+    setPayOpen(true);
+    fetchPaymentMethods();
+  };
+
+  const finalizePayment = async () => {
+    setFinishing(true);
+    try {
+      const res = await fetch(`${config.BASE_URL}/sessions/${session.id}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ paymentMethodId: selectedPaymentMethodId || null }),
+      });
+      if (res.ok) {
+        const selectedMethod = paymentMethods.find(p => p.id === selectedPaymentMethodId);
+        setReceiptData({
+          customer,
+          session,
+          assignments,
+          total: totalEstimation,
+          date: new Date(),
+          paymentMethod: selectedMethod || null,
+        });
+        setReceiptOpen(true);
+        setPayOpen(false);
+        fetchLatestSession();
+        fetchHistory();
+        refreshCustomers();
+      }
+    } catch (err) {
+      console.error('finalizePayment error:', err);
+    } finally {
+      setFinishing(false);
     }
   };
 
@@ -339,7 +420,7 @@ export default function CustomerDetails({
                   <>
                     <Button
                       fullWidth variant="contained" color="secondary" size="large"
-                      onClick={() => handleAction('finish-session')}
+                      onClick={openPayDialog}
                       sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
                       startIcon={<Iconify icon="solar:verified-check-bold-duotone" />}
                     >
@@ -516,10 +597,44 @@ export default function CustomerDetails({
                           </Grid>
                           <Grid item xs={12} sm={3}>
                             <Stack direction="row" spacing={1.5} alignItems="center">
-                              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontWeight: 800, fontSize: '0.8rem' }}>{a.Employee?.name[0]}</Avatar>
-                              <Box>
-                                <Typography variant="caption" fontWeight={800} display="block" color="text.secondary">{a.Employee?.name.toUpperCase()}</Typography>
-                                <Chip label={a.status.toUpperCase()} size="small" color={a.status === 'completed' ? 'success' : a.status === 'in_progress' ? 'secondary' : 'info'} variant="soft" sx={{ height: 16, fontSize: '0.55rem', fontWeight: 800 }} />
+                              <Avatar sx={{
+                                width: 32, height: 32,
+                                bgcolor: a.Employee ? 'primary.main' : alpha(theme.palette.text.disabled, 0.2),
+                                color: a.Employee ? 'white' : 'text.disabled',
+                                fontWeight: 800, fontSize: '0.8rem',
+                              }}>
+                                {a.Employee?.name ? a.Employee.name[0] : '?'}
+                              </Avatar>
+                              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                                {a.Employee ? (
+                                  <Typography variant="caption" fontWeight={800} display="block" color="text.secondary" noWrap>
+                                    {a.Employee.name.toUpperCase()}
+                                  </Typography>
+                                ) : (
+                                  <Typography variant="caption" fontWeight={800} display="block" color="warning.main">
+                                    UNASSIGNED
+                                  </Typography>
+                                )}
+                                <Stack direction="row" spacing={0.5} alignItems="center">
+                                  <Chip
+                                    label={a.status.toUpperCase()}
+                                    size="small"
+                                    color={a.status === 'completed' ? 'success' : a.status === 'in_progress' ? 'secondary' : 'info'}
+                                    variant="soft"
+                                    sx={{ height: 16, fontSize: '0.55rem', fontWeight: 800 }}
+                                  />
+                                  {canReassign && a.status !== 'completed' && (
+                                    <Tooltip title={a.Employee ? 'Reassign staff' : 'Assign staff'}>
+                                      <IconButton
+                                        size="small"
+                                        onClick={(e) => { setReassignAnchor(e.currentTarget); setReassignTarget(a); }}
+                                        sx={{ p: 0.25 }}
+                                      >
+                                        <Iconify icon="solar:pen-2-bold-duotone" width={14} sx={{ color: 'secondary.main' }} />
+                                      </IconButton>
+                                    </Tooltip>
+                                  )}
+                                </Stack>
                               </Box>
                             </Stack>
                           </Grid>
@@ -753,7 +868,7 @@ export default function CustomerDetails({
                       {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name.toUpperCase()}`).join(', ')}
                     </Typography>
                     <Typography variant="caption" color="text.disabled" fontWeight={700}>
-                      By: {a.Employee?.name}
+                      By: {a.Employee?.name || 'Unassigned'}
                     </Typography>
                   </Box>
                   <Typography variant="subtitle2" fontWeight={900}>
@@ -771,6 +886,16 @@ export default function CustomerDetails({
               <Typography variant="h6" fontWeight={900}>TOTAL AMOUNT</Typography>
               <Typography variant="h4" fontWeight={900} color="secondary.main">{receiptData.total} Br</Typography>
             </Box>
+
+            {receiptData.paymentMethod && (
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="caption" fontWeight={800} color="text.disabled">PAID VIA</Typography>
+                <Typography variant="caption" fontWeight={900}>
+                  {receiptData.paymentMethod.name.toUpperCase()}
+                  {receiptData.paymentMethod.accountInfo ? ` • ${receiptData.paymentMethod.accountInfo}` : ''}
+                </Typography>
+              </Box>
+            )}
 
             <Box sx={{ mt: 6, mb: 2, textAlign: 'center' }}>
               <Typography variant="caption" color="text.disabled" fontWeight={800} sx={{ letterSpacing: 1 }}>
@@ -799,6 +924,174 @@ export default function CustomerDetails({
             PRINT
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* REASSIGN EMPLOYEE MENU */}
+      <Menu
+        anchorEl={reassignAnchor}
+        open={Boolean(reassignAnchor)}
+        onClose={() => { setReassignAnchor(null); setReassignTarget(null); }}
+        PaperProps={{ sx: { maxHeight: 360, minWidth: 240, borderRadius: 2 } }}
+      >
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>
+            ASSIGN STAFF
+          </Typography>
+        </Box>
+        {employees.length === 0 && (
+          <Box sx={{ px: 2, py: 2 }}>
+            <Typography variant="caption" color="text.disabled">No staff available</Typography>
+          </Box>
+        )}
+        {employees.map((emp) => {
+          const isCurrent = reassignTarget?.Employee?.id === emp.id;
+          return (
+            <MenuItem
+              key={emp.id}
+              selected={isCurrent}
+              disabled={reassignSaving}
+              onClick={() => reassignTarget && reassignEmployee(reassignTarget.id, emp.id)}
+              sx={{ fontWeight: 700, py: 1 }}
+            >
+              <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: '100%' }}>
+                <Avatar sx={{ width: 28, height: 28, fontSize: '0.7rem', bgcolor: '#1B1F3A', color: 'white' }}>
+                  {emp.name[0]}
+                </Avatar>
+                <Typography variant="body2" fontWeight={700} sx={{ flexGrow: 1 }}>
+                  {emp.name.toUpperCase()}
+                </Typography>
+                {isCurrent && <Iconify icon="solar:check-circle-bold" width={18} sx={{ color: 'success.main' }} />}
+              </Stack>
+            </MenuItem>
+          );
+        })}
+      </Menu>
+
+      {/* FINISH & PAY — PAYMENT METHOD PICKER */}
+      <Dialog open={payOpen} onClose={() => !finishing && setPayOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+        {payStep === 1 ? (
+          <>
+            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1B1F3A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Iconify icon="solar:wallet-money-bold-duotone" />
+              How was the payment received?
+            </DialogTitle>
+            <DialogContent sx={{ mt: 3 }}>
+              <Box sx={{ p: 2.5, bgcolor: alpha('#C8972A', 0.08), borderRadius: 2, textAlign: 'center', mb: 3 }}>
+                <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>TOTAL DUE</Typography>
+                <Typography variant="h3" fontWeight={900} color="#C8972A">{totalEstimation} Br</Typography>
+              </Box>
+              {paymentMethods.length === 0 ? (
+                <Box sx={{ py: 4, textAlign: 'center', border: '2px dashed', borderColor: 'divider', borderRadius: 2 }}>
+                  <Iconify icon="solar:card-search-bold-duotone" width={48} sx={{ color: 'text.disabled', mb: 1 }} />
+                  <Typography variant="body2" fontWeight={800} color="text.disabled">No payment methods configured</Typography>
+                  <Typography variant="caption" color="text.disabled">Admin can set them up in Settings.</Typography>
+                </Box>
+              ) : (
+                <RadioGroup value={selectedPaymentMethodId} onChange={(e) => setSelectedPaymentMethodId(Number(e.target.value))}>
+                  <Stack spacing={1.5}>
+                    {paymentMethods.map((pm) => {
+                      const selected = selectedPaymentMethodId === pm.id;
+                      return (
+                        <Card
+                          key={pm.id}
+                          onClick={() => setSelectedPaymentMethodId(pm.id)}
+                          sx={{
+                            p: 2, cursor: 'pointer', borderRadius: 2,
+                            border: '2px solid',
+                            borderColor: selected ? '#C8972A' : alpha(theme.palette.divider, 0.15),
+                            bgcolor: selected ? alpha('#C8972A', 0.05) : 'background.paper',
+                            transition: '0.2s',
+                            '&:hover': { borderColor: '#C8972A' },
+                          }}
+                        >
+                          <Stack direction="row" spacing={2} alignItems="center">
+                            <Radio checked={selected} value={pm.id} sx={{ p: 0.5 }} />
+                            {pm.logoUrl ? (
+                              <Avatar
+                                src={`${config.BASE_URL}${pm.logoUrl}`}
+                                variant="rounded"
+                                sx={{ width: 44, height: 44, bgcolor: 'background.neutral' }}
+                              />
+                            ) : (
+                              <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: '#1B1F3A', color: '#C8972A' }}>
+                                <Iconify icon={pm.type === 'cash' ? 'solar:wallet-bold-duotone' : 'solar:card-bold-duotone'} />
+                              </Avatar>
+                            )}
+                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                              <Typography variant="subtitle2" fontWeight={900}>{pm.name}</Typography>
+                              {pm.accountInfo && (
+                                <Typography variant="caption" color="text.secondary" fontWeight={700} noWrap>
+                                  {pm.accountInfo}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Chip label={pm.type === 'cash' ? 'CASH' : 'BANK'} size="small" variant="soft" color={pm.type === 'cash' ? 'success' : 'info'} sx={{ fontWeight: 800 }} />
+                          </Stack>
+                        </Card>
+                      );
+                    })}
+                  </Stack>
+                </RadioGroup>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ p: 3 }}>
+              <Button onClick={() => setPayOpen(false)} sx={{ fontWeight: 900, color: 'text.secondary' }}>CANCEL</Button>
+              <Button
+                variant="contained" color="secondary"
+                onClick={() => setPayStep(2)}
+                disabled={!selectedPaymentMethodId}
+                sx={{ fontWeight: 900, px: 4 }}
+              >
+                CONTINUE
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+          <>
+            <DialogTitle sx={{ fontWeight: 900, bgcolor: 'error.darker', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Iconify icon="solar:shield-warning-bold-duotone" />
+              Confirm & Close Visit
+            </DialogTitle>
+            <DialogContent sx={{ mt: 3 }}>
+              <Typography variant="body1" fontWeight={700} mb={3}>
+                Once you confirm, this visit will be closed and you <strong>cannot modify it</strong>. The system will record:
+              </Typography>
+              {(() => {
+                const m = paymentMethods.find(p => p.id === selectedPaymentMethodId);
+                return (
+                  <Box sx={{ p: 3, bgcolor: alpha('#1B1F3A', 0.04), borderRadius: 2 }}>
+                    <Stack direction="row" justifyContent="space-between" mb={1.5}>
+                      <Typography variant="caption" fontWeight={800} color="text.disabled">CUSTOMER</Typography>
+                      <Typography variant="subtitle2" fontWeight={900}>{customer.name.toUpperCase()}</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" mb={1.5}>
+                      <Typography variant="caption" fontWeight={800} color="text.disabled">AMOUNT</Typography>
+                      <Typography variant="subtitle2" fontWeight={900} color="secondary.main">{totalEstimation} Br</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Typography variant="caption" fontWeight={800} color="text.disabled">RECEIVED VIA</Typography>
+                      <Typography variant="subtitle2" fontWeight={900}>
+                        {m ? `${m.name}${m.accountInfo ? ` • ${m.accountInfo}` : ''}` : '—'}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                );
+              })()}
+            </DialogContent>
+            <DialogActions sx={{ p: 3 }}>
+              <Button onClick={() => setPayStep(1)} disabled={finishing} sx={{ fontWeight: 900, color: 'text.secondary' }}>BACK</Button>
+              <Button
+                variant="contained" color="secondary"
+                onClick={finalizePayment}
+                disabled={finishing}
+                startIcon={finishing ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:check-circle-bold-duotone" />}
+                sx={{ fontWeight: 900, px: 4 }}
+              >
+                {finishing ? 'CLOSING…' : 'CONFIRM & CLOSE'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
 
       <style>

@@ -215,11 +215,7 @@ export default function UserManagement() {
                   <MenuItem value="admin" sx={{ fontWeight: 700, color: 'error.main' }}>Admin</MenuItem>
                   <MenuItem value="receptionist" sx={{ fontWeight: 700, color: 'info.main' }}>Receptionist</MenuItem>
                   <Divider sx={{ my: 1 }} />
-                  {['barber', 'hairdresser', 'nail_specialist', 'spa_therapist', 'employee'].map(r => (
-                    <MenuItem key={r} value={r} sx={{ textTransform: 'capitalize', fontWeight: 700 }}>
-                      {r.replace('_', ' ')}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="employee" sx={{ fontWeight: 700 }}>Employee</MenuItem>
                 </Select>
               </FormControl>
 

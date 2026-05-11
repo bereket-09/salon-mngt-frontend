@@ -58,7 +58,7 @@ export default function Attendance() {
 
   const token = localStorage.getItem('authToken');
   const userData = JSON.parse(localStorage.getItem('userData'));
-  const isAdmin = userData?.role === 'admin' || userData?.role === 'manager';
+  const isAdmin = userData?.role === 'admin';
 
   const fetchUsers = useCallback(async () => {
     try {

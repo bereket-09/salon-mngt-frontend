@@ -17,6 +17,7 @@ import CustomersManagePage from 'src/sections/customers/CustomerManagmet';
 import CommissionReport from 'src/sections/customers/commistion';
 import CommissionManager from 'src/sections/customers/CommissionManager';
 import ManageGallery from 'src/sections/gallery/manage-gallery';
+import PaymentMethodsPage from 'src/sections/setting/payment-methods';
 
 // New Milana Salon Views
 import AnalyticsView from 'src/sections/analytics/analytics-view';
@@ -65,7 +66,7 @@ const IndexPageRoleRedirect = () => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (['admin', 'manager'].includes(user.role)) {
+  if (user.role === 'admin') {
     return <Navigate to="/analytics" replace />;
   }
 
@@ -97,6 +98,7 @@ export default function Router() {
         { path: 'services', element: <ServicesPage /> },
         { path: 'service-type', element: <BranchesTable /> },
         { path: 'manage-gallery', element: <ManageGallery /> },
+        { path: 'payment-methods', element: <PaymentMethodsPage /> },
 
         // Financials
         { path: 'commissionsMgr', element: <CommissionManager /> },

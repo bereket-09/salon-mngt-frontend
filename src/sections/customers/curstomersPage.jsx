@@ -5,12 +5,13 @@ import {
   TextField,
   Button,
   Stack,
-  Divider,
   Grid,
   Card,
   alpha,
   useTheme,
-  InputAdornment,
+  Drawer,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
@@ -19,6 +20,8 @@ import CustomerList from './CustomerList';
 import CustomerForm from './CustomerForm';
 import CustomerDetails from './CustomerDetails';
 import ActiveSessionsBoard from './ActiveSessionsBoard';
+
+const DRAWER_WIDTH = 440;
 
 export default function CustomersPage() {
   const theme = useTheme();
@@ -29,6 +32,7 @@ export default function CustomersPage() {
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [viewState, setViewState] = useState('board'); // board | list
   const [search, setSearch] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const token = localStorage.getItem('authToken');
 
@@ -82,88 +86,42 @@ export default function CustomersPage() {
           <Typography variant="body2" color="text.secondary" fontWeight={700}>View and manage your customer list and active sessions.</Typography>
         </Box>
 
-        <Box sx={{ p: 0.8, bgcolor: 'white', borderRadius: 2, display: 'flex', border: '1px solid', borderColor: alpha('#1B1F3A', 0.05), boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-          <Button
-            variant={viewState === 'board' ? 'contained' : 'text'}
-            onClick={() => setViewState('board')}
-            startIcon={<Iconify icon="solar:floor-plan-bold-duotone" />}
-            sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'board' ? '#1B1F3A' : 'transparent', color: viewState === 'board' ? 'white' : 'text.secondary' }}
-          >
-            ACTIVE BOARD
-          </Button>
-          <Button
-            variant={viewState === 'list' ? 'contained' : 'text'}
-            onClick={() => setViewState('list')}
-            startIcon={<Iconify icon="solar:users-group-rounded-bold-duotone" />}
-            sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'list' ? '#1B1F3A' : 'transparent', color: viewState === 'list' ? 'white' : 'text.secondary' }}
-          >
-            CUSTOMER LIST
-          </Button>
-        </Box>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Box sx={{ p: 0.8, bgcolor: 'white', borderRadius: 2, display: 'flex', border: '1px solid', borderColor: alpha('#1B1F3A', 0.05), boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+            <Button
+              variant={viewState === 'board' ? 'contained' : 'text'}
+              onClick={() => setViewState('board')}
+              startIcon={<Iconify icon="solar:floor-plan-bold-duotone" />}
+              sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'board' ? '#1B1F3A' : 'transparent', color: viewState === 'board' ? 'white' : 'text.secondary' }}
+            >
+              ACTIVE BOARD
+            </Button>
+            <Button
+              variant={viewState === 'list' ? 'contained' : 'text'}
+              onClick={() => setViewState('list')}
+              startIcon={<Iconify icon="solar:users-group-rounded-bold-duotone" />}
+              sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'list' ? '#1B1F3A' : 'transparent', color: viewState === 'list' ? 'white' : 'text.secondary' }}
+            >
+              CUSTOMER LIST
+            </Button>
+          </Box>
+          {!currentCustomer && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setDrawerOpen(true)}
+              startIcon={<Iconify icon="solar:magnifer-zoom-in-bold-duotone" />}
+              sx={{ fontWeight: 900, borderRadius: 2, px: 3, height: 48, bgcolor: '#C8972A', '&:hover': { bgcolor: '#B5851F' } }}
+            >
+              SEARCH / ADD
+            </Button>
+          )}
+        </Stack>
       </Stack>
 
-      {/* Main Grid Layout */}
+      {/* Main View Area */}
       <Grid container spacing={4}>
-        {!currentCustomer && (
-          <Grid item xs={12} md={5} lg={4}>
-            <Stack spacing={3}>
-              <Card sx={{
-                p: { xs: 2.5, md: 4 }, borderRadius: 2.5,
-                border: '1px solid', borderColor: alpha('#1B1F3A', 0.05),
-                boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
-                bgcolor: 'white'
-              }}>
-                <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-                  <Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: alpha('#C8972A', 0.1), color: '#C8972A' }}>
-                    <Iconify icon="solar:magnifer-zoom-in-bold-duotone" width={24} />
-                  </Box>
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 900, mb: -0.5 }}>Search</Typography>
-                    <Typography variant="caption" color="text.secondary" fontWeight={800}>FIND CUSTOMERS</Typography>
-                  </Box>
-                </Stack>
-                <TextField
-                  fullWidth
-                  placeholder="Search by name or phone..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  InputProps={{
-                    startAdornment: <Iconify icon="solar:user-bold-duotone" sx={{ mr: 1.5, color: '#C8972A' }} />,
-                    sx: { borderRadius: 1.5, fontWeight: 800, bgcolor: alpha('#1B1F3A', 0.02) }
-                  }}
-                />
-
-                {search && (
-                  <Box sx={{ mt: 4, maxHeight: 500, overflowY: 'auto', pr: 1 }}>
-                    <CustomerList
-                      customers={filteredCustomers}
-                      setCurrentCustomer={(c) => { setCurrentCustomer(c); setSearch(''); }}
-                      token={token}
-                      columns={{ xs: 12 }}
-                    />
-                  </Box>
-                )}
-
-                {!search && (
-                  <Box sx={{ mt: 4, textAlign: 'center', py: 6, border: '2px dashed', borderColor: alpha('#1B1F3A', 0.05), borderRadius: 2 }}>
-                    <Iconify icon="solar:ghost-bold-duotone" width={48} sx={{ color: alpha('#1B1F3A', 0.1), mb: 1.5 }} />
-                    <Typography variant="body2" color="text.disabled" fontWeight={800}>SEARCH BY NAME OR PHONE</Typography>
-                  </Box>
-                )}
-              </Card>
-
-              <CustomerForm
-                branches={branches}
-                onCustomerCreated={(c) => { setCurrentCustomer(c); setViewState('board'); }}
-                token={token}
-                refreshCustomers={fetchData}
-              />
-            </Stack>
-          </Grid>
-        )}
-
-        {/* Right Column: Main View Area */}
-        <Grid item xs={12} lg={currentCustomer ? 12 : 8}>
+        <Grid item xs={12}>
           {currentCustomer ? (
             <Box>
               <Button
@@ -218,6 +176,95 @@ export default function CustomersPage() {
           )}
         </Grid>
       </Grid>
+
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            width: { xs: '100%', sm: DRAWER_WIDTH },
+            bgcolor: alpha('#1B1F3A', 0.02),
+            p: { xs: 2.5, md: 3.5 },
+            borderLeft: '1px solid',
+            borderColor: alpha('#1B1F3A', 0.05),
+          },
+        }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+          <Typography variant="h5" sx={{ fontWeight: 950, letterSpacing: -0.5 }}>
+            Search & Add
+          </Typography>
+          <Tooltip title="Close">
+            <IconButton onClick={() => setDrawerOpen(false)} sx={{ bgcolor: alpha('#1B1F3A', 0.05) }}>
+              <Iconify icon="solar:close-circle-bold-duotone" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+
+        <Stack spacing={3}>
+          <Card sx={{
+            p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            border: '1px solid', borderColor: alpha('#1B1F3A', 0.05),
+            boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
+            bgcolor: 'white'
+          }}>
+            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
+              <Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: alpha('#C8972A', 0.1), color: '#C8972A' }}>
+                <Iconify icon="solar:magnifer-zoom-in-bold-duotone" width={24} />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 900, mb: -0.5 }}>Search</Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={800}>FIND CUSTOMERS</Typography>
+              </Box>
+            </Stack>
+            <TextField
+              fullWidth
+              autoFocus
+              placeholder="Search by name or phone..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: <Iconify icon="solar:user-bold-duotone" sx={{ mr: 1.5, color: '#C8972A' }} />,
+                sx: { borderRadius: 1.5, fontWeight: 800, bgcolor: alpha('#1B1F3A', 0.02) }
+              }}
+            />
+
+            {search && (
+              <Box sx={{ mt: 3, maxHeight: 400, overflowY: 'auto', pr: 1 }}>
+                <CustomerList
+                  customers={filteredCustomers}
+                  setCurrentCustomer={(c) => {
+                    setCurrentCustomer(c);
+                    setSearch('');
+                    setDrawerOpen(false);
+                  }}
+                  token={token}
+                  columns={{ xs: 12 }}
+                />
+              </Box>
+            )}
+
+            {!search && (
+              <Box sx={{ mt: 3, textAlign: 'center', py: 4, border: '2px dashed', borderColor: alpha('#1B1F3A', 0.05), borderRadius: 2 }}>
+                <Iconify icon="solar:ghost-bold-duotone" width={48} sx={{ color: alpha('#1B1F3A', 0.1), mb: 1.5 }} />
+                <Typography variant="body2" color="text.disabled" fontWeight={800}>SEARCH BY NAME OR PHONE</Typography>
+              </Box>
+            )}
+          </Card>
+
+          <CustomerForm
+            branches={branches}
+            onCustomerCreated={(c) => {
+              setCurrentCustomer(c);
+              setViewState('board');
+              setDrawerOpen(false);
+            }}
+            token={token}
+            refreshCustomers={fetchData}
+          />
+        </Stack>
+      </Drawer>
     </Box>
   );
 }

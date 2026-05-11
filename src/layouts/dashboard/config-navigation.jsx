@@ -62,6 +62,10 @@ const navConfig = [
         title: 'Gallery',
         path: '/manage-gallery',
       },
+      {
+        title: 'Payment Methods',
+        path: '/payment-methods',
+      },
     ],
   },
 
@@ -94,7 +98,7 @@ const navConfig = [
   {
     title: 'My Workspace',
     icon: 'solar:user-circle-bold-duotone',
-    roles: ['admin', 'receptionist', 'barber', 'hairdresser', 'nail_specialist', 'spa_therapist', 'employee'],
+    roles: ['admin', 'receptionist', 'employee'],
     children: [
       {
         title: 'My Daily Jobs',

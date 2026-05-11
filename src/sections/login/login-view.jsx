@@ -31,7 +31,7 @@ export default function LoginView() {
     const userStr = localStorage.getItem('userData');
     if (token && userStr) {
       const user = JSON.parse(userStr);
-      if (['admin', 'manager'].includes(user.role)) {
+      if (['admin'].includes(user.role)) {
         router.push('/analytics');
       } else {
         router.push('/my-assignments');
@@ -56,7 +56,7 @@ export default function LoginView() {
         toast.success('Welcome back!');
 
         // Redirect based on role
-        if (['admin', 'manager'].includes(result.user.role)) {
+        if (['admin'].includes(result.user.role)) {
           router.push('/analytics');
         } else {
           router.push('/my-assignments');
