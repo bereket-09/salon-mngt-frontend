@@ -22,6 +22,7 @@ import {
   DialogActions,
   InputAdornment,
   alpha,
+  CircularProgress,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
@@ -48,6 +49,9 @@ export default function ServicesPage() {
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const token = localStorage.getItem('authToken');
 
   useEffect(() => {
@@ -57,7 +61,7 @@ export default function ServicesPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const auth = { headers: { Authorization: `Bearer ${token}` } };
+      const auth = { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' };
       const [svcRes, brRes] = await Promise.all([
         fetch(`${config.BASE_URL}/services`, auth),
         fetch(`${config.BASE_URL}/branches`, auth),
@@ -75,6 +79,7 @@ export default function ServicesPage() {
 
   const handleCreate = async () => {
     if (!form.name || !form.price) return;
+    setCreating(true);
     try {
       const payload = {
         ...form,
@@ -88,20 +93,24 @@ export default function ServicesPage() {
         body: JSON.stringify(payload),
       });
       setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 0.10, code: '' });
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error(err);
+    } finally {
+      setCreating(false);
     }
   };
 
   const handleUpdate = async () => {
     if (!editService) return;
+    setSaving(true);
     try {
       const payload = {
         ...editService,
         price: parseFloat(editService.price),
         commissionRate: parseFloat(editService.commissionRate),
         estimatedDuration: parseInt(editService.estimatedDuration, 10),
+        BranchId: editService.BranchId || null,
       };
       await fetch(`${config.BASE_URL}/services/${editService.id}`, {
         method: 'PUT',
@@ -109,9 +118,11 @@ export default function ServicesPage() {
         body: JSON.stringify(payload),
       });
       setEditService(null);
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -123,14 +134,17 @@ export default function ServicesPage() {
   const executeDelete = async () => {
     setConfirmOpen(false);
     if (!deleteId) return;
+    setDeleting(true);
     try {
       await fetch(`${config.BASE_URL}/services/${deleteId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error(err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -147,8 +161,10 @@ export default function ServicesPage() {
             color="secondary"
             sx={{ fontWeight: 800, borderRadius: 1.5, px: 2, height: 44 }}
           />
-          <IconButton onClick={fetchData} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), width: 44, height: 44 }}>
-            <Iconify icon="solar:restart-bold-duotone" sx={{ color: 'secondary.main' }} />
+          <IconButton onClick={fetchData} disabled={loading} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), width: 44, height: 44 }}>
+            {loading
+              ? <CircularProgress size={18} sx={{ color: 'secondary.main' }} />
+              : <Iconify icon="solar:restart-bold-duotone" sx={{ color: 'secondary.main' }} />}
           </IconButton>
         </Stack>
       </Stack>
@@ -266,9 +282,11 @@ export default function ServicesPage() {
               <Button
                 variant="contained" color="secondary" fullWidth
                 onClick={handleCreate}
+                disabled={creating}
+                startIcon={creating ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : null}
                 sx={{ height: 64, fontWeight: 900, borderRadius: 1.5, fontSize: '1.1rem' }}
               >
-                Save Service
+                {creating ? 'Saving…' : 'Save Service'}
               </Button>
             </Stack>
           </Card>
@@ -353,6 +371,20 @@ export default function ServicesPage() {
               </Grid>
               <TextField fullWidth label="Duration (min)" type="number" value={editService.estimatedDuration} onChange={(e) => setEditService({ ...editService, estimatedDuration: e.target.value })} />
 
+              <FormControl fullWidth>
+                <InputLabel>Branch</InputLabel>
+                <Select
+                  value={editService.BranchId || ''}
+                  label="Branch"
+                  onChange={(e) => setEditService({ ...editService, BranchId: e.target.value || null })}
+                >
+                  <MenuItem value="">All Branches</MenuItem>
+                  {branches.map((b) => (
+                    <MenuItem key={b.id} value={b.id}>{b.name.toUpperCase()}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               <Box sx={{ p: 2, bgcolor: '#1B1F3A', borderRadius: 2 }}>
                 <FormControlLabel
                   control={<Switch checked={editService.commissionEnabled} color="secondary" onChange={(e) => setEditService({ ...editService, commissionEnabled: e.target.checked })} />}
@@ -366,8 +398,15 @@ export default function ServicesPage() {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
-          <Button variant="soft" color="inherit" fullWidth onClick={() => setEditService(null)}>Cancel</Button>
-          <Button variant="contained" color="secondary" fullWidth onClick={handleUpdate}>Save Changes</Button>
+          <Button variant="soft" color="inherit" fullWidth onClick={() => setEditService(null)} disabled={saving}>Cancel</Button>
+          <Button
+            variant="contained" color="secondary" fullWidth
+            onClick={handleUpdate}
+            disabled={saving}
+            startIcon={saving ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : null}
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </Button>
         </DialogActions>
       </Dialog>
 

@@ -163,25 +163,33 @@ export default function ManageGallery() {
               boxShadow: theme.customShadows.z12,
               '&:hover .actions': { opacity: 1 }
             }}>
-              <Box component="img" 
-                   src={img.url.startsWith('/') ? `${config.BASE_URL}${img.url}` : img.url} 
+              <Box component="img"
+                   src={resolveImageUrl(img)}
                    sx={{ width: '100%', height: 240, objectFit: 'cover' }} />
-              
+
               <Box className="actions" sx={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 bgcolor: alpha('#000', 0.5), opacity: 0, transition: '0.3s',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2
               }}>
                 <Tooltip title="Delete">
-                  <IconButton onClick={() => handleDelete(img.id)} sx={{ bgcolor: 'error.main', color: 'white', '&:hover': { bgcolor: 'error.dark' } }}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  <IconButton
+                    onClick={() => handleDelete(img.id)}
+                    disabled={deletingId === img.id}
+                    sx={{ bgcolor: 'error.main', color: 'white', '&:hover': { bgcolor: 'error.dark' } }}
+                  >
+                    {deletingId === img.id
+                      ? <CircularProgress size={20} sx={{ color: 'white' }} />
+                      : <Iconify icon="solar:trash-bin-trash-bold" />}
                   </IconButton>
                 </Tooltip>
               </Box>
 
               <Box sx={{ p: 2 }}>
-                <Typography variant="subtitle2" fontWeight={800} noWrap>{img.title || 'Untitled Portait'}</Typography>
-                <Typography variant="caption" color="text.secondary" fontWeight={700}>{img.url.startsWith('/') ? 'Local Upload' : 'External URL'}</Typography>
+                <Typography variant="subtitle2" fontWeight={800} noWrap>{img.title || 'Untitled Portrait'}</Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={700}>
+                  {isLocalUpload(img) ? 'Local Upload' : 'External URL'}
+                </Typography>
               </Box>
             </Card>
           </Grid>
@@ -233,8 +241,13 @@ export default function ManageGallery() {
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
           <Button variant="soft" color="inherit" fullWidth onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="secondary" fullWidth onClick={handleUpload} disabled={loading}>
-            {loading ? 'Adding...' : 'Add Image'}
+          <Button
+            variant="contained" color="secondary" fullWidth
+            onClick={handleUpload}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : null}
+          >
+            {loading ? 'Adding…' : 'Add Image'}
           </Button>
         </DialogActions>
       </Dialog>
