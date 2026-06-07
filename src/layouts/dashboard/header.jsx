@@ -18,8 +18,6 @@ import Searchbar from './common/searchbar';
 import BranchSwitcher from './common/branch-switcher';
 import { NAV, HEADER } from './config-layout';
 import AccountPopover from './common/account-popover';
-// import LanguagePopover from './common/language-popover';
-// import NotificationsPopover from './common/notifications-popover';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +25,7 @@ export default function Header({ onOpenNav }) {
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
+  const mdUp = useResponsive('up', 'md');
 
   const renderContent = (
     <>
@@ -41,8 +40,6 @@ export default function Header({ onOpenNav }) {
       <Box sx={{ flexGrow: 1 }} />
 
       <Stack direction="row" alignItems="center" spacing={1}>
-        {/* <LanguagePopover /> */}
-        {/* <NotificationsPopover /> */}
         <BranchSwitcher />
         <AccountPopover />
       </Stack>
@@ -55,12 +52,17 @@ export default function Header({ onOpenNav }) {
         boxShadow: 'none',
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
+        borderBottom: `1px solid ${theme.palette.divider}`,
         ...bgBlur({
           color: theme.palette.background.default,
         }),
         transition: theme.transitions.create(['height'], {
           duration: theme.transitions.duration.shorter,
         }),
+        ...(mdUp &&
+          !lgUp && {
+            height: HEADER.H_TABLET,
+          }),
         ...(lgUp && {
           width: `calc(100% - ${NAV.WIDTH + 1}px)`,
           height: HEADER.H_DESKTOP,
@@ -70,7 +72,7 @@ export default function Header({ onOpenNav }) {
       <Toolbar
         sx={{
           height: 1,
-          px: { lg: 5 },
+          px: { md: 3, lg: 5 },
         }}
       >
         {renderContent}

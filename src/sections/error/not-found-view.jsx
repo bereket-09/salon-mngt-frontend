@@ -35,11 +35,11 @@ export default function NotFoundView() {
             <Typography
               variant="h1"
               sx={{
-                fontSize: { xs: '8rem', md: '12rem' },
+                fontSize: { xs: '3rem', md: '8rem' },
                 fontWeight: 900,
                 color: alpha('#fff', 0.03),
                 lineHeight: 1,
-                letterSpacing: -10
+                letterSpacing: { xs: -4, md: -10 }
               }}
             >
               404

@@ -84,23 +84,23 @@ export default function MyEarningsView() {
 
     return (
         <Box>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Stack direction="row" spacing={3} alignItems="center">
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={{ xs: 4, md: 5 }} spacing={1.5}>
+                <Stack direction="row" spacing={{ xs: 1.5, md: 3 }} alignItems="center" sx={{ minWidth: 0 }}>
                     <Box sx={{
-                        p: 1.5, bgcolor: '#C8972A', borderRadius: 2, color: 'white',
+                        p: 1.5, bgcolor: '#C8972A', borderRadius: 2, color: 'white', flexShrink: 0,
                         display: 'flex', border: '1px solid', borderColor: alpha('#C8972A', 0.2)
                     }}>
                         <Iconify icon="solar:safe-square-bold-duotone" width={32} />
                     </Box>
-                    <Box>
-                        <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>My Earnings</Typography>
-                        <Typography variant="body1" color="text.secondary" fontWeight={600}>Your performance results for this month.</Typography>
+                    <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.5rem', md: '3rem' } }}>My Earnings</Typography>
+                        <Typography variant="body1" color="text.secondary" fontWeight={600} sx={{ fontSize: { xs: '0.8125rem', md: '1rem' } }}>Your performance results for this month.</Typography>
                     </Box>
                 </Stack>
                 <Chip
                     label={`${report?.history?.length || 0} Finished Jobs`}
                     color="secondary"
-                    sx={{ fontWeight: 800, borderRadius: 1, px: 2, height: 40 }}
+                    sx={{ fontWeight: 800, borderRadius: 1, px: { xs: 1, md: 2 }, height: 40, flexShrink: 0 }}
                 />
             </Stack>
 
@@ -118,11 +118,19 @@ export default function MyEarningsView() {
                             transition: '0.2s',
                             '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.customShadows.z20, borderColor: kpi.color }
                         }}>
-                            <Box sx={{ position: 'absolute', top: -10, right: -10, p: 3, bgcolor: alpha(kpi.color, 0.1), borderRadius: '50%' }}>
-                                <Iconify icon={kpi.icon} sx={{ width: 44, height: 44, color: kpi.color, opacity: 0.8 }} />
+                            <Box sx={{
+                                position: 'absolute',
+                                display: { xs: 'none', sm: 'flex' },
+                                top: 0, right: 0,
+                                p: 2.5, bgcolor: alpha(kpi.color, 0.1),
+                                borderTopRightRadius: 0,
+                                borderBottomLeftRadius: 24,
+                                borderTopLeftRadius: 24,
+                            }}>
+                                <Iconify icon={kpi.icon} sx={{ width: 40, height: 40, color: kpi.color, opacity: 0.8 }} />
                             </Box>
                             <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>{kpi.label}</Typography>
-                            <Typography variant="h3" sx={{ fontWeight: 900, mt: 0.5, color: kpi.color }}>{kpi.value}</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 900, mt: 0.5, color: kpi.color, fontSize: { xs: '1.75rem', md: '3rem' }, wordBreak: 'break-word' }}>{kpi.value}</Typography>
                             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, mt: 0.5, display: 'block' }}>{kpi.desc}</Typography>
                         </Card>
                     </Grid>
@@ -154,9 +162,9 @@ export default function MyEarningsView() {
                                         <Typography variant="subtitle1" fontWeight={900} sx={{ lineHeight: 1.2 }}>
                                             {row.serviceName.toUpperCase()}
                                         </Typography>
-                                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.75, color: 'text.secondary' }}>
-                                            <Iconify icon="solar:calendar-mark-bold-duotone" width={16} sx={{ color: 'secondary.main' }} />
-                                            <Typography variant="caption" fontWeight={800}>
+                                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.75, color: 'text.secondary', minWidth: 0 }}>
+                                            <Iconify icon="solar:calendar-mark-bold-duotone" width={16} sx={{ color: 'secondary.main', flexShrink: 0 }} />
+                                            <Typography variant="caption" fontWeight={800} noWrap sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' }, letterSpacing: 0 }}>
                                                 {dayjs(row.completedDate).format('MMM DD').toUpperCase()} · {dayjs(row.completedDate).format('hh:mm A')}
                                             </Typography>
                                         </Stack>

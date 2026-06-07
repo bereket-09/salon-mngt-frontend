@@ -80,7 +80,7 @@ export default function Router() {
       element: (
         <PrivateRoute>
           <DashboardLayout>
-            <Suspense fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>Loading...</Box>}>
+            <Suspense fallback={<RouteFallback />}>
               <Outlet />
             </Suspense>
           </DashboardLayout>
@@ -143,4 +143,13 @@ export default function Router() {
   return routes;
 }
 
-import { Box } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
+
+// Branded thin top progress bar shown while a route chunk loads.
+function RouteFallback() {
+  return (
+    <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: (theme) => theme.zIndex.appBar + 2 }}>
+      <LinearProgress color="secondary" sx={{ height: 3 }} />
+    </Box>
+  );
+}

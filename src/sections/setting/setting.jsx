@@ -15,8 +15,12 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Card,
+  CardContent,
+  Stack,
 } from '@mui/material';
 import Swal from 'sweetalert2';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +28,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState([]);
   const [isEditing, setIsEditing] = useState(null);
   const [userRoles, setUserRoles] = useState([]);
+  const isMobile = useResponsive('down', 'md');
 
   useEffect(() => {
     // Fetch user data from localStorage
@@ -128,7 +133,82 @@ export default function SettingsPage() {
         Platform Settings
       </Typography>
 
-      {/* Table Section */}
+      {/* Card fallback for small screens — avoids horizontal table scroll */}
+      {isMobile ? (
+        <Stack spacing={2.5} sx={{ mb: 6 }}>
+          {settings.map((setting) => (
+            <Card key={setting.keyName} sx={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
+              <CardContent>
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 'bold', color: 'text.disabled', letterSpacing: 0.5, textTransform: 'uppercase' }}
+                >
+                  Key Name
+                </Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, wordBreak: 'break-word' }}>
+                  {setting.keyName}
+                </Typography>
+
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 'bold', color: 'text.disabled', letterSpacing: 0.5, textTransform: 'uppercase' }}
+                >
+                  Value / Content
+                </Typography>
+                {isEditing === setting.keyName ? (
+                  <TextField
+                    id={`value-${setting.keyName}`}
+                    defaultValue={setting.value}
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    minRows={2}
+                    size="small"
+                    sx={{ mt: 1, mb: 2 }}
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2, wordBreak: 'break-word' }}>
+                    {setting.value}
+                  </Typography>
+                )}
+
+                {isEditing === setting.keyName ? (
+                  <Stack direction="row" spacing={1.5}>
+                    <Button
+                      onClick={() => handleSaveClick(setting.keyName)}
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      onClick={() => setIsEditing(null)}
+                      variant="outlined"
+                      color="secondary"
+                      fullWidth
+                    >
+                      Cancel
+                    </Button>
+                  </Stack>
+                ) : (
+                  userRoles.length > 0 && (
+                    <Button
+                      onClick={() => handleEditClick(setting.keyName)}
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                    >
+                      Edit
+                    </Button>
+                  )
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      ) : (
+      /* Table Section (md and up) */
       <TableContainer
         component={Paper}
         sx={{
@@ -273,6 +353,7 @@ export default function SettingsPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      )}
 
       {/* Footer Button */}
       <Box textAlign="center">

@@ -74,8 +74,6 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          // src={accountMock.photoURL}
-          // alt={account.username}
           sx={{
             width: 40,
             height: 40,
@@ -90,7 +88,6 @@ export default function AccountPopover() {
             icon="ri:account-pin-circle-fill"
             style={{ color: '#fff', fontSize: '48px', transform: 'scale(1.5)' }}
           />
-          {/* {account.username.charAt(0).toUpperCase()} */}
         </Avatar>
       </IconButton>
 
@@ -110,33 +107,38 @@ export default function AccountPopover() {
           },
         }}
       >
-        <Box sx={{ p: 2, textAlign: 'center', justifyContent: 'center' }}>
-          {/* <Avatar
-            src={accountMock.photoURL}
-            alt={account.username}
+        <Box sx={{ p: 2, textAlign: 'center' }}>
+          <Avatar
             sx={{
-              width: 44,
-              height: 44,
-              mb: 1,
+              width: 56,
+              height: 56,
+              mx: 'auto',
+              mb: 1.5,
+              bgcolor: 'primary.main',
+              fontWeight: 900,
+              fontSize: '1.25rem',
             }}
-          /> */}
+          >
+            {account.name?.[0]?.toUpperCase() || 'U'}
+          </Avatar>
 
-          <Iconify
-            icon="ix:panel-ipc-question"
-            style={{ color: '#00A76F', fontSize: '48px', transform: 'scale(2.4)' }}
-          />
-
-          <br />
-          <br />
-          <Typography variant="subtitle1">{account.name}</Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography variant="subtitle1" noWrap sx={{ fontWeight: 800 }}>
+            {account.name}
+          </Typography>
+          <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
             {account.email}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.roles?.[0] || account.role}
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'secondary.main',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+            }}
+          >
+            {account.roles?.[0] || account.role}
           </Typography>
-
-        
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

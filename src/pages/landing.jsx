@@ -32,6 +32,7 @@ import config from 'src/config';
 import MapComponent from 'src/components/map/MapComponent';
 import dayjs from 'dayjs';
 import { useRouter } from 'src/routes/hooks';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function LandingPage() {
     const theme = useTheme();
@@ -58,6 +59,14 @@ export default function LandingPage() {
     const [userRole, setUserRole] = useState('');
     const [scrollY, setScrollY] = useState(0);
     const [selectedImg, setSelectedImg] = useState(null);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+    const isMobile = useResponsive('down', 'md');
+
+    const navLinks = [
+        { name: 'Our Services', id: 'services' },
+        { name: 'Gallery', id: 'gallery' },
+        { name: 'Locations', id: 'locations' }
+    ];
 
     const [galleryImages, setGalleryImages] = useState([
         'https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069',
@@ -69,10 +78,18 @@ export default function LandingPage() {
     ]);
 
     useEffect(() => {
+        // Skip JS-driven parallax on mobile / reduced-motion for performance & comfort.
+        const prefersReducedMotion = typeof window !== 'undefined'
+            && window.matchMedia
+            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (isMobile || prefersReducedMotion) {
+            setScrollY(0);
+            return undefined;
+        }
         const handleScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [isMobile]);
 
     useEffect(() => {
         const userStr = localStorage.getItem('userData');
@@ -199,11 +216,7 @@ export default function LandingPage() {
                         </Typography>
 
                         <Stack direction="row" spacing={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            {[
-                                { name: 'Our Services', id: 'services' },
-                                { name: 'Gallery', id: 'gallery' },
-                                { name: 'Locations', id: 'locations' }
-                            ].map((item) => (
+                            {navLinks.map((item) => (
                                 <Typography
                                     key={item.id}
                                     onClick={() => scrollToSection(item.id)}
@@ -214,7 +227,8 @@ export default function LandingPage() {
                             ))}
                         </Stack>
 
-                        <Stack direction="row" spacing={2} alignItems="center">
+                        {/* Desktop actions */}
+                        <Stack direction="row" spacing={2} alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {isLoggedIn ? (
                                 <Button
                                     variant="contained"
@@ -250,9 +264,94 @@ export default function LandingPage() {
                                 BOOK NOW
                             </Button>
                         </Stack>
+
+                        {/* Mobile hamburger */}
+                        <IconButton
+                            onClick={() => setMobileNavOpen(true)}
+                            aria-label="Open navigation menu"
+                            sx={{ display: { xs: 'inline-flex', md: 'none' }, color: 'white', width: 44, height: 44 }}
+                        >
+                            <Iconify icon="solar:hamburger-menu-line-duotone" width={28} />
+                        </IconButton>
                     </Toolbar>
                 </Container>
             </AppBar>
+
+            {/* MOBILE NAV DRAWER */}
+            <Drawer
+                anchor="right"
+                open={mobileNavOpen}
+                onClose={() => setMobileNavOpen(false)}
+                PaperProps={{
+                    sx: {
+                        width: { xs: '80%', sm: 360 },
+                        bgcolor: '#0D0E1C',
+                        borderLeft: '1px solid',
+                        borderColor: alpha('#C8972A', 0.2),
+                        p: 3,
+                    }
+                }}
+            >
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 900, color: 'white', letterSpacing: -1 }}>
+                        MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
+                    </Typography>
+                    <IconButton
+                        onClick={() => setMobileNavOpen(false)}
+                        aria-label="Close navigation menu"
+                        sx={{ color: 'white', width: 44, height: 44 }}
+                    >
+                        <Iconify icon="solar:close-circle-bold" width={28} />
+                    </IconButton>
+                </Stack>
+
+                <Stack spacing={1} sx={{ mb: 4 }}>
+                    {navLinks.map((item) => (
+                        <Button
+                            key={item.id}
+                            onClick={() => { setMobileNavOpen(false); scrollToSection(item.id); }}
+                            fullWidth
+                            sx={{
+                                justifyContent: 'flex-start', color: 'grey.300', fontWeight: 700,
+                                fontSize: '1rem', height: 52, px: 2, borderRadius: 1,
+                                '&:hover': { color: '#C8972A', bgcolor: alpha('#C8972A', 0.08) }
+                            }}
+                        >
+                            {item.name}
+                        </Button>
+                    ))}
+                </Stack>
+
+                <Divider sx={{ borderColor: alpha('#fff', 0.08), mb: 3 }} />
+
+                <Stack spacing={2}>
+                    {isLoggedIn ? (
+                        <Button
+                            variant="contained" fullWidth
+                            onClick={() => { setMobileNavOpen(false); router.push(userRole === 'employee' ? '/my-assignments' : '/analytics'); }}
+                            startIcon={<Iconify icon="solar:widget-bold-duotone" />}
+                            sx={{ bgcolor: '#C8972A', color: 'white', height: 52, fontWeight: 900, borderRadius: 1, '&:hover': { bgcolor: '#b08425' } }}
+                        >
+                            GO TO DASHBOARD
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="outlined" fullWidth
+                            onClick={() => { setMobileNavOpen(false); router.push('/login'); }}
+                            sx={{ borderColor: '#C8972A', color: '#C8972A', height: 52, fontWeight: 900, borderRadius: 1, '&:hover': { borderColor: 'white', color: 'white' } }}
+                        >
+                            LOGIN
+                        </Button>
+                    )}
+                    <Button
+                        variant="contained" fullWidth
+                        onClick={() => { setMobileNavOpen(false); setOpenBooking(true); }}
+                        sx={{ bgcolor: 'white', color: '#1B1F3A', height: 52, fontWeight: 900, borderRadius: 1, '&:hover': { bgcolor: '#f0f0f0' } }}
+                    >
+                        BOOK NOW
+                    </Button>
+                </Stack>
+            </Drawer>
 
             {/* HERO SECTION */}
             <Box sx={{ pt: { xs: 15, md: 24 }, pb: { xs: 10, md: 20 }, position: 'relative', overflow: 'hidden', bgcolor: '#0D0E1C' }}>
@@ -423,7 +522,7 @@ export default function LandingPage() {
                                     '&:hover': { transform: 'translateY(-15px) scale(1.02)', borderColor: '#C8972A', boxShadow: '0 40px 80px rgba(200, 151, 42, 0.15)' },
                                     '&:hover .book-btn': { opacity: 1, transform: 'translateY(0)' }
                                 }}>
-                                    <CardContent sx={{ p: 5 }}>
+                                    <CardContent sx={{ p: { xs: 3, md: 5 } }}>
                                         <Typography variant="overline" color="#C8972A" fontWeight={900} letterSpacing={2}>{s.gender === 'both' ? 'Unisex' : s.gender.toUpperCase()}</Typography>
                                         <Stack direction="row" justifyContent="space-between" mb={2} mt={1}>
                                             <Typography variant="h4" fontWeight={900} letterSpacing={-1}>{s.name.toUpperCase()}</Typography>
@@ -448,7 +547,10 @@ export default function LandingPage() {
                                             className="book-btn"
                                             sx={{
                                                 mt: 4, height: 56, bgcolor: '#0D0E1C', color: 'white', fontWeight: 900, borderRadius: 1.5,
-                                                opacity: 0, transform: 'translateY(10px)', transition: '0.3s'
+                                                // Always visible & tappable on touch; reveal-on-hover only from md up.
+                                                opacity: { xs: 1, md: 0 },
+                                                transform: { xs: 'none', md: 'translateY(10px)' },
+                                                transition: '0.3s'
                                             }}
                                         >
                                             BOOK NOW
@@ -471,11 +573,11 @@ export default function LandingPage() {
                     </Stack>
                     <Grid container spacing={3}>
                         {galleryImages.map((img, idx) => (
-                            <Grid item xs={12} sm={6} md={idx === 0 || idx === 3 ? 8 : 4} key={idx}>
+                            <Grid item xs={12} sm={6} md={4} key={idx}>
                                 <Box
                                     onClick={() => setSelectedImg(img)}
                                     sx={{
-                                        height: 450,
+                                        height: { xs: 260, sm: 320, md: 400 },
                                         width: '100%',
                                         borderRadius: 3,
                                         overflow: 'hidden',
@@ -489,10 +591,19 @@ export default function LandingPage() {
                                     <Box component="img" src={img} sx={{ width: '100%', height: '100%', objectFit: 'cover', transition: '1.2s cubic-bezier(0.16, 1, 0.3, 1)' }} />
                                     <Box className="overlay" sx={{
                                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                                        bgcolor: alpha('#0D0E1CEB', 0.8), opacity: 0, transition: '0.4s',
-                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2
+                                        bgcolor: alpha('#0D0E1CEB', 0.8),
+                                        // Visible/tappable affordance on touch; reveal-on-hover from md up.
+                                        opacity: { xs: 1, md: 0 },
+                                        // Lighten the always-on mobile veil so the photo still reads.
+                                        background: { xs: `linear-gradient(to top, ${alpha('#0D0E1C', 0.85)} 0%, transparent 55%)`, md: 'none' },
+                                        transition: '0.4s',
+                                        display: 'flex', flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: { xs: 'flex-end', md: 'center' },
+                                        pb: { xs: 3, md: 0 },
+                                        gap: 2
                                     }}>
-                                        <Box sx={{ p: 2, borderRadius: '50%', border: '2px solid #C8972A' }}>
+                                        <Box sx={{ p: 2, borderRadius: '50%', border: '2px solid #C8972A', display: { xs: 'none', md: 'block' } }}>
                                             <Iconify icon="solar:magnifer-zoom-in-bold" width={32} sx={{ color: '#C8972A' }} />
                                         </Box>
                                         <Typography variant="h5" fontWeight={900} color="white">VIEW PHOTO</Typography>

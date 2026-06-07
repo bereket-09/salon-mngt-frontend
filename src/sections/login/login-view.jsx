@@ -118,8 +118,8 @@ export default function LoginView() {
                 sx={{
                   fontWeight: 900,
                   color: 'white',
-                  letterSpacing: -5,
-                  fontSize: { xs: '5rem', md: '7.5rem' },
+                  letterSpacing: { xs: -2, md: -5 },
+                  fontSize: { xs: '2.5rem', md: '7.5rem' },
                   lineHeight: 1,
                   mb: 1
                 }}
@@ -162,7 +162,9 @@ export default function LoginView() {
                   '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: '#C8972A' },
                   '& .MuiInput-underline:after': { borderBottomColor: '#C8972A' },
                   '& .MuiInputLabel-root': { color: 'grey.500', fontWeight: 700 },
-                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 }
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#C8972A' },
+                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 },
+                  '& .MuiInputBase-input:focus': { boxShadow: `0 2px 0 0 ${alpha('#C8972A', 0.5)}` }
                 }}
               />
 
@@ -179,13 +181,20 @@ export default function LoginView() {
                   '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: '#C8972A' },
                   '& .MuiInput-underline:after': { borderBottomColor: '#C8972A' },
                   '& .MuiInputLabel-root': { color: 'grey.500', fontWeight: 700 },
-                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 }
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#C8972A' },
+                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 },
+                  '& .MuiInputBase-input:focus': { boxShadow: `0 2px 0 0 ${alpha('#C8972A', 0.5)}` }
                 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'grey.500' }}>
-                        <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        aria-label="toggle password visibility"
+                        sx={{ color: 'grey.500', width: 44, height: 44 }}
+                      >
+                        <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} width={24} />
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -240,7 +249,7 @@ export default function LoginView() {
           }
         `}
       </style>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar theme="dark" />
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar theme="dark" />
     </Box>
   );
 }

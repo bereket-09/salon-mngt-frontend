@@ -80,27 +80,27 @@ export default function SpecialistBoard() {
     const totalQueued = Object.values(loadData).reduce((sum, tasks) => sum + tasks.filter(t => t.status === 'pending').length, 0);
 
     return (
-        <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Container maxWidth="xl" sx={{ py: 3, px: { xs: 2, md: 3 } }}>
             {/* HEADER */}
             <Paper sx={{
-                p: 4, mb: 6, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
+                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
                 boxShadow: theme.customShadows.z24, position: 'relative', overflow: 'hidden'
             }}>
                 <Box sx={{ position: 'absolute', top: -20, right: -20, opacity: 0.05 }}>
                     <Iconify icon="solar:transmission-bold-duotone" width={240} />
                 </Box>
-                <Stack direction={{ xs: 'column', md: 'row' }} alignItems="center" justifyContent="space-between" spacing={4}>
+                <Stack direction={{ xs: 'column', md: 'row' }} alignItems={{ xs: 'flex-start', md: 'center' }} justifyContent="space-between" spacing={{ xs: 3, md: 4 }}>
                     <Box>
                         <Stack direction="row" spacing={2} alignItems="center" mb={1}>
-                            <Box sx={{ p: 1, bgcolor: alpha('#C8972A', 0.2), borderRadius: 1.5, color: '#C8972A' }}>
+                            <Box sx={{ p: 1, bgcolor: alpha('#C8972A', 0.2), borderRadius: 1.5, color: '#C8972A', display: 'flex' }}>
                                 <Iconify icon="solar:users-group-rounded-bold-duotone" width={32} />
                             </Box>
-                            <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Staff Board</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '3rem' } }}>Staff Board</Typography>
                         </Stack>
                         <Typography variant="body1" sx={{ color: 'grey.400', fontWeight: 600 }}>See who is working and who is waiting.</Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={3}>
+                    <Stack direction="row" spacing={{ xs: 2, md: 3 }} sx={{ width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'flex-end' } }} alignItems="center">
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="h4" fontWeight={900} color="secondary.main">{totalEngaged}</Typography>
                             <Typography variant="caption" fontWeight={900} sx={{ opacity: 0.6 }}>WORKING</Typography>
@@ -131,16 +131,17 @@ export default function SpecialistBoard() {
                         <Grid item xs={12} md={6} lg={4} key={emp.id}>
                             <Card sx={{
                                 p: 0, overflow: 'hidden', height: '100%',
+                                display: 'flex', flexDirection: 'column',
                                 borderRadius: 2.5, border: '1px solid',
                                 borderColor: alpha(theme.palette.divider, 0.1),
                                 transition: '0.2s',
-                                '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.customShadows.z20, borderColor: 'secondary.main' }
+                                '&:hover': { transform: { md: 'translateY(-4px)' }, boxShadow: theme.customShadows.z20, borderColor: 'secondary.main' }
                             }}>
-                                <Box sx={{ p: 4 }}>
-                                    <Stack direction="row" spacing={2.5} alignItems="center" mb={4}>
+                                <Box sx={{ p: { xs: 3, md: 4 } }}>
+                                    <Stack direction="row" spacing={2.5} alignItems="center" mb={{ xs: 3, md: 4 }}>
                                         <Box sx={{ position: 'relative' }}>
                                             <Avatar sx={{
-                                                width: 64, height: 64,
+                                                width: { xs: 56, md: 64 }, height: { xs: 56, md: 64 },
                                                 bgcolor: '#1B1F3A', color: 'white',
                                                 fontWeight: 800, fontSize: '1.4rem',
                                                 border: '2px solid',
@@ -172,7 +173,7 @@ export default function SpecialistBoard() {
                                     </Stack>
 
                                     {/* CURRENT JOB */}
-                                    <Box sx={{ mb: 4 }}>
+                                    <Box sx={{ mb: { xs: 3, md: 4 } }}>
                                         <Typography variant="overline" color="text.disabled" fontWeight={800}>Current Job</Typography>
                                         {activeTask ? (
                                             <Box sx={{
@@ -217,23 +218,23 @@ export default function SpecialistBoard() {
                                         <Stack spacing={1.5}>
                                             {queueTasks.length > 0 ? queueTasks.map((task) => (
                                                 <Box key={task.id} sx={{
-                                                    p: 1.5, borderRadius: 1, bgcolor: alpha(theme.palette.background.neutral, 0.5),
-                                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                    p: { xs: 1.75, md: 1.5 }, minHeight: 44, borderRadius: 1, bgcolor: alpha(theme.palette.background.neutral, 0.5),
+                                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1,
                                                     border: '1px solid', borderColor: alpha(theme.palette.divider, 0.05)
                                                 }}>
-                                                    <Box>
-                                                        <Typography variant="caption" fontWeight={800}>
+                                                    <Box sx={{ minWidth: 0 }}>
+                                                        <Typography variant="caption" fontWeight={800} sx={{ fontSize: { xs: '0.8125rem', md: '0.75rem' } }}>
                                                             {task.CustomerSession?.Customer?.name?.toUpperCase() || 'Customer'}
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.2 }}>
+                                                        <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mt: 0.25 }}>
                                                             {task.Services?.map(s => (
-                                                                <Typography key={s.id} variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.6rem' }}>
+                                                                <Typography key={s.id} variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: { xs: '0.75rem', md: '0.6875rem' } }}>
                                                                     • {s.name}
                                                                 </Typography>
                                                             ))}
                                                         </Box>
                                                     </Box>
-                                                    <Iconify icon="solar:clock-circle-bold-duotone" sx={{ color: 'warning.main', width: 16 }} />
+                                                    <Iconify icon="solar:clock-circle-bold-duotone" sx={{ color: 'warning.main', width: 18, flexShrink: 0 }} />
                                                 </Box>
                                             )) : (
                                                 <Typography variant="caption" color="text.disabled" fontWeight={700} sx={{ textAlign: 'center', display: 'block' }}>No waiting jobs.</Typography>
@@ -243,11 +244,17 @@ export default function SpecialistBoard() {
                                 </Box>
 
                                 <Box sx={{ mt: 'auto' }}>
+                                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: { xs: 3, md: 4 }, pb: 1 }}>
+                                        <Typography variant="caption" color="text.disabled" fontWeight={800} sx={{ fontSize: '0.6875rem' }}>WORKLOAD</Typography>
+                                        <Typography variant="caption" fontWeight={900} sx={{ fontSize: '0.6875rem', color: loadPercentage > 80 ? 'error.main' : loadPercentage > 50 ? 'warning.main' : 'success.main' }}>
+                                            {tasks.length} / 3
+                                        </Typography>
+                                    </Stack>
                                     <LinearProgress
                                         variant="determinate"
                                         value={loadPercentage}
                                         sx={{
-                                            height: 6, bgcolor: alpha(theme.palette.secondary.main, 0.05),
+                                            height: 10, bgcolor: alpha(theme.palette.text.primary, 0.08),
                                             '& .MuiLinearProgress-bar': {
                                                 bgcolor: loadPercentage > 80 ? 'error.main' : loadPercentage > 50 ? 'warning.main' : 'success.main',
                                             }

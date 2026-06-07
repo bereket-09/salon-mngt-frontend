@@ -8,9 +8,11 @@ import listPlugin from '@fullcalendar/list';
 import { Card, Box, Typography, alpha, useTheme, Chip, Stack, Alert, Button } from '@mui/material';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function BookingCalendar({ onSelectBooking, user }) {
   const theme = useTheme();
+  const isMobile = useResponsive('down', 'md');
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('authToken');
@@ -69,9 +71,15 @@ export default function BookingCalendar({ onSelectBooking, user }) {
   };
 
   return (
-    <Card sx={{ p: 3, borderRadius: 3, boxShadow: theme.customShadows.z12 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
-         <Stack direction="row" spacing={1} flexWrap="wrap">
+    <Card sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, boxShadow: theme.customShadows.z12 }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        justifyContent="space-between"
+        spacing={2}
+        mb={3}
+      >
+         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             <Chip label="PENDING" size="small" variant="soft" color="warning" sx={{ fontWeight: 800 }} />
             <Chip label="CONFIRMED" size="small" variant="soft" color="success" sx={{ fontWeight: 800 }} />
             <Chip label="COMPLETED" size="small" variant="soft" color="info" sx={{ fontWeight: 800 }} />
@@ -81,25 +89,40 @@ export default function BookingCalendar({ onSelectBooking, user }) {
             variant="soft" color="secondary"
             onClick={fetchEvents}
             startIcon={<Iconify icon="solar:restart-bold" className={loading ? 'animate-spin' : ''} />}
-            sx={{ fontWeight: 900 }}
+            sx={{ fontWeight: 900, height: 44, flexShrink: 0, width: { xs: '100%', sm: 'auto' } }}
          >
             REFRESH
          </Button>
       </Stack>
-      <Box sx={{ 
+      <Box sx={{
         '& .fc-theme-standard': { border: 'none' },
-        '& .fc-header-toolbar': { mb: 3 },
-        '& .fc-toolbar-title': { fontWeight: 900, textTransform: 'uppercase', fontSize: '1.2rem' },
-        '& .fc-button': { bgcolor: alpha(theme.palette.secondary.main, 0.05), border: 'none', color: 'secondary.main', fontWeight: 900, '&:hover': { bgcolor: 'secondary.main', color: 'white' } },
+        '& .fc-header-toolbar': {
+          mb: 3,
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: { xs: 1.5, md: 0 },
+          alignItems: { xs: 'stretch', md: 'center' },
+        },
+        '& .fc-toolbar-chunk': { display: 'flex', justifyContent: 'center' },
+        '& .fc-toolbar-title': { fontWeight: 900, textTransform: 'uppercase', fontSize: { xs: '1rem', md: '1.2rem' } },
+        '& .fc-button': {
+          bgcolor: alpha(theme.palette.secondary.main, 0.05), border: 'none', color: 'secondary.main', fontWeight: 900,
+          minHeight: 44, px: { xs: 1.5, md: 1.25 },
+          '&:hover': { bgcolor: 'secondary.main', color: 'white' },
+        },
         '& .fc-button-active': { bgcolor: 'secondary.main !important', color: 'white !important' },
         '& .fc-col-header-cell': { py: 2, bgcolor: alpha(theme.palette.background.neutral, 0.5), fontWeight: 900 },
         '& .fc-event': { cursor: 'pointer', border: 'none', px: 1, py: 0.5, borderRadius: 1 },
-        '& .fc-event-title': { fontWeight: 800, fontSize: '0.75rem' }
+        '& .fc-event-title': { fontWeight: 800, fontSize: '0.75rem' },
+        '& .fc-list-event': { cursor: 'pointer' },
       }}>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-          initialView="timeGridWeek"
-          headerToolbar={{
+          initialView={isMobile ? 'listWeek' : 'timeGridWeek'}
+          headerToolbar={isMobile ? {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'listWeek,dayGridMonth'
+          } : {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
@@ -108,7 +131,7 @@ export default function BookingCalendar({ onSelectBooking, user }) {
           eventClick={handleEventClick}
           slotMinTime="08:00:00"
           slotMaxTime="22:00:00"
-          height="700px"
+          height={isMobile ? 420 : '700px'}
           nowIndicator={true}
           allDaySlot={false}
         />

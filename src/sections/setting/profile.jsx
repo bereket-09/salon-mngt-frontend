@@ -47,7 +47,7 @@ export default function ProfilePage() {
               flexDirection: 'column',
             }}
           >
-            <Avatar sx={{ width: 100, height: 100, mb: 2, bgcolor: 'primary.main' }}>
+            <Avatar sx={{ width: { xs: 80, md: 100 }, height: { xs: 80, md: 100 }, mb: 2, bgcolor: 'primary.main' }}>
               <Iconify
                 icon="flowbite:profile-card-outline"
                 sx={{ width: 50, height: 50, color: 'white', transform: 'scale(1.2)' }}
@@ -64,7 +64,7 @@ export default function ProfilePage() {
           <Divider sx={{ my: 2 }} />
 
           {/* User Details */}
-          <Grid container spacing={2} sx={{ mb: 3, paddingLeft: 2 }}>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
             {/* Full Name */}
             <Grid item xs={12} sm={6}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -210,10 +210,10 @@ export default function ProfilePage() {
           <Box
             sx={{
               display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'space-between',
+              gap: 2,
               mt: 2,
-              paddingLeft: 2,
-              paddingRight: 5,
             }}
           >
             <Button
@@ -221,7 +221,7 @@ export default function ProfilePage() {
               color="primary"
               onClick={() => navigate(-1)}
               startIcon={<Iconify icon="mdi:arrow-left" sx={{ width: 20, height: 20 }} />}
-              
+              sx={{ px: 4 }}
             >
               Go Back
             </Button>

@@ -83,13 +83,61 @@ export function overrides(theme) {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          borderRadius: 24,
+          boxShadow: theme.customShadows.card,
+          borderRadius: 16,
           position: 'relative',
           zIndex: 0, // Fix Safari overflow: hidden with border radius
-          border: '1px solid rgba(255,255,255,0.6)',
+          border: `1px solid ${alpha(theme.palette.grey[500], 0.08)}`,
         },
       },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: { fontWeight: 700, borderRadius: 8 },
+        sizeSmall: { borderRadius: 6 },
+        label: { fontVariantNumeric: 'tabular-nums' },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 16,
+          boxShadow: theme.customShadows.dialog,
+          [theme.breakpoints.down('sm')]: {
+            margin: theme.spacing(2),
+            width: `calc(100% - ${theme.spacing(4)})`,
+            maxWidth: `calc(100% - ${theme.spacing(4)})`,
+          },
+        },
+        paperFullScreen: { borderRadius: 0 },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: { root: { fontWeight: 800, padding: theme.spacing(3) } },
+    },
+    MuiDialogActions: {
+      styleOverrides: { root: { padding: theme.spacing(2, 3, 3) } },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: { fontWeight: 700, textTransform: 'none', minWidth: 'auto' },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          '&:hover': { backgroundColor: alpha(theme.palette.grey[500], 0.04) },
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: { borderRadius: 8, overflow: 'hidden' },
+        bar: { borderRadius: 8 },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: { root: { borderRadius: 12, fontWeight: 600 } },
     },
     MuiCardHeader: {
       defaultProps: {

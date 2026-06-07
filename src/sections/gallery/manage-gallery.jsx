@@ -130,7 +130,13 @@ export default function ManageGallery() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        justifyContent="space-between"
+        spacing={2}
+        mb={5}
+      >
         <Box>
           <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Gallery Management</Typography>
           <Typography variant="body1" color="text.secondary" fontWeight={600}>Manage portraits and portfolio images for the landing page.</Typography>
@@ -165,18 +171,42 @@ export default function ManageGallery() {
             }}>
               <Box component="img"
                    src={resolveImageUrl(img)}
-                   sx={{ width: '100%', height: 240, objectFit: 'cover' }} />
+                   sx={{ width: '100%', height: { xs: 180, md: 240 }, objectFit: 'cover' }} />
+
+              {/* Permanent, always-tappable delete button (essential on touch devices) */}
+              <Tooltip title="Delete">
+                <IconButton
+                  onClick={() => handleDelete(img.id)}
+                  disabled={deletingId === img.id}
+                  aria-label="Delete image"
+                  sx={{
+                    position: 'absolute', top: 8, right: 8,
+                    width: 44, height: 44,
+                    bgcolor: 'error.main', color: 'white',
+                    boxShadow: theme.customShadows.z8,
+                    '&:hover': { bgcolor: 'error.dark' },
+                    // On pointer-capable (desktop) screens the overlay handles the action,
+                    // so only surface the permanent button on touch/small screens.
+                    display: { xs: 'inline-flex', md: 'none' }
+                  }}
+                >
+                  {deletingId === img.id
+                    ? <CircularProgress size={20} sx={{ color: 'white' }} />
+                    : <Iconify icon="solar:trash-bin-trash-bold" />}
+                </IconButton>
+              </Tooltip>
 
               <Box className="actions" sx={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 bgcolor: alpha('#000', 0.5), opacity: 0, transition: '0.3s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2
+                display: { xs: 'none', md: 'flex' }, alignItems: 'center', justifyContent: 'center', gap: 2
               }}>
                 <Tooltip title="Delete">
                   <IconButton
                     onClick={() => handleDelete(img.id)}
                     disabled={deletingId === img.id}
-                    sx={{ bgcolor: 'error.main', color: 'white', '&:hover': { bgcolor: 'error.dark' } }}
+                    aria-label="Delete image"
+                    sx={{ width: 44, height: 44, bgcolor: 'error.main', color: 'white', '&:hover': { bgcolor: 'error.dark' } }}
                   >
                     {deletingId === img.id
                       ? <CircularProgress size={20} sx={{ color: 'white' }} />

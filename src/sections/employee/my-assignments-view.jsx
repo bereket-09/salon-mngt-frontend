@@ -9,7 +9,6 @@ import {
     Button,
     Grid,
     Divider,
-    LinearProgress,
     alpha,
     Dialog,
     DialogTitle,
@@ -20,15 +19,18 @@ import {
     Select,
     MenuItem,
     IconButton,
+    Skeleton,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
+import { useResponsive } from 'src/hooks/use-responsive';
 import dayjs from 'dayjs';
 
 export default function MyAssignmentsView() {
     const theme = useTheme();
+    const isMobile = useResponsive('down', 'md');
     const [assignments, setAssignments] = useState([]);
     const [activeSessions, setActiveSessions] = useState([]);
     const [services, setServices] = useState([]);
@@ -132,7 +134,25 @@ export default function MyAssignmentsView() {
         }
     };
 
-    if (loading && !assignments.length) return <LinearProgress color="secondary" sx={{ height: 4, borderRadius: 2 }} />;
+    if (loading && !assignments.length) {
+        return (
+            <Box>
+                <Stack direction="row" alignItems="center" spacing={{ xs: 2, md: 3 }} mb={4}>
+                    <Skeleton variant="circular" sx={{ width: { xs: 56, md: 72 }, height: { xs: 56, md: 72 }, flexShrink: 0 }} />
+                    <Box sx={{ flex: 1 }}>
+                        <Skeleton variant="text" sx={{ fontSize: '2rem', maxWidth: 240 }} />
+                        <Skeleton variant="text" sx={{ fontSize: '0.75rem', maxWidth: 160 }} />
+                    </Box>
+                </Stack>
+                <Skeleton variant="rounded" height={48} sx={{ borderRadius: 2, mb: 3 }} />
+                <Stack spacing={2}>
+                    {[1, 2, 3].map((n) => (
+                        <Skeleton key={n} variant="rounded" sx={{ height: { xs: 120, md: 96 }, borderRadius: 2 }} />
+                    ))}
+                </Stack>
+            </Box>
+        );
+    }
 
     const activeJobs = assignments.filter(a => a.status === 'in_progress');
     const pausedJobs = assignments.filter(a => a.status === 'waiting');
@@ -141,26 +161,26 @@ export default function MyAssignmentsView() {
 
     return (
         <Box>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
-                <Stack direction="row" spacing={{ xs: 2, md: 3 }} alignItems="center">
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4} spacing={1.5}>
+                <Stack direction="row" spacing={{ xs: 1.5, md: 3 }} alignItems="center" sx={{ minWidth: 0 }}>
                     <Avatar
                         src={user?.avatarUrl}
                         sx={{
-                            width: { xs: 56, md: 72 }, height: { xs: 56, md: 72 }, bgcolor: '#1B1F3A', color: '#C8972A',
+                            width: { xs: 48, md: 72 }, height: { xs: 48, md: 72 }, flexShrink: 0, bgcolor: '#1B1F3A', color: '#C8972A',
                             fontWeight: 900, border: '4px solid', borderColor: alpha('#C8972A', 0.2),
                         }}
                     >
                         {user?.name[0]}
                     </Avatar>
-                    <Box>
-                        <Typography variant="h4" sx={{ fontWeight: 900 }}>Selam, {user?.name}</Typography>
+                    <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 900, fontSize: { xs: '1.25rem', md: '2.125rem' } }} noWrap>Selam, {user?.name}</Typography>
                         <Typography variant="caption" color="text.secondary" fontWeight={900}>YOUR WORKBOARD TODAY</Typography>
                     </Box>
                 </Stack>
                 <Chip
                     label={`${activeJobs.length} WORKING`}
                     color="error"
-                    sx={{ fontWeight: 900, borderRadius: 1 }}
+                    sx={{ fontWeight: 900, borderRadius: 1, flexShrink: 0 }}
                 />
             </Stack>
 
@@ -225,30 +245,30 @@ export default function MyAssignmentsView() {
 
             {/* WORKING NOW SECTION */}
             {activeJobs.map(job => (
-                <Card key={job.id} sx={{ mb: 4, p: { xs: 3, md: 4 }, borderRadius: 3, border: '2px solid', borderColor: 'secondary.main' }}>
-                    <Grid container spacing={3} alignItems="center">
+                <Card key={job.id} sx={{ mb: 4, p: { xs: 2.5, md: 4 }, borderRadius: 3, border: '2px solid', borderColor: 'secondary.main' }}>
+                    <Grid container spacing={{ xs: 2.5, md: 3 }} alignItems="center">
                         <Grid item xs={12} md={8}>
                             <Stack direction="row" spacing={1} alignItems="center" mb={1}>
                                 <Typography variant="overline" color="error.main" fontWeight={900}>WORKING NOW</Typography>
                                 <Chip label={`#SID-${job.CustomerSessionId}`} size="small" variant="soft" color="secondary" sx={{ fontWeight: 900, borderRadius: 0.5, height: 20, fontSize: '0.65rem' }} />
                             </Stack>
-                            <Typography variant="h3" fontWeight={900} sx={{ mb: 1 }}>{job.Services?.map(s => s.name).join(' + ').toUpperCase()}</Typography>
+                            <Typography variant="h3" fontWeight={900} sx={{ mb: 1, fontSize: { xs: '1.6rem', md: '3rem' }, lineHeight: 1.1 }}>{job.Services?.map(s => s.name).join(' + ').toUpperCase()}</Typography>
                             <Stack spacing={0.5}>
-                                <Stack direction="row" spacing={2} alignItems="center">
+                                <Stack direction="row" spacing={{ xs: 1.5, md: 2 }} alignItems="center">
                                     <Iconify icon="solar:user-bold-duotone" sx={{ color: 'text.secondary' }} />
-                                    <Typography variant="h5" fontWeight={800}>{job.CustomerSession?.Customer?.name || 'Customer'}</Typography>
+                                    <Typography variant="h5" fontWeight={800} sx={{ fontSize: { xs: '1.05rem', md: '1.5rem' } }}>{job.CustomerSession?.Customer?.name || 'Customer'}</Typography>
                                 </Stack>
-                                <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ ml: 4 }}>
+                                <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ ml: { xs: 3.5, md: 4 } }}>
                                     TEL: {job.CustomerSession?.Customer?.phone || 'NO PHONE'}
                                 </Typography>
                             </Stack>
                         </Grid>
                         <Grid item xs={12} md={4}>
-                            <Stack spacing={2}>
+                            <Stack direction={{ xs: 'column', sm: 'row', md: 'column' }} spacing={{ xs: 1.5, md: 2 }}>
                                 <Button
                                     fullWidth variant="contained" color="success" size="large"
                                     onClick={() => handleActionClick(job.id, 'completed')}
-                                    sx={{ height: 64, fontWeight: 900, fontSize: '1.2rem' }}
+                                    sx={{ height: { xs: 52, md: 64 }, fontWeight: 900, fontSize: { xs: '1rem', md: '1.2rem' } }}
                                     startIcon={<Iconify icon="solar:check-circle-bold-duotone" />}
                                 >
                                     FINISH JOB
@@ -256,7 +276,7 @@ export default function MyAssignmentsView() {
                                 <Button
                                     fullWidth variant="soft" color="warning" size="large"
                                     onClick={() => handleActionClick(job.id, 'waiting')}
-                                    sx={{ height: 52, fontWeight: 900 }}
+                                    sx={{ height: { xs: 48, md: 52 }, fontWeight: 900 }}
                                     startIcon={<Iconify icon="solar:pause-bold-duotone" />}
                                 >
                                     PAUSE
@@ -273,9 +293,9 @@ export default function MyAssignmentsView() {
                     <Typography variant="h6" fontWeight={800} mb={2}>Paused Jobs</Typography>
                     <Stack spacing={2}>
                         {pausedJobs.map(job => (
-                            <Card key={job.id} sx={{ p: 3, borderRadius: 2, bgcolor: alpha(theme.palette.warning.main, 0.05) }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Box>
+                            <Card key={job.id} sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2, bgcolor: alpha(theme.palette.warning.main, 0.05) }}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} spacing={{ xs: 2, sm: 1 }}>
+                                    <Box sx={{ minWidth: 0 }}>
                                         <Stack direction="row" spacing={1} alignItems="center">
                                             <Typography variant="subtitle1" fontWeight={900}>{job.Services?.map(s => s.name).join(' + ')}</Typography>
                                             <Typography variant="caption" sx={{ opacity: 0.5, fontWeight: 800 }}>#SID-{job.CustomerSessionId}</Typography>
@@ -284,9 +304,10 @@ export default function MyAssignmentsView() {
                                     </Box>
                                     <Button
                                         variant="contained" color="warning"
+                                        fullWidth={isMobile}
                                         onClick={() => handleActionClick(job.id, 'in_progress')}
                                         startIcon={<Iconify icon="solar:play-bold-duotone" />}
-                                        sx={{ fontWeight: 900 }}
+                                        sx={{ fontWeight: 900, height: { xs: 48, sm: 'auto' }, flexShrink: 0 }}
                                     >
                                         RESUME
                                     </Button>
@@ -303,9 +324,9 @@ export default function MyAssignmentsView() {
                     <Typography variant="h5" fontWeight={900} mb={3}>Waiting Jobs ({queueJobs.length})</Typography>
                     <Stack spacing={2}>
                         {queueJobs.map(job => (
-                            <Card key={job.id} sx={{ p: 3, borderRadius: 2, '&:hover': { transform: 'translateX(8px)' }, transition: '0.2s' }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Box>
+                            <Card key={job.id} sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2, '&:hover': { transform: { md: 'translateX(8px)' } }, transition: '0.2s' }}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} spacing={{ xs: 2, sm: 1 }}>
+                                    <Box sx={{ minWidth: 0 }}>
                                         <Stack direction="row" spacing={1} alignItems="center">
                                             <Typography variant="h6" fontWeight={900}>{job.Services?.map(s => s.name).join(' + ')}</Typography>
                                             <Typography variant="caption" sx={{ opacity: 0.5, fontWeight: 800 }}>#SID-{job.CustomerSessionId}</Typography>
@@ -316,10 +337,11 @@ export default function MyAssignmentsView() {
                                     </Box>
                                     <Button
                                         variant="soft" color="secondary"
+                                        fullWidth={isMobile}
                                         disabled={activeJobs.length > 0}
                                         onClick={() => handleActionClick(job.id, 'in_progress')}
                                         startIcon={<Iconify icon="solar:play-bold-duotone" />}
-                                        sx={{ fontWeight: 900 }}
+                                        sx={{ fontWeight: 900, height: { xs: 48, sm: 'auto' }, flexShrink: 0 }}
                                     >
                                         START
                                     </Button>

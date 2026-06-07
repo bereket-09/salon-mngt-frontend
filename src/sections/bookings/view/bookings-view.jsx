@@ -28,6 +28,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useResponsive } from 'src/hooks/use-responsive';
 import config from 'src/config';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 import BookingCalendar from '../booking-calendar';
@@ -39,6 +40,7 @@ import dayjs from 'dayjs';
 
 export default function BookingsView() {
     const theme = useTheme();
+    const isMobile = useResponsive('down', 'md');
     const [data, setData] = useState([]);
     const [branches, setBranches] = useState([]);
     const [services, setServices] = useState([]);
@@ -202,17 +204,23 @@ export default function BookingsView() {
 
     return (
         <Box>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+            <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                alignItems={{ xs: 'stretch', md: 'center' }}
+                justifyContent="space-between"
+                spacing={2}
+                mb={5}
+            >
                 <Box>
                     <Typography variant="h3" sx={{ fontWeight: 900 }}>Appointments</Typography>
                     <Typography variant="body1" color="text.secondary" fontWeight={500}>Manage your coming and past bookings.</Typography>
                 </Box>
-                <Stack direction="row" spacing={2} alignItems="center">
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="stretch">
                     <Button
                         variant="soft" color="inherit"
                         onClick={() => setViewMode(v => v === 'list' ? 'calendar' : 'list')}
                         startIcon={<Iconify icon={viewMode === 'list' ? "solar:calendar-bold-duotone" : "solar:list-bold-duotone"} />}
-                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5 }}
+                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, flex: { xs: 1, sm: 'none' } }}
                     >
                         {viewMode === 'list' ? 'CALENDAR VIEW' : 'LIST VIEW'}
                     </Button>
@@ -220,7 +228,7 @@ export default function BookingsView() {
                         variant="contained" color="secondary"
                         onClick={() => setOpenCreate(true)}
                         startIcon={<Iconify icon="solar:add-circle-bold" />}
-                        sx={{ fontWeight: 900, height: 48, borderRadius: 1.5, px: 3 }}
+                        sx={{ fontWeight: 900, height: 48, borderRadius: 1.5, px: 3, flex: { xs: 1, sm: 'none' } }}
                     >
                         NEW RESERVATION
                     </Button>
@@ -250,6 +258,72 @@ export default function BookingsView() {
                     ))}
                 </Tabs>
 
+                {isMobile ? (
+                    <Stack spacing={2} sx={{ p: 2 }}>
+                        {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                            const hasConflict = checkConflicts(row);
+                            const conflicting = hasConflict && row.status !== 'cancelled';
+                            return (
+                                <Card
+                                    key={row.id}
+                                    onClick={() => { setSelectedBooking(row); setOpenModal(true); }}
+                                    sx={{
+                                        p: 2,
+                                        cursor: 'pointer',
+                                        boxShadow: theme.customShadows.z8,
+                                        border: '1px solid',
+                                        borderColor: conflicting ? alpha(theme.palette.warning.main, 0.4) : alpha(theme.palette.divider, 0.1),
+                                        bgcolor: conflicting ? alpha(theme.palette.warning.main, 0.04) : 'background.paper',
+                                    }}
+                                >
+                                    <Stack direction="row" spacing={2} alignItems="center">
+                                        <Avatar sx={{
+                                            width: 44, height: 44, flexShrink: 0,
+                                            bgcolor: conflicting ? alpha(theme.palette.warning.main, 0.1) : alpha(theme.palette.primary.main, 0.05),
+                                            color: conflicting ? 'warning.main' : 'primary.main',
+                                            border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1)
+                                        }}>
+                                            <Iconify icon={conflicting ? "solar:danger-bold" : "solar:user-bold"} />
+                                        </Avatar>
+                                        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Typography variant="subtitle1" fontWeight={900} noWrap>{row.customerName.toUpperCase()}</Typography>
+                                                {conflicting && (
+                                                    <Box sx={{ p: 0.5, bgcolor: 'warning.main', borderRadius: 0.5, display: 'flex', flexShrink: 0 }}>
+                                                        <Iconify icon="solar:danger-triangle-bold" sx={{ color: 'white', width: 12, height: 12 }} />
+                                                    </Box>
+                                                )}
+                                            </Stack>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }} noWrap>TEL: {row.phone}</Typography>
+                                        </Box>
+                                        <Chip
+                                            label={row.status.toUpperCase()}
+                                            variant="soft"
+                                            color={getStatusColor(row.status)}
+                                            sx={{ fontWeight: 900, borderRadius: 1, fontSize: '0.6rem', flexShrink: 0 }}
+                                        />
+                                    </Stack>
+                                    <Stack direction="row" spacing={2} sx={{ mt: 2, pt: 2, borderTop: '1px dashed', borderColor: alpha(theme.palette.divider, 0.15) }}>
+                                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                                            <Typography variant="caption" color="text.disabled" sx={{ letterSpacing: 1, fontWeight: 900, display: 'block' }}>BRANCH</Typography>
+                                            <Typography variant="subtitle2" fontWeight={800} noWrap>{row.Branch?.name?.toUpperCase() || 'MAIN BRANCH'}</Typography>
+                                        </Box>
+                                        <Box sx={{ flex: 1, minWidth: 0, textAlign: 'right' }}>
+                                            <Typography variant="caption" color="text.disabled" sx={{ letterSpacing: 1, fontWeight: 900, display: 'block' }}>WHEN</Typography>
+                                            <Typography variant="subtitle2" fontWeight={900} noWrap>{row.preferredDate || 'DATE TBD'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }}>{row.preferredTime || '-'}</Typography>
+                                        </Box>
+                                    </Stack>
+                                </Card>
+                            );
+                        })}
+                        {data.length === 0 && (
+                            <Box sx={{ py: 6, textAlign: 'center' }}>
+                                <Typography variant="subtitle2" color="text.disabled" fontWeight={800}>NO RESERVATIONS</Typography>
+                            </Box>
+                        )}
+                    </Stack>
+                ) : (
                 <Scrollbar>
                     <TableContainer sx={{ minWidth: 800 }}>
                         <Table>
@@ -319,6 +393,7 @@ export default function BookingsView() {
                         </Table>
                     </TableContainer>
                 </Scrollbar>
+                )}
 
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
@@ -343,7 +418,7 @@ export default function BookingsView() {
             >
                 {selectedBooking && (
                     <>
-                        <DialogTitle sx={{ p: 4, bgcolor: '#1B1F3A', color: 'white' }}>
+                        <DialogTitle sx={{ p: { xs: 2.5, sm: 4 }, bgcolor: '#1B1F3A', color: 'white' }}>
                             <Stack direction="row" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="h4" sx={{ fontWeight: 900 }}>Appointment Info</Typography>
@@ -357,8 +432,8 @@ export default function BookingsView() {
                                 />
                             </Stack>
                         </DialogTitle>
-                        <DialogContent sx={{ p: 4, mt: 2 }}>
-                            <Grid container spacing={4}>
+                        <DialogContent sx={{ p: { xs: 2.5, sm: 4 }, mt: 2 }}>
+                            <Grid container spacing={{ xs: 3, sm: 4 }}>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="overline" color="text.disabled" fontWeight={900} sx={{ letterSpacing: 2 }}>CLIENT INFO</Typography>
                                     <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>{selectedBooking.customerName.toUpperCase()}</Typography>
@@ -404,7 +479,7 @@ export default function BookingsView() {
                                 )}
                             </Grid>
                         </DialogContent>
-                        <DialogActions sx={{ p: 4, bgcolor: alpha(theme.palette.background.neutral, 0.4), gap: 2 }}>
+                        <DialogActions sx={{ p: { xs: 2.5, sm: 4 }, bgcolor: alpha(theme.palette.background.neutral, 0.4), gap: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > :not(style)': { m: '0 !important' } }}>
                             {selectedBooking.status !== 'completed' && selectedBooking.status !== 'cancelled' && (
                                 <Button
                                     color="error"
@@ -463,8 +538,8 @@ export default function BookingsView() {
                     <DialogTitle sx={{ fontWeight: 900, p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.05) }}>
                         New Manual Reservation
                     </DialogTitle>
-                    <DialogContent sx={{ p: 4 }}>
-                        <Grid container spacing={3} sx={{ mt: 1 }}>
+                    <DialogContent sx={{ p: { xs: 2.5, sm: 4 } }}>
+                        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mt: 1 }}>
                             <Grid item xs={12} sm={6}>
                                 <TextField fullWidth label="Customer Name" value={newBooking.customerName} onChange={(e) => setNewBooking({ ...newBooking, customerName: e.target.value })} />
                             </Grid>
@@ -489,14 +564,14 @@ export default function BookingsView() {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <DatePicker 
+                                <DatePicker
                                     label="Preferred Date" sx={{ width: '100%' }}
                                     value={dayjs(newBooking.preferredDate)}
                                     onChange={(v) => setNewBooking({ ...newBooking, preferredDate: v.format('YYYY-MM-DD') })}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TimePicker 
+                                <TimePicker
                                     label="Preferred Time" sx={{ width: '100%' }}
                                     value={dayjs(`2000-01-01T${newBooking.preferredTime}`)}
                                     onChange={(v) => setNewBooking({ ...newBooking, preferredTime: v.format('HH:mm') })}
@@ -530,9 +605,9 @@ export default function BookingsView() {
                             </Grid>
                         </Grid>
                     </DialogContent>
-                    <DialogActions sx={{ p: 4, gap: 2 }}>
-                        <Button variant="soft" color="inherit" fullWidth onClick={() => setOpenCreate(false)}>CANCEL</Button>
-                        <Button variant="contained" color="secondary" fullWidth onClick={handleCreateBooking}>SAVE RESERVATION</Button>
+                    <DialogActions sx={{ p: { xs: 2.5, sm: 4 }, gap: 2, flexDirection: { xs: 'column-reverse', sm: 'row' } }}>
+                        <Button variant="soft" color="inherit" fullWidth onClick={() => setOpenCreate(false)} sx={{ m: '0 !important', height: 48 }}>CANCEL</Button>
+                        <Button variant="contained" color="secondary" fullWidth onClick={handleCreateBooking} sx={{ m: '0 !important', height: 48 }}>SAVE RESERVATION</Button>
                     </DialogActions>
                 </LocalizationProvider>
             </Dialog>

@@ -72,34 +72,42 @@ export const typography = {
     fontWeight: 600,
     lineHeight: 1.5,
     fontSize: pxToRem(16),
+    letterSpacing: '-0.003em',
   },
   subtitle2: {
     fontWeight: 600,
     lineHeight: 22 / 14,
     fontSize: pxToRem(14),
+    letterSpacing: '-0.003em',
   },
   body1: {
-    lineHeight: 1.5,
+    lineHeight: 1.55,
     fontSize: pxToRem(16),
+    letterSpacing: '-0.003em',
   },
   body2: {
     lineHeight: 22 / 14,
     fontSize: pxToRem(14),
+    letterSpacing: '-0.002em',
   },
   caption: {
     lineHeight: 1.5,
     fontSize: pxToRem(12),
+    fontVariantNumeric: 'tabular-nums',
   },
   overline: {
     fontWeight: 700,
     lineHeight: 1.5,
     fontSize: pxToRem(12),
     textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    fontVariantNumeric: 'tabular-nums',
   },
   button: {
     fontWeight: 700,
     lineHeight: 24 / 14,
     fontSize: pxToRem(14),
     textTransform: 'unset',
+    fontVariantNumeric: 'tabular-nums',
   },
 };

@@ -171,18 +171,18 @@ export default function CheckInView() {
         <Box>
             {/* HEADER */}
             <Paper sx={{
-                p: 4, mb: 6, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
+                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
                 boxShadow: theme.customShadows.z24, position: 'relative', overflow: 'hidden'
             }}>
                 <Box sx={{ position: 'absolute', top: -30, right: -30, opacity: 0.1 }}>
                     <Iconify icon="solar:ticket-bold-duotone" width={200} />
                 </Box>
-                <Stack direction="row" alignItems="center" spacing={3}>
-                    <Box sx={{ p: 2, bgcolor: alpha('#C8972A', 0.2), borderRadius: 2, color: '#C8972A' }}>
+                <Stack direction="row" alignItems="center" spacing={{ xs: 2, md: 3 }}>
+                    <Box sx={{ p: 2, bgcolor: alpha('#C8972A', 0.2), borderRadius: 2, color: '#C8972A', flexShrink: 0 }}>
                         <Iconify icon="solar:user-plus-bold-duotone" width={40} />
                     </Box>
                     <Box>
-                        <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Customer Check-In</Typography>
+                        <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '3rem' } }}>Customer Check-In</Typography>
                         <Typography variant="body1" sx={{ color: 'grey.400', fontWeight: 600 }}>Register new and existing customers.</Typography>
                     </Box>
                 </Stack>
@@ -191,7 +191,7 @@ export default function CheckInView() {
             <Grid container spacing={4}>
                 {/* LEFT: CUSTOMER INFO */}
                 <Grid item xs={12} lg={7}>
-                    <Card sx={{ p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                    <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, boxShadow: theme.customShadows.z12, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                         <Stack direction="row" spacing={2} alignItems="center" mb={4}>
                             <Iconify icon="solar:shield-user-bold-duotone" sx={{ color: 'secondary.main' }} width={28} />
                             <Typography variant="h5" fontWeight={800}>Find Customer</Typography>
@@ -200,6 +200,7 @@ export default function CheckInView() {
                         <Autocomplete
                             fullWidth
                             options={customers}
+                            slotProps={{ paper: { sx: { maxHeight: 300, borderRadius: 1.5, boxShadow: theme.customShadows.z12 } } }}
                             getOptionLabel={(option) => `${option.name} (${option.phone})`}
                             onChange={(e, val) => {
                                 setSelectedCustomer(val);
@@ -255,7 +256,7 @@ export default function CheckInView() {
                                     placeholder="Enter first name"
                                     value={form.firstName}
                                     onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.2, fontWeight: 700 } }}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -264,7 +265,7 @@ export default function CheckInView() {
                                     placeholder="Enter last name"
                                     value={form.lastName}
                                     onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.2, fontWeight: 700 } }}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -273,7 +274,7 @@ export default function CheckInView() {
                                     placeholder="+251..."
                                     value={form.phone}
                                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.2, fontWeight: 700 } }}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
                                 />
                             </Grid>
                         </Grid>
@@ -283,7 +284,7 @@ export default function CheckInView() {
                 {/* RIGHT: SERVICE & STAFF */}
                 <Grid item xs={12} lg={5}>
                     <Card sx={{
-                        p: 4, borderRadius: 2.5, height: '100%',
+                        p: { xs: 2.5, md: 4 }, borderRadius: 2.5, height: '100%',
                         bgcolor: alpha(theme.palette.background.neutral, 0.3),
                         border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
                     }}>
@@ -301,6 +302,7 @@ export default function CheckInView() {
                                     label="Select Services"
                                     onChange={(e) => setForm({ ...form, serviceIds: e.target.value })}
                                     sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
+                                    MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
                                     renderValue={(selected) => (
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                             {selected.map((val) => (
@@ -328,6 +330,7 @@ export default function CheckInView() {
                                         label="Select Staff"
                                         onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
                                         sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
+                                        MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
                                     >
                                         <MenuItem value="" sx={{ fontWeight: 700 }}>Auto-assign</MenuItem>
                                         {displayedEmployees.map((e) => (
@@ -384,16 +387,30 @@ export default function CheckInView() {
                                 </Grid>
                             </Box>
 
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                fullWidth
-                                onClick={handleConfirmCheckIn}
-                                disabled={loading || !form.phone || !form.firstName}
-                                sx={{ height: 64, fontWeight: 900, fontSize: '1.1rem', borderRadius: 1.5 }}
+                            <Box
+                                sx={{
+                                    position: { xs: 'sticky', sm: 'static' },
+                                    bottom: { xs: 16, sm: 'auto' },
+                                    zIndex: { xs: 2, sm: 'auto' },
+                                }}
                             >
-                                {loading ? <CircularProgress size={28} color="inherit" /> : 'Check In Now'}
-                            </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    fullWidth
+                                    onClick={handleConfirmCheckIn}
+                                    disabled={loading || !form.phone || !form.firstName}
+                                    sx={{
+                                        height: 64,
+                                        fontWeight: 900,
+                                        fontSize: '1.1rem',
+                                        borderRadius: 1.5,
+                                        boxShadow: { xs: theme.customShadows.z12, sm: 'none' },
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={28} color="inherit" /> : 'Check In Now'}
+                                </Button>
+                            </Box>
                         </Stack>
                     </Card>
                 </Grid>

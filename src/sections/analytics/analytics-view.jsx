@@ -17,9 +17,11 @@ import { useTheme } from '@mui/material/styles';
 import Iconify from 'src/components/iconify';
 import config from 'src/config';
 import Chart, { useChart } from 'src/components/chart';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function AnalyticsView() {
     const theme = useTheme();
+    const isMobile = useResponsive('down', 'md');
     const [stats, setStats] = useState(null);
     const [revenue, setRevenue] = useState([]);
     const [performance, setPerformance] = useState([]);
@@ -119,17 +121,17 @@ export default function AnalyticsView() {
     return (
         <Box sx={{ pb: 5 }}>
             {/* HEADER */}
-            <Stack direction={{ xs: 'column', md: 'row' }} alignItems="center" justifyContent="space-between" mb={6} spacing={3}>
+            <Stack direction={{ xs: 'column', md: 'row' }} alignItems={{ xs: 'stretch', md: 'center' }} justifyContent="space-between" mb={{ xs: 4, md: 6 }} spacing={3}>
                 <Box>
-                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: -1 }}>Overview</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '3rem' } }}>Overview</Typography>
                     <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600 }}>Track your salon's daily results and performance.</Typography>
                 </Box>
-                <Stack direction="row" spacing={2}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: { xs: '100%', md: 'auto' } }}>
                     <Button
                         variant="soft" color="secondary"
                         onClick={(e) => setOpenPopover(e.currentTarget)}
                         startIcon={<Iconify icon={PERIOD_OPTIONS.find(o => o.value === period)?.icon || 'solar:calendar-bold-duotone'} />}
-                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, px: 3, bgcolor: alpha(theme.palette.secondary.main, 0.1) }}
+                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, px: 3, bgcolor: alpha(theme.palette.secondary.main, 0.1), flex: { xs: 1, sm: 'none' } }}
                     >
                         {PERIOD_OPTIONS.find(o => o.value === period)?.label}
                     </Button>
@@ -159,7 +161,7 @@ export default function AnalyticsView() {
                         variant="contained" color="secondary"
                         onClick={fetchData}
                         startIcon={<Iconify icon="solar:restart-bold-duotone" />}
-                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5 }}
+                        sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, flex: { xs: 1, sm: 'none' } }}
                     >
                         Refresh
                     </Button>
@@ -195,17 +197,17 @@ export default function AnalyticsView() {
             {/* CHARTS */}
             <Grid container spacing={3} mb={5}>
                 <Grid item xs={12} lg={8}>
-                    <Card sx={{ p: 4, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                    <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1), overflow: 'hidden' }}>
                         <Typography variant="h6" fontWeight={800}>Income Trends</Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 3 }}>Money earned over time.</Typography>
-                        <Chart type="area" series={revenueSeries} options={revenueChartOptions} height={300} />
+                        <Chart type="area" series={revenueSeries} options={revenueChartOptions} height={isMobile ? 220 : 300} />
                     </Card>
                 </Grid>
                 <Grid item xs={12} lg={4}>
-                    <Card sx={{ p: 4, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                    <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1), overflow: 'hidden' }}>
                         <Typography variant="h6" fontWeight={800}>Popular Services</Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 3 }}>Most booked treatments.</Typography>
-                        <Chart type="donut" series={serviceSeries} options={serviceChartOptions} height={300} />
+                        <Chart type="donut" series={serviceSeries} options={serviceChartOptions} height={isMobile ? 220 : 300} />
                     </Card>
                 </Grid>
             </Grid>
@@ -213,18 +215,18 @@ export default function AnalyticsView() {
             <Grid container spacing={3}>
                 {/* BRANCHES */}
                 <Grid item xs={12} md={7}>
-                    <Card sx={{ p: 4, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                    <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                         <Typography variant="h6" fontWeight={800}>Branch Status</Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 4 }}>Current activity at each location.</Typography>
                         <Stack spacing={3}>
                             {branches.map((b) => (
                                 <Box key={b.id || b.name} sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
-                                    <Stack direction="row" justifyContent="space-between" mb={1.5} alignItems="center">
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={800}>{b.name.toUpperCase()}</Typography>
+                                    <Stack direction="row" justifyContent="space-between" mb={1.5} alignItems="center" spacing={1}>
+                                        <Box sx={{ minWidth: 0 }}>
+                                            <Typography variant="subtitle2" fontWeight={800} noWrap>{b.name.toUpperCase()}</Typography>
                                             <Typography variant="caption" color="text.secondary">{b.staffCount || 0} Staff working</Typography>
                                         </Box>
-                                        <Typography variant="h5" fontWeight={800} color="secondary.main">{b.activeCustomers || 0} Customers</Typography>
+                                        <Typography variant="h5" fontWeight={800} color="secondary.main" sx={{ flexShrink: 0, fontSize: { xs: '1.1rem', md: '1.5rem' } }}>{b.activeCustomers || 0} Customers</Typography>
                                     </Stack>
                                     <LinearProgress
                                         variant="determinate"
@@ -239,7 +241,7 @@ export default function AnalyticsView() {
 
                 {/* STAFF */}
                 <Grid item xs={12} md={5}>
-                    <Card sx={{ p: 4, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                    <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                         <Typography variant="h6" fontWeight={800}>Top Staff</Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 4 }}>Highest earners today.</Typography>
                         <Stack spacing={2}>
