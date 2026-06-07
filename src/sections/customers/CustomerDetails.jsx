@@ -3,7 +3,6 @@ import {
   Card,
   Stack,
   Typography,
-  Chip,
   Divider,
   Button,
   FormControl,
@@ -16,7 +15,6 @@ import {
   Avatar,
   Badge,
   alpha,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -357,80 +355,93 @@ export default function CustomerDetails({
 
   const hasCompletedJobs = assignments.some(a => a.status === 'completed');
 
+  // Editorial micro-label: uppercase, tracked, 11px/700
+  const microLabel = {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase',
+    color: 'text.disabled',
+    lineHeight: 1.5,
+  };
+  // Flat card: white, 1px hairline border, radius 6, minimal shadow
+  const flatCard = {
+    borderRadius: '6px',
+    boxShadow: 'none',
+    border: '1px solid',
+    borderColor: alpha(theme.palette.divider, 0.18),
+    bgcolor: 'background.paper',
+  };
+  const tabularNums = { fontVariantNumeric: 'tabular-nums' };
+
   return (
     <Box>
       <Grid container spacing={3}>
-        {/* LEFT: CUSTOMER PROFILE */}
+        {/* LEFT: CUSTOMER PROFILE — calm flat panel */}
         <Grid item xs={12} md={4} lg={3.5}>
-          <Card sx={{
-            p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12,
-            border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
-            height: '100%'
-          }}>
-            <Stack spacing={4}>
+          <Card sx={{ ...flatCard, p: { xs: 3, md: 4 }, height: '100%' }}>
+            <Stack spacing={3.5}>
               <Box sx={{ textAlign: 'center' }}>
                 <Badge
                   overlap="circular"
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                   badgeContent={
                     <Box sx={{
-                      width: 20, height: 20, borderRadius: '50%', bgcolor: session ? 'success.main' : 'text.disabled',
-                      border: '3px solid white', boxShadow: 2,
-                      animation: session ? 'pulse 2s infinite' : 'none'
+                      width: 16, height: 16, borderRadius: '50%',
+                      bgcolor: session ? 'success.main' : 'text.disabled',
+                      border: '3px solid', borderColor: 'background.paper',
                     }} />
                   }
                 >
                   <Avatar sx={{
-                    width: 100, height: 100, mx: 'auto', bgcolor: '#1A1A1A', color: 'white',
-                    fontSize: '2rem', fontWeight: 800
+                    width: 88, height: 88, mx: 'auto', bgcolor: 'primary.main', color: 'common.white',
+                    fontFamily: theme.typography.h3.fontFamily, fontSize: '2rem', fontWeight: 600,
                   }}>
                     {customer.name[0]}
                   </Avatar>
                 </Badge>
-                <Typography variant="h4" fontWeight={800} sx={{ mt: 3 }}>{customer.name.toUpperCase()}</Typography>
-                <Stack direction="row" spacing={1} justifyContent="center" mt={1}>
-                  <Chip
-                    label={session ? 'In Salon' : 'Checked Out'}
-                    size="small" color={session ? 'success' : 'default'} variant="soft"
-                    sx={{ fontWeight: 800, borderRadius: 0.5 }}
-                  />
+                <Typography variant="h4" sx={{ mt: 2.5, color: 'primary.main' }}>{customer.name}</Typography>
+                <Stack direction="row" spacing={1} justifyContent="center" mt={1.5}>
+                  <Typography sx={{ ...microLabel, color: session ? 'success.main' : 'text.disabled' }}>
+                    {session ? 'In Salon' : 'Checked Out'}
+                  </Typography>
                 </Stack>
               </Box>
 
-              <Divider sx={{ borderStyle: 'dashed' }} />
+              <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.18) }} />
 
-              <Stack spacing={2}>
-                <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Iconify icon="solar:phone-linear" width={20} sx={{ color: 'secondary.main' }} />
-                    <Box>
-                      <Typography variant="caption" color="text.disabled" fontWeight={800}>PHONE</Typography>
-                      <Typography variant="body2" fontWeight={800}>{customer.phone || 'N/A'}</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
+              {/* Quiet meta rows */}
+              <Stack spacing={2.5}>
+                <Stack direction="row" spacing={1.75} alignItems="center">
+                  <Iconify icon="solar:phone-linear" width={20} sx={{ color: 'secondary.main', flexShrink: 0 }} />
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={microLabel}>Phone</Typography>
+                    <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>{customer.phone || 'N/A'}</Typography>
+                  </Box>
+                </Stack>
 
-                <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Iconify icon="solar:map-point-linear" width={20} sx={{ color: 'info.main' }} />
-                    <Box>
-                      <Typography variant="caption" color="text.disabled" fontWeight={800}>BRANCH</Typography>
-                      <Typography variant="body2" fontWeight={800}>{currentBranch.toUpperCase()}</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
+                <Stack direction="row" spacing={1.75} alignItems="center">
+                  <Iconify icon="solar:map-point-linear" width={20} sx={{ color: 'secondary.main', flexShrink: 0 }} />
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={microLabel}>Branch</Typography>
+                    <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>{currentBranch}</Typography>
+                  </Box>
+                </Stack>
               </Stack>
 
-              <Stack spacing={2} pt={2}>
+              <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.18) }} />
+
+              {/* Clear primary action */}
+              <Stack spacing={1.5}>
                 {!session ? (
                   <Button
-                    fullWidth variant="contained" color="success" size="large"
+                    fullWidth variant="contained" color="primary" size="large"
                     onClick={() => handleAction('check-in')}
                     disabled={actionBusy}
-                    sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
+                    sx={{ minHeight: 52, fontWeight: 600, letterSpacing: '0.02em', borderRadius: '6px', boxShadow: 'none' }}
                     startIcon={actionBusy
                       ? <CircularProgress size={20} sx={{ color: 'inherit' }} />
-                      : <Iconify icon="solar:play-linear" />}
+                      : <Iconify icon="solar:login-3-linear" />}
                   >
                     {actionBusy ? 'Checking in…' : 'Check In'}
                   </Button>
@@ -440,23 +451,23 @@ export default function CustomerDetails({
                       fullWidth variant="contained" color="secondary" size="large"
                       onClick={openPayDialog}
                       disabled={actionBusy}
-                      sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
-                      startIcon={<Iconify icon="solar:verified-check-linear" />}
+                      sx={{ minHeight: 52, fontWeight: 600, letterSpacing: '0.02em', borderRadius: '6px', boxShadow: 'none' }}
+                      startIcon={<Iconify icon="solar:bill-check-linear" />}
                     >
                       Finish & Pay
                     </Button>
                     {!hasCompletedJobs ? (
                       <Button
-                        fullWidth variant="soft" color="error"
+                        fullWidth variant="outlined" color="error"
                         onClick={() => handleAction('cancel-session')}
                         disabled={actionBusy}
                         startIcon={actionBusy ? <CircularProgress size={16} sx={{ color: 'inherit' }} /> : null}
-                        sx={{ height: 44, fontWeight: 700, borderRadius: 1 }}
+                        sx={{ minHeight: 44, fontWeight: 600, borderRadius: '6px', borderColor: alpha(theme.palette.error.main, 0.4) }}
                       >
                         {actionBusy ? 'Working…' : 'Cancel Visit'}
                       </Button>
                     ) : (
-                      <Typography variant="caption" color="text.disabled" textAlign="center" sx={{ fontStyle: 'italic' }}>
+                      <Typography variant="caption" color="text.disabled" textAlign="center" sx={{ fontStyle: 'italic', px: 1 }}>
                         Visit cannot be cancelled as some jobs are already finished.
                       </Typography>
                     )}
@@ -468,26 +479,32 @@ export default function CustomerDetails({
         </Grid>
 
         {/* RIGHT: SERVICES & ASSIGNMENTS */}
-        <Grid item xs={12} lg={8}>
-          <Box sx={{ mb: 4, display: 'flex', gap: 2, borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+        <Grid item xs={12} md={8} lg={8.5}>
+          <Box sx={{ mb: 3, display: 'flex', gap: { xs: 2, sm: 4 }, borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.18) }}>
             <Button
+              disableRipple
               onClick={() => setTab('active')}
               sx={{
-                py: 2, px: 3, borderRadius: '8px 8px 0 0', fontWeight: 800,
-                color: tab === 'active' ? 'secondary.main' : 'text.disabled',
-                borderBottom: tab === 'active' ? '3px solid' : 'none',
-                borderColor: 'secondary.main'
+                py: 1.5, px: 0, minWidth: 0, borderRadius: 0,
+                ...microLabel, fontSize: 12,
+                color: tab === 'active' ? 'primary.main' : 'text.disabled',
+                borderBottom: '2px solid',
+                borderColor: tab === 'active' ? 'secondary.main' : 'transparent',
+                '&:hover': { bgcolor: 'transparent', color: 'primary.main' },
               }}
             >
               Active Now
             </Button>
             <Button
+              disableRipple
               onClick={() => setTab('history')}
               sx={{
-                py: 2, px: 3, borderRadius: '8px 8px 0 0', fontWeight: 800,
-                color: tab === 'history' ? 'secondary.main' : 'text.disabled',
-                borderBottom: tab === 'history' ? '3px solid' : 'none',
-                borderColor: 'secondary.main'
+                py: 1.5, px: 0, minWidth: 0, borderRadius: 0,
+                ...microLabel, fontSize: 12,
+                color: tab === 'history' ? 'primary.main' : 'text.disabled',
+                borderBottom: '2px solid',
+                borderColor: tab === 'history' ? 'secondary.main' : 'transparent',
+                '&:hover': { bgcolor: 'transparent', color: 'primary.main' },
               }}
             >
               Visit History
@@ -497,24 +514,22 @@ export default function CustomerDetails({
           {tab === 'active' ? (
             !session ? (
               <Box sx={{
-                height: '100%', minHeight: 400, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', p: 4,
-                border: '2px dashed', borderColor: alpha(theme.palette.divider, 0.1),
-                borderRadius: 2.5, bgcolor: alpha(theme.palette.secondary.main, 0.01)
+                ...flatCard, minHeight: 380, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', p: 4, textAlign: 'center',
               }}>
-                <Iconify icon="solar:sleeping-circle-linear" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />
-                <Typography variant="h5" color="text.disabled" fontWeight={800}>No active visit</Typography>
-                <Typography variant="body2" color="text.disabled" fontWeight={600} textAlign="center">
+                <Iconify icon="solar:moon-sleep-linear" width={48} sx={{ color: 'text.disabled', mb: 2 }} />
+                <Typography variant="h5" sx={{ color: 'primary.main' }}>No active visit</Typography>
+                <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mt: 0.5 }}>
                   Check in the customer to add services.
                 </Typography>
               </Box>
             ) : (
-              <Stack spacing={4}>
+              <Stack spacing={3}>
                 {/* ADD SERVICE */}
-                <Card sx={{ p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
-                  <Typography variant="h6" fontWeight={800} mb={3}>Add Service</Typography>
-                  <Grid container spacing={2} alignItems="flex-end">
-                    <Grid item xs={12} sm={4}>
+                <Card sx={{ ...flatCard, p: { xs: 2.5, sm: 3 } }}>
+                  <Typography sx={{ ...microLabel, fontSize: 12, mb: 2.5 }}>Add Service</Typography>
+                  <Grid container spacing={2} alignItems="flex-start">
+                    <Grid item xs={12} sm={5}>
                       <FormControl fullWidth>
                         <Autocomplete
                           fullWidth
@@ -527,19 +542,17 @@ export default function CustomerDetails({
                               {...params}
                               label="Service"
                               placeholder="Search by name or code..."
-                              sx={{
-                                '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 }
-                              }}
+                              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '6px' } }}
                             />
                           )}
                           renderOption={(props, option) => (
-                            <MenuItem {...props} key={option.id} sx={{ fontWeight: 700 }}>
+                            <MenuItem {...props} key={option.id}>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                                 <Box>
-                                  <Typography variant="body2" fontWeight={700}>{option.name.toUpperCase()}</Typography>
-                                  <Typography variant="caption" color="text.disabled" fontWeight={800}>{option.code || 'NO CODE'}</Typography>
+                                  <Typography variant="body2" fontWeight={500}>{option.name}</Typography>
+                                  <Typography sx={{ ...microLabel, fontSize: 10 }}>{option.code || 'NO CODE'}</Typography>
                                 </Box>
-                                <Typography variant="caption" color="secondary.main" fontWeight={800}>{option.price} Br</Typography>
+                                <Typography variant="caption" color="secondary.main" fontWeight={700} sx={tabularNums}>{option.price} Br</Typography>
                               </Box>
                             </MenuItem>
                           )}
@@ -548,161 +561,149 @@ export default function CustomerDetails({
                     </Grid>
                     <Grid item xs={12} sm={4}>
                       <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 800 }}>Staff</InputLabel>
+                        <InputLabel>Staff</InputLabel>
                         <Select
                           value={newAssignment.employeeId}
                           onChange={(e) => setNewAssignment({ ...newAssignment, employeeId: e.target.value })}
                           label="Staff"
-                          sx={{ borderRadius: 1.5, fontWeight: 700 }}
+                          sx={{ borderRadius: '6px' }}
                         >
                           {employees.map(e => (
-                            <MenuItem key={e.id} value={e.id} sx={{ fontWeight: 700 }}>
+                            <MenuItem key={e.id} value={e.id}>
                               <Stack direction="row" spacing={1.5} alignItems="center">
-                                <Avatar sx={{ width: 24, height: 24, fontSize: '0.6rem', bgcolor: '#1A1A1A', color: 'white' }}>{e.name[0]}</Avatar>
-                                <Typography variant="body2" fontWeight={700}>{e.name.toUpperCase()}</Typography>
+                                <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', bgcolor: 'primary.main', color: 'common.white' }}>{e.name[0]}</Avatar>
+                                <Typography variant="body2" fontWeight={500}>{e.name}</Typography>
                               </Stack>
                             </MenuItem>
                           ))}
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                       <Button
-                        fullWidth variant="contained" color="secondary"
+                        fullWidth variant="contained" color="primary"
                         onClick={createAssignment}
                         disabled={!newAssignment.employeeId || !newAssignment.serviceId || addingService}
-                        sx={{ height: 56, fontWeight: 900, borderRadius: 1.5 }}
+                        sx={{ minHeight: 53, fontWeight: 600, borderRadius: '6px', boxShadow: 'none' }}
                         startIcon={addingService
                           ? <CircularProgress size={18} sx={{ color: 'inherit' }} />
-                          : <Iconify icon="solar:bolt-circle-linear" />}
+                          : <Iconify icon="solar:add-circle-linear" />}
                       >
-                        {addingService ? 'Adding…' : 'Add Now'}
+                        {addingService ? 'Adding…' : 'Add'}
                       </Button>
                     </Grid>
                   </Grid>
                 </Card>
 
-                {/* CURRENT SERVICES */}
-                <Card sx={{ p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
+                {/* CURRENT SERVICES — flat, hairline-separated rows */}
+                <Card sx={{ ...flatCard, p: { xs: 2.5, sm: 3 } }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-end" mb={2.5}>
                     <Box>
-                      <Typography variant="h6" fontWeight={800}>Services</Typography>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>Services added for this customer</Typography>
+                      <Typography variant="h5" sx={{ color: 'primary.main' }}>Services</Typography>
+                      <Typography variant="caption" color="text.secondary">Added for this visit</Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="caption" color="text.disabled" fontWeight={800}>TOTAL</Typography>
-                      <Typography variant="h4" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
+                      <Typography sx={microLabel}>Total</Typography>
+                      <Typography variant="h4" sx={{ color: 'secondary.main', ...tabularNums }}>{totalEstimation} Br</Typography>
                     </Box>
                   </Stack>
 
-                  <Stack spacing={2}>
+                  <Stack divider={<Divider sx={{ borderColor: alpha(theme.palette.divider, 0.18) }} />}>
                     {assignments.map((a) => (
-                      <Box key={a.id} sx={{
-                        p: 2.5, borderRadius: 2, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.05),
-                        bgcolor: alpha(theme.palette.background.neutral, 0.3),
-                        transition: '0.2s', '&:hover': { bgcolor: 'background.paper' }
-                      }}>
+                      <Box key={a.id} sx={{ py: 2 }}>
                         <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12} sm={4}>
-                            <Stack direction="row" spacing={2} alignItems="center">
-                              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.2, color: '#9A7B4F' }}>
-                                <Iconify icon="solar:hashtag-linear" width={18} />
-                              </Box>
-                              <Box>
-                                <Typography variant="subtitle2" fontWeight={800}>
-                                  {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name.toUpperCase()}`).join(', ') || 'Service'}
-                                </Typography>
-                                <Typography variant="caption" color="secondary.main" fontWeight={800}>
-                                  {a.Services?.reduce((acc, s) => acc + Number(s.price), 0)} Br
-                                </Typography>
-                              </Box>
-                            </Stack>
+                          <Grid item xs={12} sm={5}>
+                            <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'primary.main' }}>
+                              {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name}`).join(', ') || 'Service'}
+                            </Typography>
+                            <Typography variant="caption" color="secondary.main" fontWeight={600} sx={tabularNums}>
+                              {a.Services?.reduce((acc, s) => acc + Number(s.price), 0)} Br
+                            </Typography>
                           </Grid>
                           <Grid item xs={12} sm={3}>
-                            <Stack direction="row" spacing={1.5} alignItems="center">
+                            <Stack direction="row" spacing={1.25} alignItems="center">
                               <Avatar sx={{
-                                width: 32, height: 32,
-                                bgcolor: a.Employee ? 'primary.main' : alpha(theme.palette.text.disabled, 0.2),
-                                color: a.Employee ? 'white' : 'text.disabled',
-                                fontWeight: 800, fontSize: '0.8rem',
+                                width: 30, height: 30,
+                                bgcolor: a.Employee ? 'primary.main' : alpha(theme.palette.text.disabled, 0.18),
+                                color: a.Employee ? 'common.white' : 'text.disabled',
+                                fontWeight: 600, fontSize: '0.75rem',
                               }}>
                                 {a.Employee?.name ? a.Employee.name[0] : '?'}
                               </Avatar>
                               <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                                 {a.Employee ? (
-                                  <Typography variant="caption" fontWeight={800} display="block" color="text.secondary" noWrap>
-                                    {a.Employee.name.toUpperCase()}
+                                  <Typography sx={{ ...microLabel, fontSize: 10, color: 'text.secondary' }} noWrap>
+                                    {a.Employee.name}
                                   </Typography>
                                 ) : (
-                                  <Typography variant="caption" fontWeight={800} display="block" color="warning.main">
-                                    UNASSIGNED
+                                  <Typography sx={{ ...microLabel, fontSize: 10, color: 'warning.main' }}>
+                                    Unassigned
                                   </Typography>
                                 )}
                                 <Stack direction="row" spacing={0.5} alignItems="center">
-                                  <Chip
-                                    label={a.status.toUpperCase()}
-                                    size="small"
-                                    color={a.status === 'completed' ? 'success' : a.status === 'in_progress' ? 'secondary' : 'info'}
-                                    variant="soft"
-                                    sx={{ height: 16, fontSize: '0.55rem', fontWeight: 800 }}
-                                  />
+                                  <Typography sx={{
+                                    ...microLabel, fontSize: 9,
+                                    color: a.status === 'completed' ? 'success.main' : a.status === 'in_progress' ? 'secondary.main' : 'info.main',
+                                  }}>
+                                    {a.status.replace('_', ' ')}
+                                  </Typography>
                                   {canReassign && a.status !== 'completed' && (
-                                    <Tooltip title={a.Employee ? 'Reassign staff' : 'Assign staff'}>
-                                      <IconButton
-                                        size="small"
-                                        onClick={(e) => { setReassignAnchor(e.currentTarget); setReassignTarget(a); }}
-                                        sx={{ p: 0.25 }}
-                                      >
-                                        <Iconify icon="solar:pen-2-linear" width={14} sx={{ color: 'secondary.main' }} />
-                                      </IconButton>
-                                    </Tooltip>
+                                    <IconButton
+                                      size="small"
+                                      aria-label={a.Employee ? 'Reassign staff' : 'Assign staff'}
+                                      onClick={(e) => { setReassignAnchor(e.currentTarget); setReassignTarget(a); }}
+                                      sx={{ p: 0.5 }}
+                                    >
+                                      <Iconify icon="solar:pen-2-linear" width={14} sx={{ color: 'secondary.main' }} />
+                                    </IconButton>
                                   )}
                                 </Stack>
                               </Box>
                             </Stack>
                           </Grid>
-                          <Grid item xs={12} sm={5} sx={{ textAlign: 'right' }}>
-                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                          <Grid item xs={12} sm={4}>
+                            <Stack direction="row" spacing={1} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }} flexWrap="wrap" useFlexGap>
                               {a.status !== 'completed' && (
                                 <>
                                   <Button
-                                    size="small" color="secondary"
+                                    size="small" variant="outlined" color="secondary"
                                     onClick={() => updateAssignmentStatus(a.id, 'in_progress')}
                                     disabled={a.status === 'in_progress' || statusBusyId === a.id}
                                     startIcon={statusBusyId === a.id ? <CircularProgress size={12} sx={{ color: 'inherit' }} /> : null}
+                                    sx={{ minHeight: 36, borderRadius: '6px', fontWeight: 600, borderColor: alpha(theme.palette.secondary.main, 0.4) }}
                                   >
                                     Start
                                   </Button>
                                   <Button
-                                    size="small" color="success"
+                                    size="small" variant="contained" color="success"
                                     onClick={() => updateAssignmentStatus(a.id, 'completed')}
                                     disabled={statusBusyId === a.id}
                                     startIcon={statusBusyId === a.id ? <CircularProgress size={12} sx={{ color: 'inherit' }} /> : null}
+                                    sx={{ minHeight: 36, borderRadius: '6px', fontWeight: 600, boxShadow: 'none' }}
                                   >
                                     Done
                                   </Button>
                                 </>
                               )}
-                              <Tooltip title="Remove Job">
-                                <IconButton
-                                  color="error"
-                                  onClick={() => handleAction('delete-assignment', a.id)}
-                                  size="small"
-                                  disabled={a.status === 'completed' || deleteAssignmentId === a.id}
-                                >
-                                  {deleteAssignmentId === a.id
-                                    ? <CircularProgress size={16} />
-                                    : <Iconify icon="solar:trash-bin-trash-linear" width={18} />}
-                                </IconButton>
-                              </Tooltip>
+                              <IconButton
+                                color="error"
+                                aria-label="Remove job"
+                                onClick={() => handleAction('delete-assignment', a.id)}
+                                disabled={a.status === 'completed' || deleteAssignmentId === a.id}
+                                sx={{ width: 36, height: 36 }}
+                              >
+                                {deleteAssignmentId === a.id
+                                  ? <CircularProgress size={16} />
+                                  : <Iconify icon="solar:trash-bin-trash-linear" width={18} />}
+                              </IconButton>
                             </Stack>
                           </Grid>
                         </Grid>
                       </Box>
                     ))}
                     {assignments.length === 0 && (
-                      <Box sx={{ py: 6, textAlign: 'center', opacity: 0.5 }}>
-                        <Typography variant="caption" fontWeight={700}>No jobs added yet.</Typography>
+                      <Box sx={{ py: 5, textAlign: 'center' }}>
+                        <Typography variant="caption" color="text.disabled">No jobs added yet.</Typography>
                       </Box>
                     )}
                   </Stack>
@@ -711,65 +712,60 @@ export default function CustomerDetails({
             )
           ) : (
             /* HISTORY TAB */
-            <Stack spacing={3}>
+            <Stack spacing={2.5}>
               {history.map((h) => (
-                <Card key={h.id} sx={{ p: 3, borderRadius: 2, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.05) }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
-                    <Stack direction="row" spacing={1.5} alignItems="center">
-                      <Box sx={{ p: 1, bgcolor: alpha(theme.palette.info.main, 0.1), color: 'info.main', borderRadius: 1 }}>
-                        <Iconify icon="solar:calendar-date-linear" width={20} />
-                      </Box>
-                      <Box>
-                        <Typography variant="subtitle1" fontWeight={900}>
-                          {new Date(h.checkInTime).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight={800}>
-                          {new Date(h.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          {' - '}
-                          {h.checkOutTime ? new Date(h.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing'}
-                          {h.Branch && (
-                            <Typography component="span" variant="caption" sx={{ color: 'secondary.main', fontWeight: 900, ml: 1, letterSpacing: 1 }}>
-                              • {h.Branch.name.toUpperCase()}
-                            </Typography>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                    <Chip label="COMPLETED" size="small" variant="soft" color="success" sx={{ fontWeight: 900, borderRadius: 0.5 }} />
+                <Card key={h.id} sx={{ ...flatCard, p: { xs: 2.5, sm: 3 } }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2} spacing={1}>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="h5" sx={{ color: 'primary.main' }}>
+                        {new Date(h.checkInTime).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </Typography>
+                      <Typography sx={{ ...microLabel, fontSize: 10, mt: 0.25 }}>
+                        {new Date(h.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {' — '}
+                        {h.checkOutTime ? new Date(h.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing'}
+                        {h.Branch && (
+                          <Box component="span" sx={{ color: 'secondary.main', ml: 0.75 }}>
+                            · {h.Branch.name}
+                          </Box>
+                        )}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ ...microLabel, fontSize: 10, color: 'success.main', flexShrink: 0 }}>Completed</Typography>
                   </Stack>
 
-                  <Divider sx={{ borderStyle: 'dashed', mb: 2.5 }} />
+                  <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.18), mb: 1 }} />
 
-                  <Stack spacing={2}>
+                  <Stack divider={<Divider sx={{ borderColor: alpha(theme.palette.divider, 0.18) }} />}>
                     {h.Assignments?.map((a) => (
-                      <Box key={a.id} sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
-                        <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2" fontWeight={800}>
-                              {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name.toUpperCase()}`).join(', ') || 'Service'}
+                      <Box key={a.id} sx={{ py: 1.5 }}>
+                        <Grid container spacing={1} alignItems="center">
+                          <Grid item xs={8} sm={9}>
+                            <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'primary.main' }}>
+                              {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name}`).join(', ') || 'Service'}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" fontWeight={700}>
-                              Stylist: {a.Employee?.name || 'Unassigned'}
+                            <Typography variant="caption" color="text.secondary">
+                              {a.Employee?.name || 'Unassigned'}
                             </Typography>
                           </Grid>
-                          <Grid item xs={12} sm={6} sx={{ textAlign: 'right' }}>
-                            <Typography variant="subtitle2" fontWeight={900} color="secondary.main">
-                              {a.Services?.reduce((sum, s) => sum + (Number(s.price) || 0), 0)} ETB
+                          <Grid item xs={4} sm={3} sx={{ textAlign: 'right' }}>
+                            <Typography variant="subtitle2" fontWeight={700} color="primary.main" sx={tabularNums}>
+                              {a.Services?.reduce((sum, s) => sum + (Number(s.price) || 0), 0)} Br
                             </Typography>
                           </Grid>
                         </Grid>
                       </Box>
                     ))}
                     {(!h.Assignments || h.Assignments.length === 0) && (
-                      <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>No services recorded for this visit.</Typography>
+                      <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic', py: 1.5 }}>No services recorded for this visit.</Typography>
                     )}
                   </Stack>
                 </Card>
               ))}
               {history.length === 0 && (
-                <Box sx={{ py: 10, textAlign: 'center', opacity: 0.5 }}>
-                  <Iconify icon="solar:history-linear" width={48} sx={{ mb: 2, color: 'text.disabled' }} />
-                  <Typography variant="h6" fontWeight={800} color="text.disabled">No visit history found</Typography>
+                <Box sx={{ ...flatCard, py: 8, textAlign: 'center' }}>
+                  <Iconify icon="solar:history-linear" width={44} sx={{ mb: 1.5, color: 'text.disabled' }} />
+                  <Typography variant="h6" color="text.disabled">No visit history found</Typography>
                 </Box>
               )}
             </Stack>
@@ -789,9 +785,9 @@ export default function CustomerDetails({
             confirm.type === 'finish-session' ? (
               <Box>
                 <Typography variant="body1" mb={2}>This will finish the visit and generate the final bill.</Typography>
-                <Box sx={{ p: 2, bgcolor: alpha('#9A7B4F', 0.1), borderRadius: 1.5, textAlign: 'center' }}>
-                  <Typography variant="caption" fontWeight={900} color="text.disabled">TOTAL AMOUNT DUE</Typography>
-                  <Typography variant="h3" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
+                <Box sx={{ p: 2.5, border: '1px solid', borderColor: alpha(theme.palette.secondary.main, 0.3), borderRadius: '6px', textAlign: 'center' }}>
+                  <Typography sx={microLabel}>Total Amount Due</Typography>
+                  <Typography variant="h3" sx={{ color: 'secondary.main', ...tabularNums }}>{totalEstimation} Br</Typography>
                 </Box>
               </Box>
             ) :
@@ -799,7 +795,7 @@ export default function CustomerDetails({
         }
         confirmLabel={
           confirm.type === 'check-in' ? 'Check In' :
-            confirm.type === 'finish-session' ? 'COMPLETE & PAY' :
+            confirm.type === 'finish-session' ? 'Complete & Pay' :
               confirm.type === 'cancel-session' ? 'Cancel' : 'Remove'
         }
         color={confirm.type === 'check-in' ? 'primary' : confirm.type === 'finish-session' ? 'secondary' : 'error'}
@@ -808,35 +804,35 @@ export default function CustomerDetails({
       />
 
       {/* BRANCH SELECTION DIALOG */}
-      <Dialog open={branchDialogOpen} onClose={() => setBranchDialogOpen(false)}>
-         <DialogTitle sx={{ fontWeight: 900 }}>Select Branch</DialogTitle>
-         <DialogContent sx={{ minWidth: 400, pt: 2 }}>
-            <Typography variant="body2" sx={{ mb: 3, fontWeight: 700, color: 'text.secondary' }}>
-               You are currently in 'All Locations' view. Please select which branch {customer.name.toUpperCase()} is visiting.
+      <Dialog open={branchDialogOpen} onClose={() => setBranchDialogOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { borderRadius: '6px' } }}>
+         <DialogTitle variant="h5" sx={{ color: 'primary.main' }}>Select Branch</DialogTitle>
+         <DialogContent sx={{ pt: '8px !important' }}>
+            <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+               You are currently in &lsquo;All Locations&rsquo; view. Please select which branch {customer.name} is visiting.
             </Typography>
             <FormControl fullWidth>
-               <InputLabel sx={{ fontWeight: 700 }}>Branch</InputLabel>
+               <InputLabel>Branch</InputLabel>
                <Select
                   value={selectedCheckInBranch}
                   onChange={(e) => setSelectedCheckInBranch(e.target.value)}
                   label="Branch"
-                  sx={{ borderRadius: 1.5, fontWeight: 800 }}
+                  sx={{ borderRadius: '6px' }}
                >
                   {branches.map(b => (
-                     <MenuItem key={b.id} value={b.id} sx={{ fontWeight: 700 }}>{b.name.toUpperCase()}</MenuItem>
+                     <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
                   ))}
                </Select>
             </FormControl>
          </DialogContent>
          <DialogActions sx={{ p: 3 }}>
-            <Button onClick={() => setBranchDialogOpen(false)} sx={{ fontWeight: 900, color: 'text.secondary' }}>CANCEL</Button>
-            <Button 
-               variant="contained" color="secondary" 
+            <Button onClick={() => setBranchDialogOpen(false)} sx={{ fontWeight: 600, color: 'text.secondary' }}>Cancel</Button>
+            <Button
+               variant="contained" color="primary"
                disabled={!selectedCheckInBranch}
                onClick={() => handleCheckIn(selectedCheckInBranch)}
-               sx={{ fontWeight: 900, px: 4 }}
+               sx={{ fontWeight: 600, px: 3, borderRadius: '6px', boxShadow: 'none' }}
             >
-               CHECK IN AT BRANCH
+               Check In
             </Button>
          </DialogActions>
       </Dialog>
@@ -849,28 +845,11 @@ export default function CustomerDetails({
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 0,
-            backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)',
-            backgroundSize: '4px 4px',
-            bgcolor: 'white',
-            boxShadow: theme.customShadows.z24,
-            overflow: 'visible',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: -10, left: 0, right: 0, height: 10,
-              backgroundImage: 'linear-gradient(135deg, white 5px, transparent 0), linear-gradient(-135deg, white 5px, transparent 0)',
-              backgroundSize: '10px 10px',
-              backgroundPosition: '0 100%'
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              bottom: -10, left: 0, right: 0, height: 10,
-              backgroundImage: 'linear-gradient(45deg, white 5px, transparent 0), linear-gradient(-45deg, white 5px, transparent 0)',
-              backgroundSize: '10px 10px',
-              backgroundPosition: '0 0%'
-            }
+            borderRadius: '6px',
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: alpha(theme.palette.divider, 0.18),
+            boxShadow: 'none',
           }
         }}
       >
@@ -946,7 +925,7 @@ export default function CustomerDetails({
 
             {/* Total band */}
             <Box sx={{
-              mt: 3, px: 2.5, py: 2, borderRadius: 2, bgcolor: '#1A1A1A',
+              mt: 3, px: 2.5, py: 2, borderRadius: '6px', bgcolor: '#1A1A1A',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
               <Typography sx={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 1.5 }}>TOTAL</Typography>
@@ -981,21 +960,21 @@ export default function CustomerDetails({
             </Box>
           </DialogContent>
         )}
-        <DialogActions sx={{ justifyContent: 'center', pb: 4 }}>
+        <DialogActions sx={{ justifyContent: 'center', gap: 1, pb: 4 }}>
           <Button
-            variant="contained" color="secondary" size="large"
+            variant="contained" color="primary" size="large"
             onClick={() => setReceiptOpen(false)}
-            sx={{ fontWeight: 900, px: 6, borderRadius: 1.5 }}
+            sx={{ fontWeight: 600, px: 5, borderRadius: '6px', boxShadow: 'none' }}
           >
-            DONE
+            Done
           </Button>
           <Button
-            variant="soft" color="inherit" size="large"
+            variant="outlined" color="primary" size="large"
             onClick={() => window.print()}
             startIcon={<Iconify icon="solar:printer-minimalistic-linear" />}
-            sx={{ fontWeight: 900, borderRadius: 1.5 }}
+            sx={{ fontWeight: 600, borderRadius: '6px', borderColor: alpha(theme.palette.divider, 0.4) }}
           >
-            PRINT
+            Print
           </Button>
         </DialogActions>
       </Dialog>
@@ -1005,12 +984,10 @@ export default function CustomerDetails({
         anchorEl={reassignAnchor}
         open={Boolean(reassignAnchor)}
         onClose={() => { setReassignAnchor(null); setReassignTarget(null); }}
-        PaperProps={{ sx: { maxHeight: 360, minWidth: 240, borderRadius: 2 } }}
+        PaperProps={{ sx: { maxHeight: 360, minWidth: 240, borderRadius: '6px', boxShadow: theme.customShadows.z8, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.18) } }}
       >
-        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>
-            ASSIGN STAFF
-          </Typography>
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.18) }}>
+          <Typography sx={microLabel}>Assign Staff</Typography>
         </Box>
         {employees.length === 0 && (
           <Box sx={{ px: 2, py: 2 }}>
@@ -1025,14 +1002,14 @@ export default function CustomerDetails({
               selected={isCurrent}
               disabled={reassignSaving}
               onClick={() => reassignTarget && reassignEmployee(reassignTarget.id, emp.id)}
-              sx={{ fontWeight: 700, py: 1 }}
+              sx={{ py: 1.25, minHeight: 44 }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: '100%' }}>
-                <Avatar sx={{ width: 28, height: 28, fontSize: '0.7rem', bgcolor: '#1A1A1A', color: 'white' }}>
+                <Avatar sx={{ width: 28, height: 28, fontSize: '0.7rem', bgcolor: 'primary.main', color: 'common.white' }}>
                   {emp.name[0]}
                 </Avatar>
-                <Typography variant="body2" fontWeight={700} sx={{ flexGrow: 1 }}>
-                  {emp.name.toUpperCase()}
+                <Typography variant="body2" fontWeight={500} sx={{ flexGrow: 1 }}>
+                  {emp.name}
                 </Typography>
                 {isCurrent && <Iconify icon="solar:check-circle-bold" width={18} sx={{ color: 'success.main' }} />}
               </Stack>
@@ -1042,22 +1019,22 @@ export default function CustomerDetails({
       </Menu>
 
       {/* FINISH & PAY — PAYMENT METHOD PICKER */}
-      <Dialog open={payOpen} onClose={() => !finishing && setPayOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <Dialog open={payOpen} onClose={() => !finishing && setPayOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '6px', boxShadow: theme.customShadows.z16 } }}>
         {payStep === 1 ? (
           <>
-            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1A1A1A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Iconify icon="solar:wallet-money-linear" />
-              How was the payment received?
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'primary.main', pb: 1 }}>
+              <Iconify icon="solar:wallet-money-linear" sx={{ color: 'secondary.main' }} />
+              <Typography variant="h5" component="span">How was the payment received?</Typography>
             </DialogTitle>
-            <DialogContent sx={{ mt: 3 }}>
-              <Box sx={{ p: 2.5, bgcolor: alpha('#9A7B4F', 0.08), borderRadius: 2, textAlign: 'center', mb: 3 }}>
-                <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>TOTAL DUE</Typography>
-                <Typography variant="h3" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
+            <DialogContent>
+              <Box sx={{ p: 2.5, border: '1px solid', borderColor: alpha(theme.palette.secondary.main, 0.3), borderRadius: '6px', textAlign: 'center', mb: 3, mt: 1 }}>
+                <Typography sx={microLabel}>Total Due</Typography>
+                <Typography variant="h3" sx={{ color: 'secondary.main', ...tabularNums }}>{totalEstimation} Br</Typography>
               </Box>
               {paymentMethods.length === 0 ? (
-                <Box sx={{ py: 4, textAlign: 'center', border: '2px dashed', borderColor: 'divider', borderRadius: 2 }}>
-                  <Iconify icon="solar:card-search-linear" width={48} sx={{ color: 'text.disabled', mb: 1 }} />
-                  <Typography variant="body2" fontWeight={800} color="text.disabled">No payment methods configured</Typography>
+                <Box sx={{ py: 4, textAlign: 'center', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.18), borderRadius: '6px' }}>
+                  <Iconify icon="solar:card-search-linear" width={44} sx={{ color: 'text.disabled', mb: 1 }} />
+                  <Typography variant="body2" fontWeight={600} color="text.secondary">No payment methods configured</Typography>
                   <Typography variant="caption" color="text.disabled">Admin can set them up in Settings.</Typography>
                 </Box>
               ) : (
@@ -1070,12 +1047,12 @@ export default function CustomerDetails({
                           key={pm.id}
                           onClick={() => setSelectedPaymentMethodId(pm.id)}
                           sx={{
-                            p: 2, cursor: 'pointer', borderRadius: 2,
-                            border: '2px solid',
-                            borderColor: selected ? '#9A7B4F' : alpha(theme.palette.divider, 0.15),
-                            bgcolor: selected ? alpha('#9A7B4F', 0.05) : 'background.paper',
-                            transition: '0.2s',
-                            '&:hover': { borderColor: '#9A7B4F' },
+                            p: 2, cursor: 'pointer', borderRadius: '6px', boxShadow: 'none',
+                            border: '1px solid',
+                            borderColor: selected ? 'secondary.main' : alpha(theme.palette.divider, 0.18),
+                            bgcolor: selected ? alpha(theme.palette.secondary.main, 0.05) : 'background.paper',
+                            transition: '0.15s',
+                            '&:hover': { borderColor: 'secondary.main' },
                           }}
                         >
                           <Stack direction="row" spacing={2} alignItems="center">
@@ -1087,19 +1064,21 @@ export default function CustomerDetails({
                                 sx={{ width: 44, height: 44, bgcolor: 'background.neutral' }}
                               />
                             ) : (
-                              <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: '#1A1A1A', color: '#9A7B4F' }}>
+                              <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: 'primary.main', color: 'secondary.main' }}>
                                 <Iconify icon={pm.type === 'cash' ? 'solar:wallet-linear' : 'solar:card-linear'} />
                               </Avatar>
                             )}
                             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                              <Typography variant="subtitle2" fontWeight={900}>{pm.name}</Typography>
+                              <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'primary.main' }}>{pm.name}</Typography>
                               {pm.accountInfo && (
-                                <Typography variant="caption" color="text.secondary" fontWeight={700} noWrap>
+                                <Typography variant="caption" color="text.secondary" noWrap>
                                   {pm.accountInfo}
                                 </Typography>
                               )}
                             </Box>
-                            <Chip label={pm.type === 'cash' ? 'CASH' : 'BANK'} size="small" variant="soft" color={pm.type === 'cash' ? 'success' : 'info'} sx={{ fontWeight: 800 }} />
+                            <Typography sx={{ ...microLabel, fontSize: 10, color: pm.type === 'cash' ? 'success.main' : 'info.main' }}>
+                              {pm.type === 'cash' ? 'Cash' : 'Bank'}
+                            </Typography>
                           </Stack>
                         </Card>
                       );
@@ -1109,43 +1088,43 @@ export default function CustomerDetails({
               )}
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
-              <Button onClick={() => setPayOpen(false)} sx={{ fontWeight: 900, color: 'text.secondary' }}>CANCEL</Button>
+              <Button onClick={() => setPayOpen(false)} sx={{ fontWeight: 600, color: 'text.secondary' }}>Cancel</Button>
               <Button
-                variant="contained" color="secondary"
+                variant="contained" color="primary"
                 onClick={() => setPayStep(2)}
                 disabled={!selectedPaymentMethodId}
-                sx={{ fontWeight: 900, px: 4 }}
+                sx={{ fontWeight: 600, px: 3, borderRadius: '6px', boxShadow: 'none' }}
               >
-                CONTINUE
+                Continue
               </Button>
             </DialogActions>
           </>
         ) : (
           <>
-            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1A1A1A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Iconify icon="solar:bill-check-linear" sx={{ color: '#9A7B4F' }} />
-              Confirm & Close Visit
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'primary.main', pb: 1 }}>
+              <Iconify icon="solar:bill-check-linear" sx={{ color: 'secondary.main' }} />
+              <Typography variant="h5" component="span">Confirm & Close Visit</Typography>
             </DialogTitle>
-            <DialogContent sx={{ mt: 3 }}>
-              <Typography variant="body1" fontWeight={700} mb={3}>
-                Once you confirm, this visit will be closed and you <strong>cannot modify it</strong>. The system will record:
+            <DialogContent>
+              <Typography variant="body1" mb={3} mt={1} color="text.secondary">
+                Once you confirm, this visit will be closed and you <Box component="strong" sx={{ color: 'primary.main' }}>cannot modify it</Box>. The system will record:
               </Typography>
               {(() => {
                 const m = paymentMethods.find(p => p.id === selectedPaymentMethodId);
                 return (
-                  <Box sx={{ p: 3, bgcolor: alpha('#1A1A1A', 0.04), borderRadius: 2 }}>
-                    <Stack direction="row" justifyContent="space-between" mb={1.5}>
-                      <Typography variant="caption" fontWeight={800} color="text.disabled">CUSTOMER</Typography>
-                      <Typography variant="subtitle2" fontWeight={900}>{customer.name.toUpperCase()}</Typography>
+                  <Box sx={{ p: 3, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.18), borderRadius: '6px' }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                      <Typography sx={microLabel}>Customer</Typography>
+                      <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'primary.main' }}>{customer.name}</Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between" mb={1.5}>
-                      <Typography variant="caption" fontWeight={800} color="text.disabled">AMOUNT</Typography>
-                      <Typography variant="subtitle2" fontWeight={900} color="secondary.main">{totalEstimation} Br</Typography>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                      <Typography sx={microLabel}>Amount</Typography>
+                      <Typography variant="subtitle2" fontWeight={600} color="secondary.main" sx={tabularNums}>{totalEstimation} Br</Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="caption" fontWeight={800} color="text.disabled">RECEIVED VIA</Typography>
-                      <Typography variant="subtitle2" fontWeight={900}>
-                        {m ? `${m.name}${m.accountInfo ? ` • ${m.accountInfo}` : ''}` : '—'}
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography sx={microLabel}>Received Via</Typography>
+                      <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'primary.main' }}>
+                        {m ? `${m.name}${m.accountInfo ? ` · ${m.accountInfo}` : ''}` : '—'}
                       </Typography>
                     </Stack>
                   </Box>
@@ -1153,15 +1132,15 @@ export default function CustomerDetails({
               })()}
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
-              <Button onClick={() => setPayStep(1)} disabled={finishing} sx={{ fontWeight: 900, color: 'text.secondary' }}>BACK</Button>
+              <Button onClick={() => setPayStep(1)} disabled={finishing} sx={{ fontWeight: 600, color: 'text.secondary' }}>Back</Button>
               <Button
                 variant="contained" color="secondary"
                 onClick={finalizePayment}
                 disabled={finishing}
                 startIcon={finishing ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:check-circle-linear" />}
-                sx={{ fontWeight: 900, px: 4 }}
+                sx={{ fontWeight: 600, px: 3, borderRadius: '6px', boxShadow: 'none' }}
               >
-                {finishing ? 'CLOSING…' : 'CONFIRM & CLOSE'}
+                {finishing ? 'Closing…' : 'Confirm & Close'}
               </Button>
             </DialogActions>
           </>
@@ -1170,11 +1149,6 @@ export default function CustomerDetails({
 
       <style>
         {`
-          @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-          }
           @media print {
             body * { visibility: hidden; }
             #printable-bill, #printable-bill * { visibility: visible; }

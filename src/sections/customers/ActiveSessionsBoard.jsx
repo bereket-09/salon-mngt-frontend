@@ -8,7 +8,6 @@ import {
     Typography,
     Chip,
     IconButton,
-    Badge,
     LinearProgress,
     CircularProgress,
     alpha,
@@ -20,12 +19,22 @@ import Iconify from 'src/components/iconify';
 import config from 'src/config';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
+// Uppercase tracked micro-label
+const microLabel = {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase',
+    lineHeight: 1.5,
+};
+
 export default function ActiveSessionsBoard({ employees, services, token, onSelectCustomer }) {
     const [sessions, setSessions] = useState([]);
     const [refreshKey, setRefreshKey] = useState(0);
     const [loading, setLoading] = useState(true);
     const [confirm, setConfirm] = useState({ open: false, id: null, status: '' });
     const theme = useTheme();
+    const hairline = alpha(theme.palette.divider, 0.18);
 
     useEffect(() => {
         fetchActiveData();
@@ -112,201 +121,337 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
         }
     };
 
+    // Per-assignment status visuals
+    const statusVisual = (status) => {
+        if (status === 'completed') return { icon: 'solar:check-circle-linear', color: theme.palette.success.main };
+        if (status === 'in_progress') return { icon: 'solar:play-circle-linear', color: theme.palette.secondary.main };
+        return { icon: 'solar:clock-circle-linear', color: theme.palette.text.disabled };
+    };
+
     return (
         <Box>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={6}>
-                <Stack direction="row" spacing={2.5} alignItems="center">
-                    <Box sx={{
-                        p: 1.5, bgcolor: '#141312', borderRadius: 2, color: '#9A7B4F',
-                        display: 'flex', boxShadow: theme.customShadows.z12,
-                        border: '1px solid', borderColor: alpha('#9A7B4F', 0.2)
-                    }}>
-                        <Iconify icon="solar:pulse-linear" width={32} />
-                    </Box>
-                    <Box>
-                        <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Active CLIENTS</Typography>
-                        <Typography variant="body2" color="text.secondary" fontWeight={800}>See current customers and their tasks.</Typography>
-                    </Box>
-                </Stack>
-                <Stack direction="row" spacing={2} alignItems="center">
-                    <Chip
-                        label={`${sessions.length} ACTIVE CLIENTS`}
-                        color="secondary"
-                        sx={{ fontWeight: 900, borderRadius: 1.5, height: 44, px: 2, boxShadow: theme.customShadows.z8 }}
-                    />
-                    <IconButton
-                        onClick={() => { setRefreshKey(k => k + 1); setLoading(true); }}
-                        sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05), width: 44, height: 44, '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.1) } }}
+            {/* Section header */}
+            <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ pb: 2.5, mb: 4, borderBottom: '1px solid', borderColor: hairline }}
+            >
+                <Box>
+                    <Typography variant="h4" sx={{ color: 'text.primary' }}>
+                        Live Sessions
+                    </Typography>
+                    <Typography sx={{ ...microLabel, color: 'text.secondary', mt: 0.5 }}>
+                        Customers in the salon now
+                    </Typography>
+                </Box>
+                <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Box
+                        sx={{
+                            px: 1.5,
+                            py: 0.75,
+                            border: '1px solid',
+                            borderColor: hairline,
+                            borderRadius: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.75,
+                        }}
                     >
-                        <Iconify icon="solar:restart-bold" className={loading ? 'animate-spin' : ''} sx={{ color: '#9A7B4F' }} />
-                    </IconButton>
+                        <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: 'secondary.main' }} />
+                        <Typography sx={{ ...microLabel, color: 'text.primary' }}>
+                            {sessions.length} Active
+                        </Typography>
+                    </Box>
+                    <Tooltip title="Refresh">
+                        <IconButton
+                            onClick={() => { setRefreshKey(k => k + 1); setLoading(true); }}
+                            sx={{
+                                width: 44,
+                                height: 44,
+                                border: '1px solid',
+                                borderColor: hairline,
+                                borderRadius: 1.5,
+                                color: 'secondary.main',
+                            }}
+                        >
+                            <Iconify icon="solar:refresh-linear" width={20} className={loading ? 'animate-spin' : ''} />
+                        </IconButton>
+                    </Tooltip>
                 </Stack>
             </Stack>
 
             {sessions.length === 0 && !loading && (
-                <Box sx={{
-                    py: 15, textAlign: 'center', bgcolor: alpha('#1A1A1A', 0.02),
-                    borderRadius: 4, border: '2px dashed', borderColor: alpha('#1A1A1A', 0.1)
-                }}>
-                    <Iconify icon="solar:users-group-rounded-linear" width={64} sx={{ color: alpha('#9A7B4F', 0.1), mb: 2 }} />
-                    <Typography variant="h4" color="text.disabled" fontWeight={900}>No customers in salon</Typography>
-                    <Typography variant="body1" color="text.disabled" fontWeight={700}>Everything is quiet right now.</Typography>
+                <Box
+                    sx={{
+                        py: { xs: 8, md: 12 },
+                        textAlign: 'center',
+                        bgcolor: 'background.paper',
+                        borderRadius: 1.5,
+                        border: '1px solid',
+                        borderColor: hairline,
+                    }}
+                >
+                    <Iconify icon="solar:cup-hot-linear" width={48} sx={{ color: alpha(theme.palette.secondary.main, 0.4), mb: 2 }} />
+                    <Typography variant="h4" sx={{ color: 'text.primary', mb: 1 }}>
+                        A quiet floor
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        No customers are in the salon right now.
+                    </Typography>
                 </Box>
             )}
 
             {loading && sessions.length === 0 ? (
-                <Box sx={{ py: 15, textAlign: 'center' }}><CircularProgress color="secondary" size={48} thickness={4} /></Box>
+                <Box sx={{ py: { xs: 8, md: 12 }, textAlign: 'center' }}>
+                    <CircularProgress color="secondary" size={40} thickness={3} />
+                </Box>
             ) : (
-                <Grid container spacing={4}>
+                <Grid container spacing={{ xs: 2.5, md: 3 }}>
                     {sessions.map(({ customer, session, assignments }) => {
                         const progress = calculateProgress(assignments);
-                        const isAtPay = progress === 100 && assignments.length > 0;
+                        const isDone = progress === 100 && assignments.length > 0;
 
                         return (
-                            <Grid item xs={12} sm={12} md={12} lg={6} xl={4} key={session.id}>
-                                <Card sx={{
-                                    p: 0, overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column',
-                                    borderRadius: 3, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.08),
-                                    boxShadow: '0 20px 60px rgba(0,0,0,0.05)', transition: '0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                                    '&:hover': { transform: 'translateY(-10px)', boxShadow: theme.customShadows.z24 }
-                                }}>
-                                    <Box sx={{
-                                        p: { xs: 2.5, md: 3.5 },
-                                        bgcolor: isAtPay ? alpha('#4caf50', 0.03) : alpha('#141312', 0.01),
-                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                        borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.05)
-                                    }}>
-                                        <Stack direction="row" spacing={2.5} alignItems="center">
-                                            <Badge
-                                                overlap="circular"
-                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                                badgeContent={<Box sx={{
-                                                    width: 14, height: 14, bgcolor: '#4caf50', border: '2px solid white', borderRadius: '50%',
-                                                }} />}
+                            <Grid item xs={12} sm={6} md={6} lg={4} key={session.id}>
+                                <Card
+                                    sx={{
+                                        p: 0,
+                                        overflow: 'hidden',
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        borderRadius: 1.5,
+                                        border: '1px solid',
+                                        borderColor: hairline,
+                                        boxShadow: 'none',
+                                        bgcolor: 'background.paper',
+                                    }}
+                                >
+                                    {/* Top progress bar (thin bronze / ink) */}
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={progress}
+                                        sx={{
+                                            height: 3,
+                                            bgcolor: alpha(theme.palette.primary.main, 0.06),
+                                            '& .MuiLinearProgress-bar': {
+                                                bgcolor: isDone ? theme.palette.success.main : theme.palette.secondary.main,
+                                            },
+                                        }}
+                                    />
+
+                                    {/* Customer header */}
+                                    <Box
+                                        sx={{
+                                            px: { xs: 2.5, md: 3 },
+                                            py: { xs: 2.5, md: 3 },
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: 1.5,
+                                            borderBottom: '1px solid',
+                                            borderColor: hairline,
+                                        }}
+                                    >
+                                        <Stack direction="row" spacing={2} alignItems="center" sx={{ minWidth: 0 }}>
+                                            <Avatar
+                                                sx={{
+                                                    width: 48,
+                                                    height: 48,
+                                                    bgcolor: 'transparent',
+                                                    color: 'text.primary',
+                                                    border: '1px solid',
+                                                    borderColor: hairline,
+                                                    fontWeight: 700,
+                                                    fontSize: '1.1rem',
+                                                    fontFamily: "'Fraunces', serif",
+                                                }}
                                             >
-                                                <Avatar sx={{
-                                                    width: 56, height: 56,
-                                                    bgcolor: isAtPay ? '#4caf50' : '#141312',
-                                                    color: 'white', fontWeight: 900, fontSize: '1.4rem',
-                                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                                                }}>{customer.name[0]}</Avatar>
-                                            </Badge>
-                                            <Box>
-                                                <Typography variant="h6" fontWeight={900} letterSpacing={-0.5}>{customer.name.toUpperCase()}</Typography>
-                                                <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing={1}>{customer.phone}</Typography>
+                                                {customer.name[0]}
+                                            </Avatar>
+                                            <Box sx={{ minWidth: 0 }}>
+                                                <Typography
+                                                    variant="subtitle1"
+                                                    noWrap
+                                                    sx={{ fontFamily: "'Fraunces', serif", fontWeight: 600, color: 'text.primary' }}
+                                                >
+                                                    {customer.name}
+                                                </Typography>
+                                                <Stack direction="row" spacing={0.5} alignItems="center">
+                                                    <Iconify icon="solar:phone-linear" width={12} sx={{ color: 'text.disabled' }} />
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {customer.phone}
+                                                    </Typography>
+                                                </Stack>
                                             </Box>
                                         </Stack>
-                                        <Stack direction="row" spacing={1}>
-                                            <IconButton
-                                                onClick={() => onSelectCustomer(customer)}
-                                                size="small"
-                                                sx={{ bgcolor: alpha('#9A7B4F', 0.05), color: '#9A7B4F', '&:hover': { bgcolor: '#9A7B4F', color: 'white' } }}
-                                            >
-                                                <Iconify icon="solar:maximize-bold" width={20} />
-                                            </IconButton>
+                                        <Stack direction="row" spacing={0.5}>
+                                            <Tooltip title="Open">
+                                                <IconButton
+                                                    onClick={() => onSelectCustomer(customer)}
+                                                    sx={{ width: 40, height: 40, border: '1px solid', borderColor: hairline, borderRadius: 1.5, color: 'secondary.main' }}
+                                                >
+                                                    <Iconify icon="solar:arrow-right-up-linear" width={18} />
+                                                </IconButton>
+                                            </Tooltip>
                                             <Tooltip title="Cancel Session">
                                                 <IconButton
                                                     onClick={() => handleDeleteSession(session.id)}
-                                                    size="small"
-                                                    sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: theme.palette.error.main, '&:hover': { bgcolor: theme.palette.error.main, color: 'white' } }}
+                                                    sx={{ width: 40, height: 40, border: '1px solid', borderColor: hairline, borderRadius: 1.5, color: theme.palette.error.main }}
                                                 >
-                                                    <Iconify icon="solar:trash-bin-trash-bold" width={20} />
+                                                    <Iconify icon="solar:trash-bin-trash-linear" width={18} />
                                                 </IconButton>
                                             </Tooltip>
                                         </Stack>
                                     </Box>
 
-                                    <Box sx={{ px: { xs: 2, md: 3.5 }, py: { xs: 3, md: 4 }, flexGrow: 1 }}>
-                                        <Stack spacing={3}>
-                                            {assignments.map((a, idx) => (
-                                                <Box key={a.id} sx={{ position: 'relative', pl: 6 }}>
-                                                    <Box sx={{
-                                                        position: 'absolute', left: 0, top: 4, width: 32, height: 32,
-                                                        borderRadius: 1.2,
-                                                        bgcolor: a.status === 'completed' ? '#4caf50' : a.status === 'in_progress' ? '#9A7B4F' : alpha('#9A7B4F', 0.05),
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        boxShadow: a.status !== 'assigned' ? '0 8px 16px rgba(0,0,0,0.1)' : 'none'
-                                                    }}>
-                                                        <Iconify
-                                                            icon={a.status === 'completed' ? 'solar:verified-check-bold' : a.status === 'in_progress' ? 'solar:play-bold' : 'solar:clock-circle-bold'}
-                                                            sx={{ color: a.status === 'completed' || a.status === 'in_progress' ? 'white' : '#9A7B4F', width: 18 }}
-                                                        />
-                                                    </Box>
-                                                    <Stack spacing={0.5}>
-                                                        <Typography variant="subtitle2" fontWeight={900} color={a.status === 'completed' ? 'text.disabled' : 'text.primary'} sx={{ textDecoration: a.status === 'completed' ? 'line-through' : 'none', fontSize: '0.85rem' }}>
-                                                            {(a.Services || []).map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name.toUpperCase()}`).join(', ') || 'BESPOKE SERVICE'}
-                                                        </Typography>
-                                                        <Typography variant="caption" color="text.secondary" fontWeight={800}>
-                                                            DONE BY: {a.Employee?.name?.toUpperCase() || 'NOT ASSIGNED'}
-                                                        </Typography>
+                                    {/* Assignment rows (hairline separated) */}
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        {assignments.map((a, idx) => {
+                                            const v = statusVisual(a.status);
+                                            return (
+                                                <Box
+                                                    key={a.id}
+                                                    sx={{
+                                                        px: { xs: 2.5, md: 3 },
+                                                        py: 2,
+                                                        borderBottom: idx === assignments.length - 1 ? 'none' : '1px solid',
+                                                        borderColor: hairline,
+                                                    }}
+                                                >
+                                                    <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                                                        <Iconify icon={v.icon} width={20} sx={{ color: v.color, mt: 0.25, flexShrink: 0 }} />
+                                                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                                                            <Typography
+                                                                variant="body2"
+                                                                sx={{
+                                                                    fontWeight: 600,
+                                                                    color: a.status === 'completed' ? 'text.disabled' : 'text.primary',
+                                                                    textDecoration: a.status === 'completed' ? 'line-through' : 'none',
+                                                                }}
+                                                            >
+                                                                {(a.Services || []).map(s => `${s.code ? '[' + s.code + '] ' : ''}${s.name}`).join(', ') || 'Bespoke service'}
+                                                            </Typography>
+                                                            <Typography sx={{ ...microLabel, fontSize: 10, color: 'text.secondary', mt: 0.5 }}>
+                                                                {a.Employee?.name || 'Not assigned'}
+                                                            </Typography>
 
-                                                        {a.status !== 'completed' && (
-                                                            <Stack direction="row" flexWrap="wrap" spacing={1} mt={1.5} sx={{ gap: 1 }}>
-                                                                <Button
-                                                                    size="small" variant={a.status === 'assigned' ? 'contained' : 'soft'} color="inherit"
-                                                                    onClick={() => handleStatusClick(a.id, 'assigned')}
-                                                                    sx={{ height: 28, fontSize: '0.7rem', fontWeight: 900, minWidth: 60, borderRadius: 1 }}
-                                                                >WAIT</Button>
-                                                                <Button
-                                                                    size="small" variant={a.status === 'in_progress' ? 'contained' : 'soft'} color="warning"
-                                                                    onClick={() => handleStatusClick(a.id, 'in_progress')}
-                                                                    sx={{ height: 28, fontSize: '0.7rem', fontWeight: 900, minWidth: 60, borderRadius: 1, bgcolor: a.status === 'in_progress' ? '#9A7B4F' : '' }}
-                                                                >START</Button>
-                                                                <Button
-                                                                    size="small" variant="soft" color="success"
-                                                                    onClick={() => handleStatusClick(a.id, 'completed')}
-                                                                    sx={{ height: 28, fontSize: '0.7rem', fontWeight: 900, minWidth: 60, borderRadius: 1 }}
-                                                                >DONE</Button>
-                                                            </Stack>
-                                                        )}
+                                                            {a.status !== 'completed' && (
+                                                                <Stack direction="row" flexWrap="wrap" sx={{ gap: 1, mt: 1.5 }}>
+                                                                    <Button
+                                                                        size="small"
+                                                                        disableElevation
+                                                                        variant={a.status === 'assigned' ? 'contained' : 'outlined'}
+                                                                        color="inherit"
+                                                                        onClick={() => handleStatusClick(a.id, 'assigned')}
+                                                                        sx={{
+                                                                            minHeight: 44,
+                                                                            px: 1.5,
+                                                                            ...microLabel,
+                                                                            fontSize: 10,
+                                                                            borderRadius: 1,
+                                                                            borderColor: hairline,
+                                                                            color: a.status === 'assigned' ? 'primary.contrastText' : 'text.secondary',
+                                                                            bgcolor: a.status === 'assigned' ? 'primary.main' : 'transparent',
+                                                                        }}
+                                                                    >Wait</Button>
+                                                                    <Button
+                                                                        size="small"
+                                                                        disableElevation
+                                                                        variant={a.status === 'in_progress' ? 'contained' : 'outlined'}
+                                                                        color="secondary"
+                                                                        onClick={() => handleStatusClick(a.id, 'in_progress')}
+                                                                        sx={{
+                                                                            minHeight: 44,
+                                                                            px: 1.5,
+                                                                            ...microLabel,
+                                                                            fontSize: 10,
+                                                                            borderRadius: 1,
+                                                                            borderColor: hairline,
+                                                                            color: a.status === 'in_progress' ? 'secondary.contrastText' : 'secondary.main',
+                                                                        }}
+                                                                    >Start</Button>
+                                                                    <Button
+                                                                        size="small"
+                                                                        disableElevation
+                                                                        variant="outlined"
+                                                                        color="success"
+                                                                        onClick={() => handleStatusClick(a.id, 'completed')}
+                                                                        sx={{
+                                                                            minHeight: 44,
+                                                                            px: 1.5,
+                                                                            ...microLabel,
+                                                                            fontSize: 10,
+                                                                            borderRadius: 1,
+                                                                        }}
+                                                                    >Done</Button>
+                                                                </Stack>
+                                                            )}
+                                                        </Box>
                                                     </Stack>
                                                 </Box>
-                                            ))}
-                                            {assignments.length === 0 && (
-                                                <Box sx={{ py: 3, textAlign: 'center', bgcolor: alpha('#ff9800', 0.05), borderRadius: 2, border: '1px dashed', borderColor: alpha('#ff9800', 0.2) }}>
-                                                    <Typography variant="caption" color="#ff9800" fontWeight={900} letterSpacing={1}>WAITING FOR SERVICES</Typography>
-                                                </Box>
-                                            )}
-                                        </Stack>
+                                            );
+                                        })}
+                                        {assignments.length === 0 && (
+                                            <Box sx={{ px: { xs: 2.5, md: 3 }, py: 4, textAlign: 'center' }}>
+                                                <Iconify icon="solar:hourglass-linear" width={28} sx={{ color: alpha(theme.palette.warning.main, 0.5), mb: 1 }} />
+                                                <Typography sx={{ ...microLabel, fontSize: 10, color: 'text.secondary' }}>
+                                                    Waiting for services
+                                                </Typography>
+                                            </Box>
+                                        )}
                                     </Box>
 
-                                    <Box sx={{
-                                        px: 3.5, py: 2.5, bgcolor: alpha('#141312', 0.02),
-                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                                    }}>
-                                        <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>
-                                            IN AT: {new Date(session.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </Typography>
+                                    {/* Footer: check-in time + progress / complete */}
+                                    <Box
+                                        sx={{
+                                            px: { xs: 2.5, md: 3 },
+                                            py: 2,
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            gap: 1,
+                                            borderTop: '1px solid',
+                                            borderColor: hairline,
+                                        }}
+                                    >
+                                        <Stack direction="row" spacing={0.5} alignItems="center" sx={{ minWidth: 0 }}>
+                                            <Iconify icon="solar:clock-circle-linear" width={14} sx={{ color: 'text.disabled' }} />
+                                            <Typography sx={{ ...microLabel, fontSize: 10, color: 'text.secondary' }} noWrap>
+                                                In {new Date(session.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </Typography>
+                                        </Stack>
 
                                         <Stack direction="row" spacing={1} alignItems="center">
                                             {progress === 100 && (
                                                 <Button
-                                                    size="small" variant="contained" color="success"
+                                                    size="small"
+                                                    disableElevation
+                                                    variant="contained"
+                                                    color="success"
                                                     onClick={() => handleCompleteSession(session.id)}
-                                                    sx={{ fontWeight: 900, borderRadius: 1, height: 24, fontSize: '0.65rem' }}
+                                                    sx={{ minHeight: 44, px: 1.5, ...microLabel, fontSize: 10, borderRadius: 1 }}
                                                 >
-                                                    COMPLETE
+                                                    Complete
                                                 </Button>
                                             )}
                                             <Chip
-                                                label={progress === 100 ? 'SETTLED' : `${Math.round(progress)}% PROGRESS`}
-                                                color={progress === 100 ? 'success' : 'secondary'}
-                                                variant="soft" size="small"
-                                                sx={{ fontWeight: 900, borderRadius: 1, height: 24 }}
+                                                label={progress === 100 ? 'Settled' : `${Math.round(progress)}%`}
+                                                size="small"
+                                                variant="outlined"
+                                                sx={{
+                                                    ...microLabel,
+                                                    fontSize: 10,
+                                                    borderRadius: 1,
+                                                    height: 26,
+                                                    borderColor: hairline,
+                                                    color: isDone ? theme.palette.success.main : 'secondary.main',
+                                                }}
                                             />
                                         </Stack>
                                     </Box>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={progress}
-                                        sx={{
-                                            height: 6,
-                                            '& .MuiLinearProgress-bar': {
-                                                bgcolor: progress === 100 ? '#4caf50' : '#9A7B4F',
-                                            },
-                                            bgcolor: alpha('#9A7B4F', 0.1)
-                                        }}
-                                    />
                                 </Card>
                             </Grid>
                         );

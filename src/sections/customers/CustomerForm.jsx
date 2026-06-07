@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Card,
+  Box,
+  Stack,
   Grid,
   TextField,
   Button,
@@ -10,12 +11,18 @@ import {
   MenuItem,
   Typography,
   InputAdornment,
-  Box,
-  Divider,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
+
+const microLabel = {
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  lineHeight: 1.5,
+};
 
 export default function CustomerForm({
   branches,
@@ -24,6 +31,7 @@ export default function CustomerForm({
   refreshCustomers,
 }) {
   const theme = useTheme();
+  const hairline = alpha(theme.palette.divider, 0.18);
   const [form, setForm] = useState({ name: '', phone: '', branchId: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -32,7 +40,7 @@ export default function CustomerForm({
     const errs = {};
     if (!form.name || form.name.trim().length < 3) errs.name = 'Minimum 3 characters required';
     if (!/^[79]\d{8}$/.test(form.phone)) errs.phone = 'Start with 7/9 (9 digits)';
-    if (!form.branchId) errs.branchId = 'Select a hub location';
+    if (!form.branchId) errs.branchId = 'Select a branch location';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -67,25 +75,31 @@ export default function CustomerForm({
   };
 
   return (
-    <Card sx={{
-      borderRadius: 2.5, boxShadow: theme.customShadows.z12,
-      border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
-      overflow: 'hidden'
-    }}>
-      <Box sx={{ p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.05), borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.05) }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
-            <Iconify icon="solar:user-plus-linear" width={24} />
-          </Box>
+    <Box
+      sx={{
+        borderRadius: 1.5,
+        border: '1px solid',
+        borderColor: hairline,
+        bgcolor: 'background.paper',
+        overflow: 'hidden',
+      }}
+    >
+      <Box sx={{ px: 3, py: 2.5, borderBottom: '1px solid', borderColor: hairline }}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Iconify icon="solar:user-plus-linear" width={22} sx={{ color: 'secondary.main' }} />
           <Box>
-            <Typography variant="h6" fontWeight={800}>Register Customer</Typography>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>Add a new customer to the salon.</Typography>
+            <Typography variant="subtitle1" sx={{ fontFamily: "'Fraunces', serif", fontWeight: 600, color: 'text.primary' }}>
+              Register Customer
+            </Typography>
+            <Typography sx={{ ...microLabel, fontSize: 10, color: 'text.secondary', mt: 0.25 }}>
+              Add &amp; check in
+            </Typography>
           </Box>
         </Stack>
       </Box>
 
       <Box sx={{ p: 3 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -95,7 +109,7 @@ export default function CustomerForm({
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               error={!!errors.name}
               helperText={errors.name}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
             />
           </Grid>
 
@@ -109,29 +123,33 @@ export default function CustomerForm({
               error={!!errors.phone}
               helperText={errors.phone}
               InputProps={{
-                startAdornment: <InputAdornment position="start"><Typography variant="body2" fontWeight={800} color="text.disabled">+251</Typography></InputAdornment>,
+                startAdornment: <InputAdornment position="start"><Typography variant="body2" color="text.disabled">+251</Typography></InputAdornment>,
                 inputProps: { maxLength: 9 },
-                sx: { borderRadius: 1.5, fontWeight: 700 }
+                sx: { borderRadius: 1.5 },
               }}
             />
           </Grid>
 
           <Grid item xs={12}>
             <FormControl fullWidth error={!!errors.branchId}>
-              <InputLabel sx={{ fontWeight: 800 }}>Select Branch</InputLabel>
+              <InputLabel>Select Branch</InputLabel>
               <Select
                 value={form.branchId}
                 label="Select Branch"
                 onChange={(e) => setForm({ ...form, branchId: e.target.value })}
-                sx={{ borderRadius: 1.5, fontWeight: 700 }}
+                sx={{ borderRadius: 1.5 }}
               >
                 {branches.map((b) => (
-                  <MenuItem key={b.id} value={b.id} sx={{ fontWeight: 700 }}>
-                    {b.name.toUpperCase()}
+                  <MenuItem key={b.id} value={b.id}>
+                    {b.name}
                   </MenuItem>
                 ))}
               </Select>
-              {errors.branchId && <Typography variant="caption" color="error" sx={{ mt: 0.5, fontWeight: 800 }}>{errors.branchId}</Typography>}
+              {errors.branchId && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5, fontWeight: 600 }}>
+                  {errors.branchId}
+                </Typography>
+              )}
             </FormControl>
           </Grid>
 
@@ -141,18 +159,17 @@ export default function CustomerForm({
               size="large"
               variant="contained"
               color="secondary"
+              disableElevation
               disabled={loading || !form.name || !form.phone || !form.branchId}
               onClick={createCustomer}
-              sx={{ height: 60, fontWeight: 900, borderRadius: 1.5, fontSize: '1rem' }}
-              startIcon={<Iconify icon="solar:user-check-linear" />}
+              sx={{ minHeight: 52, borderRadius: 1.5, ...microLabel }}
+              startIcon={<Iconify icon="solar:user-check-linear" width={18} />}
             >
               Check-In Customer
             </Button>
           </Grid>
         </Grid>
       </Box>
-    </Card>
+    </Box>
   );
 }
-
-import { Stack } from '@mui/material';

@@ -6,12 +6,10 @@ import {
   Button,
   Stack,
   Grid,
-  Card,
   alpha,
   useTheme,
   Drawer,
   IconButton,
-  Tooltip,
 } from '@mui/material';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
@@ -22,10 +20,20 @@ import CustomerForm from './CustomerForm';
 import CustomerDetails from './CustomerDetails';
 import ActiveSessionsBoard from './ActiveSessionsBoard';
 
-const DRAWER_WIDTH = 440;
+const DRAWER_WIDTH = 460;
+
+// Uppercase tracked micro-label
+const microLabel = {
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  lineHeight: 1.5,
+};
 
 export default function CustomersPage() {
   const theme = useTheme();
+  const hairline = alpha(theme.palette.divider, 0.18);
   const [customers, setCustomers] = useState([]);
   const [branches, setBranches] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -74,60 +82,126 @@ export default function CustomersPage() {
     [customers, search]
   );
 
-  return (
-    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3, lg: 5 }, minHeight: '100vh', bgcolor: alpha('#1A1A1A', 0.02) }}>
-      {/* Header Info */}
-      <Stack direction={{ xs: 'column', sm: 'row' }} alignItems="center" justifyContent="space-between" mb={6} spacing={2}>
-        <Box sx={{ mb: { xs: 3, sm: 0 } }}>
-          <Typography variant="h3" sx={{ fontWeight: 950, letterSpacing: -2, fontSize: { xs: '1.6rem', md: '2rem', lg: '2.25rem' } }}>
-            Manage <Box component="span" sx={{ color: '#9A7B4F' }}>Customers</Box>
-          </Typography>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
-            <Typography variant="body2" color="text.secondary" fontWeight={700}>View and manage your customer list and active sessions.</Typography>
-            <Box
+  // Tidy segmented view toggle (board / list)
+  const renderViewToggle = () => {
+    const tabs = [
+      { key: 'board', label: 'Active Board', icon: 'solar:widget-5-linear' },
+      { key: 'list', label: 'Customer List', icon: 'solar:users-group-rounded-linear' },
+    ];
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          border: '1px solid',
+          borderColor: hairline,
+          borderRadius: 1.5,
+          overflow: 'hidden',
+          bgcolor: 'background.paper',
+          width: { xs: '100%', sm: 'auto' },
+        }}
+      >
+        {tabs.map((tab, i) => {
+          const active = viewState === tab.key;
+          return (
+            <Button
+              key={tab.key}
+              disableElevation
+              onClick={() => setViewState(tab.key)}
+              startIcon={<Iconify icon={tab.icon} width={18} />}
               sx={{
-                px: 1, py: 0.25, borderRadius: 1, fontSize: '0.7rem', fontWeight: 800,
-                color: isAggregated() ? 'primary.main' : 'secondary.main',
-                bgcolor: (t) => alpha(isAggregated() ? t.palette.primary.main : t.palette.secondary.main, 0.1),
+                flex: { xs: 1, sm: 'none' },
+                minHeight: 44,
+                px: { xs: 1.5, sm: 2.5 },
+                borderRadius: 0,
+                borderLeft: i === 0 ? 'none' : '1px solid',
+                borderColor: hairline,
+                bgcolor: active ? 'primary.main' : 'transparent',
+                color: active ? 'primary.contrastText' : 'text.secondary',
+                ...microLabel,
+                '&:hover': { bgcolor: active ? 'primary.dark' : alpha(theme.palette.primary.main, 0.04) },
               }}
             >
-              {isAggregated() ? '🌐 All Branches (aggregated)' : `📍 ${getSelectedBranchName() || 'Current branch'}`}
-            </Box>
-          </Stack>
-        </Box>
+              {tab.label}
+            </Button>
+          );
+        })}
+      </Box>
+    );
+  };
 
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Box sx={{ p: 0.8, bgcolor: 'white', borderRadius: 2, display: 'flex', border: '1px solid', borderColor: alpha('#1A1A1A', 0.05), boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-            <Button
-              variant={viewState === 'board' ? 'contained' : 'text'}
-              onClick={() => setViewState('board')}
-              startIcon={<Iconify icon="solar:floor-plan-linear" />}
-              sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'board' ? '#1A1A1A' : 'transparent', color: viewState === 'board' ? 'white' : 'text.secondary' }}
-            >
-              ACTIVE BOARD
-            </Button>
-            <Button
-              variant={viewState === 'list' ? 'contained' : 'text'}
-              onClick={() => setViewState('list')}
-              startIcon={<Iconify icon="solar:users-group-rounded-linear" />}
-              sx={{ fontWeight: 900, borderRadius: 1.5, px: 3, height: 44, bgcolor: viewState === 'list' ? '#1A1A1A' : 'transparent', color: viewState === 'list' ? 'white' : 'text.secondary' }}
-            >
-              CUSTOMER LIST
-            </Button>
+  return (
+    <Box sx={{ p: { xs: 2, sm: 3, md: 4, lg: 6 }, minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Header */}
+      <Box mb={{ xs: 4, md: 6 }}>
+        <Typography sx={{ ...microLabel, color: 'secondary.main', mb: 1 }}>
+          Reception
+        </Typography>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          alignItems={{ xs: 'flex-start', md: 'flex-end' }}
+          justifyContent="space-between"
+          spacing={3}
+        >
+          <Box>
+            <Typography variant="h3" sx={{ color: 'text.primary', mb: 1 }}>
+              Active Customers
+            </Typography>
+            <Stack direction="row" alignItems="center" spacing={1.5} flexWrap="wrap" useFlexGap>
+              <Typography variant="body2" color="text.secondary">
+                Live sessions and the people in your salon today.
+              </Typography>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={0.75}
+                sx={{
+                  px: 1.25,
+                  py: 0.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: hairline,
+                  color: isAggregated() ? 'text.primary' : 'secondary.main',
+                }}
+              >
+                <Iconify
+                  icon={isAggregated() ? 'solar:global-linear' : 'solar:map-point-linear'}
+                  width={14}
+                />
+                <Typography sx={{ ...microLabel, fontSize: 10 }}>
+                  {isAggregated() ? 'All Branches' : (getSelectedBranchName() || 'Current Branch')}
+                </Typography>
+              </Stack>
+            </Stack>
           </Box>
-          {!currentCustomer && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => setDrawerOpen(true)}
-              startIcon={<Iconify icon="solar:magnifer-zoom-in-linear" />}
-              sx={{ fontWeight: 900, borderRadius: 2, px: 3, height: 48, bgcolor: '#9A7B4F', '&:hover': { bgcolor: '#B5851F' } }}
-            >
-              SEARCH / ADD
-            </Button>
-          )}
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.5}
+            alignItems="center"
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+          >
+            {renderViewToggle()}
+            {!currentCustomer && (
+              <Button
+                variant="contained"
+                color="secondary"
+                disableElevation
+                onClick={() => setDrawerOpen(true)}
+                startIcon={<Iconify icon="solar:add-circle-linear" width={18} />}
+                sx={{
+                  minHeight: 44,
+                  px: 3,
+                  borderRadius: 1.5,
+                  width: { xs: '100%', sm: 'auto' },
+                  ...microLabel,
+                }}
+              >
+                Search / Add
+              </Button>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
+      </Box>
 
       {/* Main View Area */}
       <Grid container spacing={4}>
@@ -135,11 +209,11 @@ export default function CustomersPage() {
           {currentCustomer ? (
             <Box>
               <Button
-                startIcon={<Iconify icon="solar:alt-arrow-left-bold" />}
+                startIcon={<Iconify icon="solar:alt-arrow-left-linear" width={18} />}
                 onClick={() => setCurrentCustomer(null)}
-                sx={{ mb: 4, fontWeight: 900, color: '#9A7B4F', fontSize: '1.05rem' }}
+                sx={{ mb: 4, color: 'secondary.main', ...microLabel }}
               >
-                BACK TO CUSTOMERS
+                Back to Customers
               </Button>
               <CustomerDetails
                 customer={currentCustomer}
@@ -161,26 +235,30 @@ export default function CustomersPage() {
                   onSelectCustomer={setCurrentCustomer}
                 />
               ) : (
-                <Card sx={{
-                  p: 5, borderRadius: 4, border: '1px solid', borderColor: alpha('#1A1A1A', 0.05),
-                  boxShadow: '0 30px 60px rgba(0,0,0,0.03)'
-                }}>
-                  <Stack direction="row" spacing={2.5} alignItems="center" mb={5}>
-                    <Box sx={{ p: 2, bgcolor: '#1A1A1A', borderRadius: 2, color: '#9A7B4F' }}>
-                      <Iconify icon="solar:users-group-rounded-linear" width={32} />
-                    </Box>
+                <Box>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ pb: 2, mb: 4, borderBottom: '1px solid', borderColor: hairline }}
+                  >
                     <Box>
-                      <Typography variant="h3" sx={{ fontWeight: 900, mb: -0.5 }}>Customer List</Typography>
-                      <Typography variant="subtitle2" color="text.secondary" fontWeight={800} letterSpacing={1}>ALL CUSTOMERS</Typography>
+                      <Typography variant="h4" sx={{ color: 'text.primary' }}>
+                        Customer List
+                      </Typography>
+                      <Typography sx={{ ...microLabel, color: 'text.secondary', mt: 0.5 }}>
+                        All Customers
+                      </Typography>
                     </Box>
+                    <Iconify icon="solar:users-group-rounded-linear" width={28} sx={{ color: alpha(theme.palette.secondary.main, 0.4) }} />
                   </Stack>
                   <CustomerList
                     customers={filteredCustomers}
                     setCurrentCustomer={setCurrentCustomer}
                     token={token}
-                    columns={{ xs: 12 }}
+                    columns={{ xs: 12, sm: 6, lg: 4 }}
                   />
-                </Card>
+                </Box>
               )}
             </Box>
           )}
@@ -194,54 +272,64 @@ export default function CustomersPage() {
         PaperProps={{
           sx: {
             width: { xs: '100%', sm: DRAWER_WIDTH },
-            bgcolor: alpha('#1A1A1A', 0.02),
+            bgcolor: 'background.default',
             p: { xs: 2.5, md: 3.5 },
             borderLeft: '1px solid',
-            borderColor: alpha('#1A1A1A', 0.05),
+            borderColor: hairline,
           },
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
-          <Typography variant="h5" sx={{ fontWeight: 950, letterSpacing: -0.5 }}>
-            Search & Add
-          </Typography>
-          <Tooltip title="Close">
-            <IconButton onClick={() => setDrawerOpen(false)} sx={{ bgcolor: alpha('#1A1A1A', 0.05) }}>
-              <Iconify icon="solar:close-circle-linear" />
-            </IconButton>
-          </Tooltip>
+        <Stack direction="row" alignItems="flex-start" justifyContent="space-between" mb={4}>
+          <Box>
+            <Typography sx={{ ...microLabel, color: 'secondary.main', mb: 0.5 }}>
+              Reception
+            </Typography>
+            <Typography variant="h4" sx={{ color: 'text.primary' }}>
+              Search &amp; Add
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={() => setDrawerOpen(false)}
+            sx={{
+              width: 44,
+              height: 44,
+              border: '1px solid',
+              borderColor: hairline,
+              borderRadius: 1.5,
+              color: 'text.primary',
+            }}
+          >
+            <Iconify icon="solar:close-circle-linear" width={20} />
+          </IconButton>
         </Stack>
 
         <Stack spacing={3}>
-          <Card sx={{
-            p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            border: '1px solid', borderColor: alpha('#1A1A1A', 0.05),
-            boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
-            bgcolor: 'white'
-          }}>
-            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-              <Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: alpha('#9A7B4F', 0.1), color: '#9A7B4F' }}>
-                <Iconify icon="solar:magnifer-zoom-in-linear" width={24} />
-              </Box>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 900, mb: -0.5 }}>Search</Typography>
-                <Typography variant="caption" color="text.secondary" fontWeight={800}>FIND CUSTOMERS</Typography>
-              </Box>
-            </Stack>
+          <Box
+            sx={{
+              p: { xs: 2.5, md: 3 },
+              borderRadius: 1.5,
+              border: '1px solid',
+              borderColor: hairline,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Typography sx={{ ...microLabel, color: 'text.secondary', mb: 2 }}>
+              Find Customers
+            </Typography>
             <TextField
               fullWidth
               autoFocus
-              placeholder="Search by name or phone..."
+              placeholder="Search by name or phone"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{
-                startAdornment: <Iconify icon="solar:user-linear" sx={{ mr: 1.5, color: '#9A7B4F' }} />,
-                sx: { borderRadius: 1.5, fontWeight: 800, bgcolor: alpha('#1A1A1A', 0.02) }
+                startAdornment: <Iconify icon="solar:magnifer-linear" width={20} sx={{ mr: 1.5, color: 'secondary.main' }} />,
+                sx: { borderRadius: 1.5 },
               }}
             />
 
             {search && (
-              <Box sx={{ mt: 3, maxHeight: 400, overflowY: 'auto', pr: 1 }}>
+              <Box sx={{ mt: 3, maxHeight: 400, overflowY: 'auto', pr: 0.5 }}>
                 <CustomerList
                   customers={filteredCustomers}
                   setCurrentCustomer={(c) => {
@@ -256,12 +344,26 @@ export default function CustomersPage() {
             )}
 
             {!search && (
-              <Box sx={{ mt: 3, textAlign: 'center', py: 4, border: '2px dashed', borderColor: alpha('#1A1A1A', 0.05), borderRadius: 2 }}>
-                <Iconify icon="solar:ghost-linear" width={48} sx={{ color: alpha('#1A1A1A', 0.1), mb: 1.5 }} />
-                <Typography variant="body2" color="text.disabled" fontWeight={800}>SEARCH BY NAME OR PHONE</Typography>
+              <Box
+                sx={{
+                  mt: 3,
+                  textAlign: 'center',
+                  py: 5,
+                  border: '1px dashed',
+                  borderColor: hairline,
+                  borderRadius: 1.5,
+                }}
+              >
+                <Iconify icon="solar:magnifer-linear" width={36} sx={{ color: alpha(theme.palette.secondary.main, 0.35), mb: 1.5 }} />
+                <Typography variant="subtitle1" sx={{ fontFamily: "'Fraunces', serif", color: 'text.primary', mb: 0.5 }}>
+                  Find a customer
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Type a name or phone number to begin.
+                </Typography>
               </Box>
             )}
-          </Card>
+          </Box>
 
           <CustomerForm
             branches={branches}

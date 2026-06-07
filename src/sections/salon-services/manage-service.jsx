@@ -260,7 +260,7 @@ export default function ServicesPage() {
                     >
                       <MenuItem value="male">For Men</MenuItem>
                       <MenuItem value="female">For Women</MenuItem>
-                      <MenuItem value="both">For Both</MenuItem>
+                      <MenuItem value="both">Unisex (Male &amp; Female)</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -359,7 +359,7 @@ export default function ServicesPage() {
                             />
                           )}
                           <Chip
-                            label={s.gender === 'male' ? 'Men' : s.gender === 'female' ? 'Women' : 'Both'}
+                            label={s.gender === 'male' ? 'Men' : s.gender === 'female' ? 'Women' : 'Unisex'}
                             size="small" color={s.gender === 'male' ? 'info' : 'secondary'} variant="soft"
                             sx={{ fontWeight: 800, borderRadius: 0.5 }}
                           />
@@ -425,7 +425,7 @@ export default function ServicesPage() {
                     <Select value={editService.gender} label="Gender" onChange={(e) => setEditService({ ...editService, gender: e.target.value })}>
                       <MenuItem value="male">Men</MenuItem>
                       <MenuItem value="female">Women</MenuItem>
-                      <MenuItem value="both">Both</MenuItem>
+                      <MenuItem value="both">Unisex (Male &amp; Female)</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
