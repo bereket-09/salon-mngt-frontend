@@ -56,11 +56,30 @@ export default function BookingsView() {
         phone: '',
         branchId: '',
         serviceIds: [],
+        employeeId: '',
         preferredDate: dayjs().format('YYYY-MM-DD'),
         preferredTime: '10:00',
         status: 'pending',
         notes: ''
     });
+
+    // Specialists eligible for the services chosen in the create dialog
+    // (match by service category or its parent). Falls back to all staff.
+    const bookingEligibleEmployees = (() => {
+        const selected = services.filter((s) => newBooking.serviceIds.includes(s.id));
+        if (!selected.length) return employees;
+        const matched = employees.filter((emp) => {
+            if (emp.role !== 'employee') return true; // keep admins/receptionists pickable
+            const specs = (emp.Specialties || []).map((c) => c.id);
+            if (!specs.length) return true;
+            return selected.every((svc) => {
+                const ids = [svc.categoryId, svc.Category?.parentId].filter(Boolean);
+                if (!ids.length) return true;
+                return ids.some((id) => specs.includes(id));
+            });
+        });
+        return matched.length ? matched : employees;
+    })();
 
     // Confirm Dialog State
     const [confirm, setConfirm] = useState({ open: false, type: '', id: null });
@@ -488,7 +507,12 @@ export default function BookingsView() {
                                     <InputLabel>Assign Specialist</InputLabel>
                                     <Select value={newBooking.employeeId} label="Assign Specialist" onChange={(e) => setNewBooking({ ...newBooking, employeeId: e.target.value })}>
                                         <MenuItem value="">NOT ASSIGNED</MenuItem>
-                                        {employees.map(e => <MenuItem key={e.id} value={e.id}>{e.name} ({e.role})</MenuItem>)}
+                                        {bookingEligibleEmployees.map(e => (
+                                            <MenuItem key={e.id} value={e.id}>
+                                                {e.name} ({e.role})
+                                                {e.Specialties?.length ? ` — ${e.Specialties.map(c => c.name).join(', ')}` : ''}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </Grid>

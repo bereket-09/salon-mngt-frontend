@@ -149,7 +149,8 @@ export default function SettingsPage() {
                   fontSize: '1.1rem',
                   color: 'text.primary',
                   padding: '16px',
-                  width: '350px',
+                  width: { xs: 'auto', md: '350px' },
+                  minWidth: { xs: 120, md: 350 },
                 }}
               >
                 Key Name

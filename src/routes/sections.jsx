@@ -9,6 +9,7 @@ import ProfilePage from 'src/sections/setting/profile';
 import SettingsPage from 'src/sections/setting/setting';
 import BranchesTable from 'src/sections/branches/manageBranches';
 import ServicesPage from 'src/sections/salon-services/manage-service';
+import ServiceCategoriesPage from 'src/sections/salon-services/manage-categories';
 import CustomersPage from 'src/sections/customers/curstomersPage';
 import InvoicesList from 'src/sections/customers/Invoices';
 import Attendance from 'src/sections/customers/Attendance';
@@ -96,6 +97,7 @@ export default function Router() {
         // Administration
         { path: 'user-mngt', element: <UserManagement /> },
         { path: 'services', element: <ServicesPage /> },
+        { path: 'service-categories', element: <ServiceCategoriesPage /> },
         { path: 'service-type', element: <BranchesTable /> },
         { path: 'manage-gallery', element: <ManageGallery /> },
         { path: 'payment-methods', element: <PaymentMethodsPage /> },

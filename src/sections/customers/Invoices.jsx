@@ -26,9 +26,11 @@ import {
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function Invoices() {
   const theme = useTheme();
+  const isMobile = useResponsive('down', 'md');
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -67,7 +69,13 @@ export default function Invoices() {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={6}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        justifyContent="space-between"
+        spacing={2}
+        mb={{ xs: 4, md: 6 }}
+      >
         <Stack direction="row" spacing={2.5} alignItems="center">
           <Box sx={{
             p: 1.5, bgcolor: '#0D0E1C', borderRadius: 2, color: '#C8972A',
@@ -77,15 +85,16 @@ export default function Invoices() {
             <Iconify icon="solar:bill-list-bold-duotone" width={32} />
           </Box>
           <Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Invoices</Typography>
+            <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '2.25rem' } }}>Invoices</Typography>
             <Typography variant="body2" color="text.secondary" fontWeight={800}>Manage your salon bills and revenue.</Typography>
           </Box>
         </Stack>
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ width: { xs: '100%', sm: 'auto' } }}>
           <Button
             variant="contained"
             onClick={fetchInvoices}
             startIcon={<Iconify icon="solar:restart-bold" />}
+            fullWidth={isMobile}
             sx={{ fontWeight: 900, height: 48, px: 3, bgcolor: '#C8972A', '&:hover': { bgcolor: '#b08425' } }}
           >
             REFRESH DATA
@@ -114,7 +123,69 @@ export default function Invoices() {
         ))}
       </Grid>
 
+      {/* MOBILE: stacked invoice cards (xs–sm) */}
+      <Stack spacing={2} sx={{ display: { xs: 'flex', md: 'none' } }}>
+        {invoices.map((inv) => (
+          <Card
+            key={inv.id}
+            sx={{
+              p: 2.5, borderRadius: 3, border: '1px solid',
+              borderColor: alpha(theme.palette.divider, 0.12),
+              boxShadow: '0 10px 30px rgba(0,0,0,0.04)', bgcolor: 'background.paper'
+            }}
+          >
+            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1.5}>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="subtitle1" fontWeight={900} noWrap>
+                  {inv.Customer?.name?.toUpperCase() || 'WALK-IN GUEST'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontFamily: 'monospace' }}>
+                  MIL-{inv.id.toString().padStart(5, '0')}
+                </Typography>
+              </Box>
+              <Chip
+                label={inv.status.toUpperCase()}
+                color={inv.status === 'paid' ? 'success' : 'warning'}
+                variant="soft"
+                size="small"
+                sx={{ fontWeight: 900, borderRadius: 1, height: 26, px: 1, flexShrink: 0 }}
+              />
+            </Stack>
+
+            <Stack direction="row" alignItems="flex-end" justifyContent="space-between" spacing={1.5} sx={{ mt: 2 }}>
+              <Typography variant="h4" fontWeight={900} color="#0D0E1C">
+                {inv.totalAmount}{' '}
+                <Typography component="span" variant="caption" fontWeight={900} color="text.disabled">Br</Typography>
+              </Typography>
+              <Typography variant="caption" color="text.disabled" fontWeight={700} sx={{ textAlign: 'right' }}>
+                {new Date(inv.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                {' • '}
+                {new Date(inv.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Typography>
+            </Stack>
+
+            <Button
+              variant="soft"
+              color="inherit"
+              fullWidth
+              onClick={() => setSelectedInvoice(inv)}
+              startIcon={<Iconify icon="solar:eye-bold" />}
+              sx={{ mt: 2, fontWeight: 800, borderRadius: 1.5 }}
+            >
+              REVIEW &amp; PRINT
+            </Button>
+          </Card>
+        ))}
+        {invoices.length === 0 && (
+          <Card sx={{ p: 6, borderRadius: 3, textAlign: 'center', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.12) }}>
+            <Typography color="text.disabled" variant="h6" fontWeight={900}>No Invoices Found</Typography>
+          </Card>
+        )}
+      </Stack>
+
+      {/* DESKTOP: table (md and up) */}
       <Card sx={{
+        display: { xs: 'none', md: 'block' },
         borderRadius: 4, overflow: 'hidden', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
         boxShadow: '0 20px 60px rgba(0,0,0,0.05)', bgcolor: 'background.paper'
       }}>
@@ -192,21 +263,24 @@ export default function Invoices() {
       <Dialog
         open={!!selectedInvoice}
         onClose={() => setSelectedInvoice(null)}
-        maxWidth="xs"
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 0,
             boxShadow: theme.customShadows.z24,
-            border: '1px solid black'
+            border: '1px solid black',
+            m: { xs: 1.5, sm: 4 },
+            width: { xs: 'calc(100% - 24px)', sm: '100%' },
+            maxWidth: { sm: 480 }
           }
         }}
       >
         <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
           {selectedInvoice && (
-            <Box id="printable-bill" sx={{ p: 5, color: 'black', fontFamily: '"Outfit", sans-serif' }}>
+            <Box id="printable-bill" sx={{ p: { xs: 3, sm: 5 }, color: 'black', fontFamily: '"Outfit", sans-serif' }}>
               <Box sx={{ borderBottom: '2px solid black', pb: 3, mb: 4, textAlign: 'center' }}>
-                <Typography variant="h2" fontWeight={900} letterSpacing={-2} sx={{ color: 'black' }}>
+                <Typography variant="h2" fontWeight={900} letterSpacing={-2} sx={{ color: 'black', fontSize: { xs: '2.25rem', sm: '3.75rem' } }}>
                   MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
                 </Typography>
                 <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 5, display: 'block', mt: -1 }}>BOUTIQUE SALON</Typography>
@@ -214,15 +288,15 @@ export default function Invoices() {
               </Box>
 
               <Stack spacing={4}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ minWidth: 0 }}>
                     <Typography variant="caption" fontWeight={900} color="grey.500">BILLED TO</Typography>
-                    <Typography variant="h5" fontWeight={900}>{(selectedInvoice.Customer?.name || 'Valued Guest').toUpperCase()}</Typography>
+                    <Typography variant="h5" fontWeight={900} sx={{ wordBreak: 'break-word' }}>{(selectedInvoice.Customer?.name || 'Valued Guest').toUpperCase()}</Typography>
                     <Typography variant="body2" fontWeight={700}>{selectedInvoice.Customer?.phone}</Typography>
                   </Box>
-                  <Box sx={{ textAlign: 'right' }}>
+                  <Box sx={{ textAlign: 'right', minWidth: 0 }}>
                     <Typography variant="caption" fontWeight={900} color="grey.500">TRANSACTION</Typography>
-                    <Typography variant="h5" fontWeight={900}>#MIL-{selectedInvoice.id}</Typography>
+                    <Typography variant="h5" fontWeight={900} sx={{ wordBreak: 'break-word' }}>#MIL-{selectedInvoice.id}</Typography>
                     <Typography variant="body2" fontWeight={700}>{new Date(selectedInvoice.createdAt).toLocaleDateString()}</Typography>
                   </Box>
                 </Box>
@@ -233,21 +307,21 @@ export default function Invoices() {
                     <Typography variant="caption" fontWeight={900}>AMOUNT (BR)</Typography>
                   </Box>
                   {selectedInvoice.InvoiceItems?.map((item, idx) => (
-                    <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', py: 1.5 }}>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={900}>{(item.Service?.name || item.serviceName || 'Treatment').toUpperCase()}</Typography>
+                    <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, py: 1.5 }}>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="subtitle2" fontWeight={900} sx={{ wordBreak: 'break-word' }}>{(item.Service?.name || item.serviceName || 'Treatment').toUpperCase()}</Typography>
                         <Typography variant="caption" sx={{ color: 'grey.600' }}>Master Stylist Session</Typography>
                       </Box>
-                      <Typography variant="subtitle1" fontWeight={900}>{item.price}.00</Typography>
+                      <Typography variant="subtitle1" fontWeight={900} sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>{item.price}.00</Typography>
                     </Box>
                   ))}
                 </Box>
 
                 <Box sx={{ pt: 3, borderTop: '2px solid black' }}>
-                  <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-                    <Typography variant="h4" fontWeight={900}>TOTAL DUE</Typography>
-                    <Typography variant="h3" fontWeight={900}>
-                      {selectedInvoice.totalAmount}<Typography variant="caption" sx={{ fontWeight: 900, ml: 1 }}>ETB</Typography>
+                  <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" flexWrap="wrap">
+                    <Typography variant="h4" fontWeight={900} sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>TOTAL DUE</Typography>
+                    <Typography variant="h3" fontWeight={900} sx={{ fontSize: { xs: '1.75rem', sm: '3rem' }, whiteSpace: 'nowrap' }}>
+                      {selectedInvoice.totalAmount}<Typography component="span" variant="caption" sx={{ fontWeight: 900, ml: 1 }}>ETB</Typography>
                     </Typography>
                   </Stack>
                 </Box>
@@ -273,7 +347,7 @@ export default function Invoices() {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 4, bgcolor: '#f8f9fa', borderTop: '1px solid #ddd' }}>
+        <DialogActions sx={{ p: { xs: 2, sm: 4 }, gap: 1, bgcolor: '#f8f9fa', borderTop: '1px solid #ddd' }}>
           <Button variant="outlined" color="inherit" fullWidth onClick={() => setSelectedInvoice(null)} sx={{ height: 56, fontWeight: 900 }}>CLOSE</Button>
           <Button variant="contained" color="primary" fullWidth onClick={handlePrint} startIcon={<Iconify icon="solar:printer-bold" />} sx={{ height: 56, fontWeight: 900, bgcolor: 'black', '&:hover': { bgcolor: '#222' } }}>PRINT BILL</Button>
         </DialogActions>

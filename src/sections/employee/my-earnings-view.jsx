@@ -22,9 +22,11 @@ import {
 import { useTheme } from '@mui/material/styles';
 import Iconify from 'src/components/iconify';
 import config from 'src/config';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function MyEarningsView() {
     const theme = useTheme();
+    const isMobile = useResponsive('down', 'md');
     const [report, setReport] = useState(null);
     const [loading, setLoading] = useState(true);
     const userStr = localStorage.getItem('userData');
@@ -142,54 +144,112 @@ export default function MyEarningsView() {
                     </Stack>
                     <Chip label="Current Month" color="secondary" size="small" sx={{ fontWeight: 800, borderRadius: 0.5 }} />
                 </Box>
-                <TableContainer>
-                    <Table>
-                        <TableHead sx={{ bgcolor: alpha(theme.palette.background.neutral, 0.5) }}>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 800, py: 2.5 }}>Date</TableCell>
-                                <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
-                                <TableCell sx={{ fontWeight: 800 }}>Customer</TableCell>
-                                <TableCell sx={{ fontWeight: 800 }}>Price</TableCell>
-                                <TableCell sx={{ fontWeight: 800 }} align="right">My Earnings</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {report?.history?.map((row, i) => (
-                                <TableRow key={i} hover>
-                                    <TableCell sx={{ py: 2.5 }}>
-                                        <Typography variant="subtitle2" fontWeight={800} color="secondary.main">
-                                            {dayjs(row.completedDate).format('MMM DD').toUpperCase()}
+                {/* MOBILE: stacked card list (xs–sm) */}
+                {isMobile ? (
+                    <Stack spacing={0} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
+                        {report?.history?.map((row, i) => (
+                            <Box key={`${row.completedDate}-${i}`} sx={{ p: 2.5 }}>
+                                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+                                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                                        <Typography variant="subtitle1" fontWeight={900} sx={{ lineHeight: 1.2 }}>
+                                            {row.serviceName.toUpperCase()}
                                         </Typography>
-                                        <Typography variant="caption" color="text.secondary" fontWeight={700}>
-                                            {dayjs(row.completedDate).format('hh:mm A')}
+                                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.75, color: 'text.secondary' }}>
+                                            <Iconify icon="solar:calendar-mark-bold-duotone" width={16} sx={{ color: 'secondary.main' }} />
+                                            <Typography variant="caption" fontWeight={800}>
+                                                {dayjs(row.completedDate).format('MMM DD').toUpperCase()} · {dayjs(row.completedDate).format('hh:mm A')}
+                                            </Typography>
+                                        </Stack>
+                                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                                            <Iconify icon="solar:user-bold-duotone" width={16} />
+                                            <Typography variant="caption" fontWeight={800} noWrap>
+                                                {row.customerName.toUpperCase()}
+                                            </Typography>
+                                        </Stack>
+                                    </Box>
+                                    <Chip
+                                        label="DONE" size="small" variant="soft" color="success"
+                                        sx={{ height: 20, fontSize: '0.6rem', fontWeight: 800, borderRadius: 0.5, flexShrink: 0 }}
+                                    />
+                                </Stack>
+
+                                <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                    sx={{
+                                        mt: 2, pt: 1.5, borderTop: '1px solid',
+                                        borderColor: alpha(theme.palette.divider, 0.08),
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography variant="caption" color="text.disabled" fontWeight={800} sx={{ display: 'block' }}>
+                                            PRICE
                                         </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={800}>{row.serviceName.toUpperCase()}</Typography>
-                                        <Chip
-                                            label="DONE" size="small" variant="soft" color="success"
-                                            sx={{ height: 20, fontSize: '0.6rem', fontWeight: 800, borderRadius: 0.5, mt: 0.5 }}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2" fontWeight={800}>{row.customerName.toUpperCase()}</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2" fontWeight={800}>{row.servicePrice} Br</Typography>
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Typography variant="h6" sx={{ color: 'secondary.main', fontWeight: 900 }}>
+                                        <Typography variant="subtitle2" fontWeight={800}>{row.servicePrice} Br</Typography>
+                                    </Box>
+                                    <Box sx={{ textAlign: 'right' }}>
+                                        <Typography variant="h6" sx={{ color: 'secondary.main', fontWeight: 900, lineHeight: 1.1 }}>
                                             + {row.commissionAmount} Br
                                         </Typography>
                                         <Typography variant="caption" color="text.disabled" fontWeight={800}>
                                             {(row.commissionRate * 100).toFixed(0)}% SHARE
                                         </Typography>
-                                    </TableCell>
+                                    </Box>
+                                </Stack>
+                            </Box>
+                        ))}
+                    </Stack>
+                ) : (
+                    <TableContainer>
+                        <Table>
+                            <TableHead sx={{ bgcolor: alpha(theme.palette.background.neutral, 0.5) }}>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 800, py: 2.5 }}>Date</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }}>Customer</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }}>Price</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }} align="right">My Earnings</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {report?.history?.map((row, i) => (
+                                    <TableRow key={`${row.completedDate}-${i}`} hover>
+                                        <TableCell sx={{ py: 2.5 }}>
+                                            <Typography variant="subtitle2" fontWeight={800} color="secondary.main">
+                                                {dayjs(row.completedDate).format('MMM DD').toUpperCase()}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" fontWeight={700}>
+                                                {dayjs(row.completedDate).format('hh:mm A')}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="subtitle2" fontWeight={800}>{row.serviceName.toUpperCase()}</Typography>
+                                            <Chip
+                                                label="DONE" size="small" variant="soft" color="success"
+                                                sx={{ height: 20, fontSize: '0.6rem', fontWeight: 800, borderRadius: 0.5, mt: 0.5 }}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" fontWeight={800}>{row.customerName.toUpperCase()}</Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" fontWeight={800}>{row.servicePrice} Br</Typography>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Typography variant="h6" sx={{ color: 'secondary.main', fontWeight: 900 }}>
+                                                + {row.commissionAmount} Br
+                                            </Typography>
+                                            <Typography variant="caption" color="text.disabled" fontWeight={800}>
+                                                {(row.commissionRate * 100).toFixed(0)}% SHARE
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
                 {!report?.history?.length && (
                     <Box sx={{ py: 15, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.01) }}>
                         <Iconify icon="solar:safe-bold-duotone" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />

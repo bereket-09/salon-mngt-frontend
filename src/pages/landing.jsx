@@ -40,12 +40,14 @@ export default function LandingPage() {
     const [typeFilter, setTypeFilter] = useState('all');
     const [services, setServices] = useState([]);
     const [branches, setBranches] = useState([]);
+    const [specialists, setSpecialists] = useState([]);
     const [bookingSuccess, setBookingSuccess] = useState(false);
     const [bookingForm, setBookingForm] = useState({
         customerName: '',
         phone: '',
         branchId: '',
         serviceIds: [],
+        employeeId: '',
         preferredDate: dayjs().format('YYYY-MM-DD'),
         preferredTime: '10:00',
         notes: '',
@@ -106,7 +108,30 @@ export default function LandingPage() {
                 }
             })
             .catch((err) => console.error(err));
+
+        fetch(`${config.BASE_URL}/users/specialists`)
+            .then((res) => res.json())
+            .then((data) => setSpecialists(Array.isArray(data) ? data : []))
+            .catch((err) => console.error(err));
     }, []);
+
+    // Specialists eligible for the chosen services (and branch), matching by
+    // service category or its parent super-category. Falls back to all.
+    const eligibleSpecialists = (() => {
+        const selected = services.filter((s) => bookingForm.serviceIds.includes(s.id));
+        const byBranch = specialists.filter((sp) => !sp.BranchId || !bookingForm.branchId || sp.BranchId === bookingForm.branchId);
+        if (!selected.length) return byBranch;
+        const matched = byBranch.filter((sp) => {
+            const specs = (sp.Specialties || []).map((c) => c.id);
+            if (!specs.length) return true; // generalist
+            return selected.every((svc) => {
+                const ids = [svc.categoryId, svc.Category?.parentId].filter(Boolean);
+                if (!ids.length) return true;
+                return ids.some((id) => specs.includes(id));
+            });
+        });
+        return matched.length ? matched : byBranch;
+    })();
 
     const handleBookingSubmit = async () => {
         if (!bookingForm.customerName || !bookingForm.phone) {
@@ -122,7 +147,7 @@ export default function LandingPage() {
             if (response.ok) {
                 setBookingSuccess(true);
                 setOpenBooking(false);
-                setBookingForm({ customerName: '', phone: '', branchId: branches[0]?.id || '', serviceIds: [], preferredDate: dayjs().format('YYYY-MM-DD'), preferredTime: '10:00', notes: '' });
+                setBookingForm({ customerName: '', phone: '', branchId: branches[0]?.id || '', serviceIds: [], employeeId: '', preferredDate: dayjs().format('YYYY-MM-DD'), preferredTime: '10:00', notes: '' });
             } else {
                 const err = await response.json().catch(() => ({}));
                 alert(err.error || 'Oops! Something went wrong with your booking.');
@@ -674,6 +699,33 @@ export default function LandingPage() {
                                     <MenuItem key={s.id} value={s.id} sx={{ justifyContent: 'space-between', py: 1.5 }}>
                                         <Typography variant="body1" fontWeight={700}>{s.name.toUpperCase()}</Typography>
                                         <Typography variant="caption" fontWeight={900} color="#C8972A">{s.price} Br</Typography>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth variant="standard">
+                            <InputLabel sx={{ color: 'grey.500', fontWeight: 700 }}>Preferred Specialist (Optional)</InputLabel>
+                            <Select
+                                value={bookingForm.employeeId}
+                                onChange={(e) => setBookingForm({ ...bookingForm, employeeId: e.target.value })}
+                                sx={{
+                                    color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1,
+                                    '&:before': { borderBottomColor: alpha('#ffffff', 0.2) },
+                                    '&:hover:not(.Mui-disabled):before': { borderBottomColor: '#C8972A' },
+                                    '&:after': { borderBottomColor: '#C8972A' },
+                                    '& .MuiSelect-icon': { color: 'grey.500' }
+                                }}
+                            >
+                                <MenuItem value="" sx={{ fontWeight: 700 }}>No preference</MenuItem>
+                                {eligibleSpecialists.map((sp) => (
+                                    <MenuItem key={sp.id} value={sp.id} sx={{ justifyContent: 'space-between', py: 1.5 }}>
+                                        <Typography variant="body1" fontWeight={700}>{sp.name}</Typography>
+                                        <Stack direction="row" spacing={0.5}>
+                                            {(sp.Specialties || []).slice(0, 2).map((c) => (
+                                                <Chip key={c.id} label={c.name} size="small" sx={{ bgcolor: alpha('#C8972A', 0.15), color: '#C8972A', fontWeight: 800, height: 20, fontSize: '0.6rem' }} />
+                                            ))}
+                                        </Stack>
                                     </MenuItem>
                                 ))}
                             </Select>

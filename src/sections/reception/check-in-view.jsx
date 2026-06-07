@@ -17,6 +17,8 @@ import {
     Divider,
     CircularProgress,
     Paper,
+    Switch,
+    FormControlLabel,
     alpha,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -32,6 +34,7 @@ export default function CheckInView() {
     const [services, setServices] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const [showAllStaff, setShowAllStaff] = useState(false);
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -139,6 +142,30 @@ export default function CheckInView() {
         const s = services.find(x => x.id === id);
         return acc + (Number(s?.estimatedDuration) || 30);
     }, 0);
+
+    // ── Specialist matching ──────────────────────────────────────────────
+    // A service is covered by an employee whose specialties include the
+    // service's category OR its parent super-category.
+    const serviceMatchIds = (svc) => {
+        const ids = [];
+        if (svc?.categoryId) ids.push(svc.categoryId);
+        if (svc?.Category?.parentId) ids.push(svc.Category.parentId);
+        return ids;
+    };
+    const selectedServices = services.filter((s) => form.serviceIds.includes(s.id));
+    const employeeQualifies = (emp) => {
+        if (!selectedServices.length) return true;
+        const specs = (emp.Specialties || []).map((c) => c.id);
+        if (!specs.length) return true; // no specialties set => generalist
+        return selectedServices.every((svc) => {
+            const match = serviceMatchIds(svc);
+            if (!match.length) return true; // uncategorized service
+            return match.some((id) => specs.includes(id));
+        });
+    };
+    const qualified = employees.filter(employeeQualifies);
+    const noQualified = selectedServices.length > 0 && qualified.length === 0;
+    const displayedEmployees = (showAllStaff || noQualified) ? employees : qualified;
 
     return (
         <Box>
@@ -293,25 +320,47 @@ export default function CheckInView() {
                                 </Select>
                             </FormControl>
 
-                            <FormControl fullWidth>
-                                <InputLabel sx={{ fontWeight: 800 }}>Select Staff</InputLabel>
-                                <Select
-                                    value={form.employeeId}
-                                    label="Select Staff"
-                                    onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
-                                    sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
-                                >
-                                    <MenuItem value="" sx={{ fontWeight: 700 }}>Auto-assign</MenuItem>
-                                    {employees.map((e) => (
-                                        <MenuItem key={e.id} value={e.id}>
-                                            <Stack direction="row" spacing={2} alignItems="center">
-                                                <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', bgcolor: '#1B1F3A', color: 'white', fontWeight: 800 }}>{e.name[0]}</Avatar>
-                                                <Typography variant="body2" fontWeight={700}>{e.name}</Typography>
-                                            </Stack>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Box>
+                                <FormControl fullWidth>
+                                    <InputLabel sx={{ fontWeight: 800 }}>Select Staff</InputLabel>
+                                    <Select
+                                        value={form.employeeId}
+                                        label="Select Staff"
+                                        onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
+                                        sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
+                                    >
+                                        <MenuItem value="" sx={{ fontWeight: 700 }}>Auto-assign</MenuItem>
+                                        {displayedEmployees.map((e) => (
+                                            <MenuItem key={e.id} value={e.id}>
+                                                <Stack direction="row" spacing={2} alignItems="center" sx={{ width: '100%' }}>
+                                                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', bgcolor: '#1B1F3A', color: 'white', fontWeight: 800 }}>{e.name[0]}</Avatar>
+                                                    <Typography variant="body2" fontWeight={700} sx={{ flexGrow: 1 }}>{e.name}</Typography>
+                                                    {(e.Specialties || []).slice(0, 2).map((c) => (
+                                                        <Chip key={c.id} label={c.name} size="small" variant="soft" color="warning" sx={{ fontWeight: 800, height: 20, fontSize: '0.6rem' }} />
+                                                    ))}
+                                                </Stack>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                {selectedServices.length > 0 && (
+                                    <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1, px: 0.5 }}>
+                                        <Typography variant="caption" fontWeight={700} color={noQualified ? 'error.main' : 'text.secondary'}>
+                                            {noQualified
+                                                ? 'No specialist matches all selected services — showing everyone.'
+                                                : `Showing ${qualified.length} specialist(s) for the selected service(s).`}
+                                        </Typography>
+                                        {!noQualified && (
+                                            <FormControlLabel
+                                                sx={{ m: 0 }}
+                                                control={<Switch size="small" color="secondary" checked={showAllStaff} onChange={(e) => setShowAllStaff(e.target.checked)} />}
+                                                label={<Typography variant="caption" fontWeight={800}>All staff</Typography>}
+                                            />
+                                        )}
+                                    </Stack>
+                                )}
+                            </Box>
 
                             <TextField
                                 fullWidth multiline rows={2}

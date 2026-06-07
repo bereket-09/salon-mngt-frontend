@@ -34,11 +34,14 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
+import { getSelectedBranchId } from 'src/utils/branch';
+import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
 export default function Attendance() {
   const theme = useTheme();
+  const isMobile = useResponsive('down', 'md');
   const [currentTab, setCurrentTab] = useState('live'); // live | history
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
@@ -115,8 +118,8 @@ export default function Attendance() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ 
-           userId: selectedUser, 
-           branchId: (selectedBranchId && selectedBranchId !== 'all') ? selectedBranchId : (userData.branches?.[0]?.id || userData.BranchId)
+           userId: selectedUser,
+           branchId: getSelectedBranchId() || userData.branches?.[0]?.id || userData.BranchId
         }),
       });
 
@@ -383,7 +386,95 @@ export default function Attendance() {
              </Grid>
           </Card>
 
-          {/* HISTORY TABLE */}
+          {/* HISTORY — MOBILE CARD LIST (xs–sm) */}
+          {isMobile ? (
+            <Stack spacing={2}>
+              {attendance.map((att) => {
+                const hasResumed = att.events?.some((e) => e.type === 'UNDO_END');
+                return (
+                  <Card
+                    key={att.id}
+                    onClick={() => setSelectedShift(att)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedShift(att);
+                      }
+                    }}
+                    sx={{
+                      p: 2.5,
+                      borderRadius: 2.5,
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      borderColor: alpha(theme.palette.divider, 0.12),
+                      boxShadow: theme.customShadows.z8,
+                      transition: 'all 0.2s',
+                      '&:hover': { borderColor: alpha('#C8972A', 0.4) },
+                      '&:focus-visible': { outline: `2px solid ${alpha('#C8972A', 0.6)}`, outlineOffset: 2 },
+                    }}
+                  >
+                    {/* Header: employee + date */}
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                      <Avatar sx={{ width: 44, height: 44, bgcolor: '#1B1F3A', color: 'white', fontWeight: 900, fontSize: '0.9rem' }}>
+                        {att.User?.name?.[0] || '?'}
+                      </Avatar>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="subtitle1" noWrap sx={{ fontWeight: 900, letterSpacing: 0.2 }}>
+                          {att.User?.name?.toUpperCase() || 'STAFF'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                          {new Date(att.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </Typography>
+                      </Box>
+                      <Chip label={att.Branch?.name || 'MAIN'} size="small" variant="soft" sx={{ fontWeight: 900, borderRadius: 0.8 }} />
+                    </Stack>
+
+                    {hasResumed && (
+                      <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 900, display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                        <Iconify icon="solar:danger-bold" width={12} sx={{ mr: 0.5 }} /> SHIFT RESUMED
+                      </Typography>
+                    )}
+
+                    <Divider sx={{ borderStyle: 'dashed', mb: 2 }} />
+
+                    {/* Key-value pairs */}
+                    <Grid container spacing={1.5}>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>CHECK IN</Typography>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'success.main' }}>
+                          {new Date(att.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>CHECK OUT</Typography>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: att.checkOutTime ? 'text.primary' : 'secondary.main' }}>
+                          {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'ON DUTY'}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>BREAKS</Typography>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'warning.main' }}>{att.breakMinutes || 0}m</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>NET WORK HOURS</Typography>
+                        <Box sx={{ mt: 0.25, px: 1.25, py: 0.25, bgcolor: alpha(theme.palette.info.main, 0.1), borderRadius: 1, display: 'inline-block', color: 'info.main', fontWeight: 900 }}>
+                          {att.totalHours || '—'} Hrs
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                );
+              })}
+              {attendance.length === 0 && (
+                <Box sx={{ py: 8, textAlign: 'center', bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 2.5, border: '2px dashed', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                  <Typography variant="body1" color="text.disabled" fontWeight={800}>No records found for this period.</Typography>
+                </Box>
+              )}
+            </Stack>
+          ) : (
+          /* HISTORY TABLE (md and up) */
           <TableContainer component={Paper} sx={{ borderRadius: 2.5, boxShadow: theme.customShadows.z8, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1), overflow: 'hidden' }}>
              <Table>
                 <TableHead sx={{ bgcolor: alpha(theme.palette.background.neutral, 0.6) }}>
@@ -444,6 +535,7 @@ export default function Attendance() {
                 </TableBody>
              </Table>
           </TableContainer>
+          )}
         </Stack>
       )}
 

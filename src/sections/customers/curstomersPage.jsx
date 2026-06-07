@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
+import { withBranch, isAggregated, getSelectedBranchName } from 'src/utils/branch';
 
 import CustomerList from './CustomerList';
 import CustomerForm from './CustomerForm';
@@ -44,15 +45,13 @@ export default function CustomersPage() {
 
   const fetchData = async () => {
     try {
-      const branchId = localStorage.getItem('selectedBranchId');
-      const branchQuery = (branchId && branchId !== 'all') ? `branchId=${branchId}` : '';
       const auth = { headers: { Authorization: `Bearer ${token}` } };
-      
+
       const [custRes, branchRes, empRes, serviceRes] = await Promise.all([
-        fetch(`${config.BASE_URL}/customers`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/customers?status=active${withBranch('&')}`, { ...auth, cache: 'no-store' }),
         fetch(`${config.BASE_URL}/branches`, { ...auth, cache: 'no-store' }),
-        fetch(`${config.BASE_URL}/users?role=employee&status=active${branchQuery ? `&${branchQuery}` : ''}`, { ...auth, cache: 'no-store' }),
-        fetch(`${config.BASE_URL}/services?${branchQuery}`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/users?role=employee&status=active${withBranch('&')}`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/services?status=active${withBranch('&')}`, { ...auth, cache: 'no-store' }),
       ]);
 
       setCustomers(await custRes.json() || []);
@@ -83,7 +82,18 @@ export default function CustomersPage() {
           <Typography variant="h3" sx={{ fontWeight: 950, letterSpacing: -2, fontSize: { xs: '1.6rem', md: '2rem', lg: '2.25rem' } }}>
             Manage <Box component="span" sx={{ color: '#C8972A' }}>Customers</Box>
           </Typography>
-          <Typography variant="body2" color="text.secondary" fontWeight={700}>View and manage your customer list and active sessions.</Typography>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="text.secondary" fontWeight={700}>View and manage your customer list and active sessions.</Typography>
+            <Box
+              sx={{
+                px: 1, py: 0.25, borderRadius: 1, fontSize: '0.7rem', fontWeight: 800,
+                color: isAggregated() ? 'primary.main' : 'secondary.main',
+                bgcolor: (t) => alpha(isAggregated() ? t.palette.primary.main : t.palette.secondary.main, 0.1),
+              }}
+            >
+              {isAggregated() ? '🌐 All Branches (aggregated)' : `📍 ${getSelectedBranchName() || 'Current branch'}`}
+            </Box>
+          </Stack>
         </Box>
 
         <Stack direction="row" spacing={2} alignItems="center">

@@ -7,6 +7,7 @@ import {
   TextField,
   Button,
   MenuItem,
+  ListSubheader,
   Select,
   InputLabel,
   FormControl,
@@ -33,12 +34,14 @@ export default function ServicesPage() {
   const theme = useTheme();
   const [services, setServices] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [categories, setCategories] = useState([]); // tree: supers with nested Children
   const [form, setForm] = useState({
     name: '',
     type: 'Styling',
     price: '',
     status: 'active',
     BranchId: '',
+    categoryId: '',
     gender: 'both',
     estimatedDuration: 30,
     commissionEnabled: false,
@@ -62,14 +65,17 @@ export default function ServicesPage() {
     setLoading(true);
     try {
       const auth = { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' };
-      const [svcRes, brRes] = await Promise.all([
+      const [svcRes, brRes, catRes] = await Promise.all([
         fetch(`${config.BASE_URL}/services`, auth),
         fetch(`${config.BASE_URL}/branches`, auth),
+        fetch(`${config.BASE_URL}/service-categories?tree=1`, auth),
       ]);
       const svcData = await svcRes.json();
       const brData = await brRes.json();
+      const catData = await catRes.json();
       setServices(Array.isArray(svcData) ? svcData : []);
       setBranches(Array.isArray(brData) ? brData : []);
+      setCategories(Array.isArray(catData) ? catData : []);
     } catch (err) {
       console.error('fetchData error:', err);
     } finally {
@@ -93,7 +99,7 @@ export default function ServicesPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
-      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 10, code: '' });
+      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', categoryId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 10, code: '' });
       await fetchData();
     } catch (err) {
       console.error(err);
@@ -131,6 +137,26 @@ export default function ServicesPage() {
   const confirmDelete = (id) => {
     setDeleteId(id);
     setConfirmOpen(true);
+  };
+
+  // Flatten the category tree into <ListSubheader> + indented <MenuItem> options.
+  // Selectable values: each super-category and each of its sub-categories.
+  const renderCategoryOptions = () => {
+    const out = [<MenuItem key="none" value=""><em>Uncategorized</em></MenuItem>];
+    categories.forEach((sup) => {
+      out.push(<ListSubheader key={`h-${sup.id}`} sx={{ fontWeight: 900, color: 'secondary.main', lineHeight: '36px' }}>{sup.name}</ListSubheader>);
+      out.push(<MenuItem key={`s-${sup.id}`} value={sup.id} sx={{ fontWeight: 800 }}>All {sup.name}</MenuItem>);
+      (sup.Children || []).forEach((child) => {
+        out.push(<MenuItem key={`c-${child.id}`} value={child.id} sx={{ pl: 4 }}>{child.name}</MenuItem>);
+      });
+    });
+    return out;
+  };
+
+  // Human label for a service's category (sub with parent context, or super).
+  const categoryLabel = (svc) => {
+    if (!svc.Category) return null;
+    return svc.Category.Parent ? `${svc.Category.Parent.name} › ${svc.Category.name}` : svc.Category.name;
   };
 
   const executeDelete = async () => {
@@ -210,12 +236,25 @@ export default function ServicesPage() {
                 }}
               />
 
+              <FormControl fullWidth>
+                <InputLabel sx={{ fontWeight: 800 }}>Service Category</InputLabel>
+                <Select
+                  value={form.categoryId} label="Service Category"
+                  onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                  sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
+                  MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
+                  startAdornment={<InputAdornment position="start"><Iconify icon="solar:widget-5-bold-duotone" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>}
+                >
+                  {renderCategoryOptions()}
+                </Select>
+              </FormControl>
+
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel sx={{ fontWeight: 800 }}>Category</InputLabel>
+                    <InputLabel sx={{ fontWeight: 800 }}>Gender</InputLabel>
                     <Select
-                      value={form.gender} label="Category"
+                      value={form.gender} label="Gender"
                       onChange={(e) => setForm({ ...form, gender: e.target.value })}
                       sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
                     >
@@ -310,7 +349,15 @@ export default function ServicesPage() {
                   <Box sx={{ p: 4 }}>
                     <Stack direction="row" justifyContent="space-between" alignItems="start" mb={3}>
                       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                        <Stack direction="row" spacing={1} mb={2} flexWrap="wrap">
+                        <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" useFlexGap>
+                          {categoryLabel(s) && (
+                            <Chip
+                              label={categoryLabel(s)}
+                              size="small" color="warning" variant="soft"
+                              icon={<Iconify icon="solar:widget-5-bold-duotone" width={14} />}
+                              sx={{ fontWeight: 800, borderRadius: 0.5 }}
+                            />
+                          )}
                           <Chip
                             label={s.gender === 'male' ? 'Men' : s.gender === 'female' ? 'Women' : 'Both'}
                             size="small" color={s.gender === 'male' ? 'info' : 'secondary'} variant="soft"
@@ -333,7 +380,7 @@ export default function ServicesPage() {
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                       <Box>
                         {s.commissionEnabled ? (
-                          <Typography variant="caption" fontWeight={800} color="success.main">Commission: {(Number(s.commissionRate) * 100).toFixed(0)}%</Typography>
+                          <Typography variant="caption" fontWeight={800} color="success.main">Commission: {Number(s.commissionRate || 0).toFixed(0)}%</Typography>
                         ) : (
                           <Typography variant="caption" color="text.disabled" fontWeight={800}>No Commission</Typography>
                         )}
@@ -359,11 +406,23 @@ export default function ServicesPage() {
             <Stack spacing={3}>
               <TextField fullWidth label="Service Name" value={editService.name} onChange={(e) => setEditService({ ...editService, name: e.target.value })} />
               <TextField fullWidth label="Service Code" placeholder="Leave empty for auto-generation" value={editService.code || ''} onChange={(e) => setEditService({ ...editService, code: e.target.value })} />
+
+              <FormControl fullWidth>
+                <InputLabel>Service Category</InputLabel>
+                <Select
+                  value={editService.categoryId || ''} label="Service Category"
+                  onChange={(e) => setEditService({ ...editService, categoryId: e.target.value })}
+                  MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
+                >
+                  {renderCategoryOptions()}
+                </Select>
+              </FormControl>
+
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Category</InputLabel>
-                    <Select value={editService.gender} label="Category" onChange={(e) => setEditService({ ...editService, gender: e.target.value })}>
+                    <InputLabel>Gender</InputLabel>
+                    <Select value={editService.gender} label="Gender" onChange={(e) => setEditService({ ...editService, gender: e.target.value })}>
                       <MenuItem value="male">Men</MenuItem>
                       <MenuItem value="female">Women</MenuItem>
                       <MenuItem value="both">Both</MenuItem>

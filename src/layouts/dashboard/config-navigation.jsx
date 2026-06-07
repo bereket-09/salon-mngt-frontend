@@ -55,6 +55,10 @@ const navConfig = [
         path: '/services',
       },
       {
+        title: 'Categories',
+        path: '/service-categories',
+      },
+      {
         title: 'Branches',
         path: '/service-type',
       },

@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Chip,
   MenuItem,
+  ListSubheader,
   Select,
   FormControl,
   InputLabel,
@@ -36,6 +37,7 @@ export default function UserManagement() {
   const theme = useTheme();
   const [users, setUsers] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [categories, setCategories] = useState([]); // tree: supers with Children
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -47,6 +49,7 @@ export default function UserManagement() {
     role: 'employee',
     status: 'active',
     branchIds: [],
+    categoryIds: [],
     commissionEnabled: false,
     commissionRate: 10,
   };
@@ -64,12 +67,14 @@ export default function UserManagement() {
     setLoading(true);
     try {
       const auth = { headers: { Authorization: `Bearer ${token}` } };
-      const [uRes, bRes] = await Promise.all([
+      const [uRes, bRes, cRes] = await Promise.all([
         fetch(`${config.BASE_URL}/users`, { ...auth, cache: 'no-store' }),
         fetch(`${config.BASE_URL}/branches`, { ...auth, cache: 'no-store' }),
+        fetch(`${config.BASE_URL}/service-categories?tree=1`, { ...auth, cache: 'no-store' }),
       ]);
       setUsers(await uRes.json() || []);
       setBranches(await bRes.json() || []);
+      setCategories(await cRes.json() || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -134,9 +139,32 @@ export default function UserManagement() {
       role: u.role,
       status: u.status,
       branchIds: u.Branches ? u.Branches.map(b => b.id) : (u.BranchId ? [u.BranchId] : []),
+      categoryIds: u.Specialties ? u.Specialties.map(c => c.id) : [],
       commissionEnabled: !!u.commissionEnabled,
       commissionRate: u.commissionRate ? Math.round(Number(u.commissionRate)) : 10,
     });
+  };
+
+  // name lookup for a category id across the super/sub tree
+  const categoryName = (id) => {
+    for (const sup of categories) {
+      if (sup.id === id) return sup.name;
+      const child = (sup.Children || []).find((c) => c.id === id);
+      if (child) return child.name;
+    }
+    return null;
+  };
+
+  const renderSpecialtyOptions = () => {
+    const out = [];
+    categories.forEach((sup) => {
+      out.push(<ListSubheader key={`h-${sup.id}`} sx={{ fontWeight: 900, color: 'secondary.main', lineHeight: '36px' }}>{sup.name}</ListSubheader>);
+      out.push(<MenuItem key={`s-${sup.id}`} value={sup.id} sx={{ fontWeight: 800 }}>All {sup.name}</MenuItem>);
+      (sup.Children || []).forEach((child) => {
+        out.push(<MenuItem key={`c-${child.id}`} value={child.id} sx={{ pl: 4 }}>{child.name}</MenuItem>);
+      });
+    });
+    return out;
   };
 
   const confirmDelete = (id) => {
@@ -260,6 +288,30 @@ export default function UserManagement() {
                 </Select>
               </FormControl>
 
+              {form.role === 'employee' && (
+                <FormControl fullWidth>
+                  <InputLabel sx={{ fontWeight: 800 }}>Specialties (Service Categories)</InputLabel>
+                  <Select
+                    multiple
+                    value={form.categoryIds}
+                    label="Specialties (Service Categories)"
+                    onChange={(e) => setForm({ ...form, categoryIds: e.target.value })}
+                    sx={{ borderRadius: 1.5, fontWeight: 700 }}
+                    MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((val) => (
+                          <Chip key={val} label={categoryName(val)} size="small" variant="soft" color="warning" sx={{ fontWeight: 800 }} />
+                        ))}
+                      </Box>
+                    )}
+                  >
+                    {categories.length === 0 && <MenuItem disabled>Create categories first</MenuItem>}
+                    {renderSpecialtyOptions()}
+                  </Select>
+                </FormControl>
+              )}
+
               <Box sx={{ p: 2, bgcolor: alpha(theme.palette.secondary.main, 0.02), borderRadius: 1.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                 <FormControlLabel
                   control={
@@ -361,12 +413,19 @@ export default function UserManagement() {
                         />
                       </TableCell>
                       <TableCell>
-                        <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ rowGap: 0.5 }}>
                           {(u.Branches?.length > 0 ? u.Branches : (branches.find(b => b.id === u.BranchId) ? [branches.find(b => b.id === u.BranchId)] : [])).map(b => (
                             <Chip key={b.id} label={b.name?.toUpperCase()} size="small" variant="soft" sx={{ fontWeight: 800, fontSize: '0.65rem' }} />
                           ))}
                           {(!u.Branches?.length && !u.BranchId) && <Typography variant="caption" sx={{ color: 'text.disabled' }}>None</Typography>}
                         </Stack>
+                        {u.Specialties?.length > 0 && (
+                          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ rowGap: 0.5, mt: 0.5 }}>
+                            {u.Specialties.map((c) => (
+                              <Chip key={c.id} label={c.name} size="small" variant="soft" color="warning" sx={{ fontWeight: 800, fontSize: '0.6rem', height: 20 }} />
+                            ))}
+                          </Stack>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Chip
