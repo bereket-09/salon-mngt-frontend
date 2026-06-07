@@ -7,20 +7,20 @@ import {
   Grid,
   CircularProgress,
   Chip,
-  IconButton,
   Button,
   Stack,
   Avatar,
   Divider,
   alpha,
-  Tooltip,
   TextField,
-  InputAdornment,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import dayjs from 'dayjs';
+
+const GOLD = '#C8972A';
+const INK = '#1B1F3A';
 
 export default function CommissionManager() {
   const theme = useTheme();
@@ -74,135 +74,422 @@ export default function CommissionManager() {
     });
   };
 
+  // Derived totals — computed from already-fetched data, no new requests.
+  const totalPayable = summaries.reduce((sum, s) => sum + (Number(s.commissionAmount) || 0), 0);
+  const totalRevenue = summaries.reduce((sum, s) => sum + (Number(s.totalRevenue) || 0), 0);
+  const staffCount = summaries.length;
+
+  const fmt = (n) => (Number(n) || 0).toLocaleString();
+
+  const labelSx = {
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 1,
+    color: 'text.disabled',
+    textTransform: 'uppercase',
+    display: 'block',
+    lineHeight: 1.4,
+  };
+
+  const moneySx = { fontVariantNumeric: 'tabular-nums' };
+
+  const dateFieldSx = {
+    flex: 1,
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 1.5,
+      fontWeight: 700,
+      bgcolor: 'background.paper',
+      ...moneySx,
+    },
+  };
+
   return (
     <Box>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={6}>
-        <Stack direction="row" spacing={2.5} alignItems="center">
-          <Box sx={{
-            p: 1.5, bgcolor: '#C8972A', borderRadius: 2, color: 'white',
-            display: 'flex', boxShadow: theme.customShadows.z12,
-            border: '1px solid', borderColor: alpha('#C8972A', 0.2)
-          }}>
-            <Iconify icon="solar:wallet-money-bold-duotone" width={32} />
-          </Box>
-          <Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Staff Earnings</Typography>
-            <Typography variant="body2" color="text.secondary" fontWeight={800}>Monitor your staff performance and commissions.</Typography>
-          </Box>
-        </Stack>
+      {/* ---------- Page header ---------- */}
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        alignItems={{ xs: 'flex-start', md: 'flex-end' }}
+        justifyContent="space-between"
+        spacing={3}
+        mb={5}
+      >
+        <Box>
+          <Typography
+            sx={{
+              ...labelSx,
+              color: GOLD,
+              fontWeight: 800,
+              letterSpacing: 1.5,
+              mb: 1,
+            }}
+          >
+            Payroll
+          </Typography>
+          <Typography
+            variant="h3"
+            sx={{ fontWeight: 900, letterSpacing: '-0.02em', color: INK, lineHeight: 1.05 }}
+          >
+            Staff Commissions
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontWeight: 600 }}>
+            Monitor staff performance and what each member has earned this period.
+          </Typography>
+        </Box>
 
-        <Stack direction="row" spacing={2} sx={{ p: 1, bgcolor: alpha(theme.palette.background.neutral, 0.8), borderRadius: 2, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
-          <TextField
-            type="date" size="small"
-            value={dateRange.from}
-            onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><Typography variant="caption" fontWeight={900}>FROM:</Typography></InputAdornment>,
-              sx: { borderRadius: 1.2, fontWeight: 800, bgcolor: 'background.paper' }
-            }}
-          />
-          <TextField
-            type="date" size="small"
-            value={dateRange.to}
-            onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><Typography variant="caption" fontWeight={900}>TO:</Typography></InputAdornment>,
-              sx: { borderRadius: 1.2, fontWeight: 800, bgcolor: 'background.paper' }
-            }}
-          />
-        </Stack>
+        {/* Date-range filter — tidy card, full-width on mobile */}
+        <Card
+          sx={{
+            p: 2,
+            width: { xs: '100%', md: 'auto' },
+            borderRadius: 2.5,
+            border: '1px solid',
+            borderColor: alpha(theme.palette.divider, 0.08),
+            boxShadow: theme.customShadows.z8,
+          }}
+        >
+          <Typography sx={{ ...labelSx, mb: 1.25 }}>Date Range</Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.5}
+            sx={{ minWidth: { sm: 360 } }}
+          >
+            <TextField
+              type="date"
+              size="small"
+              label="From"
+              value={dateRange.from}
+              onChange={(e) => setDateRange((prev) => ({ ...prev, from: e.target.value }))}
+              InputLabelProps={{ shrink: true }}
+              sx={dateFieldSx}
+            />
+            <TextField
+              type="date"
+              size="small"
+              label="To"
+              value={dateRange.to}
+              onChange={(e) => setDateRange((prev) => ({ ...prev, to: e.target.value }))}
+              InputLabelProps={{ shrink: true }}
+              sx={dateFieldSx}
+            />
+          </Stack>
+        </Card>
       </Stack>
 
+      {/* ---------- Summary strip ---------- */}
+      {!loading && staffCount > 0 && (
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={4}>
+            <Card
+              sx={{
+                p: 2.5,
+                height: '100%',
+                borderRadius: 2.5,
+                border: '1px solid',
+                borderColor: alpha(GOLD, 0.25),
+                bgcolor: alpha(GOLD, 0.04),
+                boxShadow: theme.customShadows.z8,
+              }}
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Box
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 2,
+                    bgcolor: GOLD,
+                    color: 'white',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="solar:wallet-money-bold-duotone" width={26} />
+                </Box>
+                <Box>
+                  <Typography sx={labelSx}>Total Payable</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 900, color: GOLD, ...moneySx, lineHeight: 1.1 }}>
+                    {fmt(totalPayable)}{' '}
+                    <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+                      Br
+                    </Typography>
+                  </Typography>
+                </Box>
+              </Stack>
+            </Card>
+          </Grid>
+
+          <Grid item xs={6} sm={4}>
+            <Card
+              sx={{
+                p: 2.5,
+                height: '100%',
+                borderRadius: 2.5,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.divider, 0.08),
+                boxShadow: theme.customShadows.z8,
+              }}
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Box
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 2,
+                    bgcolor: alpha(INK, 0.06),
+                    color: INK,
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="solar:chart-2-bold-duotone" width={26} />
+                </Box>
+                <Box>
+                  <Typography sx={labelSx}>Total Revenue</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 900, color: INK, ...moneySx, lineHeight: 1.1 }}>
+                    {fmt(totalRevenue)}{' '}
+                    <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+                      Br
+                    </Typography>
+                  </Typography>
+                </Box>
+              </Stack>
+            </Card>
+          </Grid>
+
+          <Grid item xs={6} sm={4}>
+            <Card
+              sx={{
+                p: 2.5,
+                height: '100%',
+                borderRadius: 2.5,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.divider, 0.08),
+                boxShadow: theme.customShadows.z8,
+              }}
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Box
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 2,
+                    bgcolor: alpha(INK, 0.06),
+                    color: INK,
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="solar:users-group-rounded-bold-duotone" width={26} />
+                </Box>
+                <Box>
+                  <Typography sx={labelSx}>Staff</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 900, color: INK, ...moneySx, lineHeight: 1.1 }}>
+                    {staffCount}
+                  </Typography>
+                </Box>
+              </Stack>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
+
+      {/* ---------- Body ---------- */}
       {loading ? (
-        <Box sx={{ py: 20, textAlign: 'center' }}><CircularProgress color="secondary" size={60} /></Box>
+        <Box sx={{ py: 20, textAlign: 'center' }}>
+          <CircularProgress sx={{ color: GOLD }} size={56} />
+        </Box>
       ) : (
-        <Grid container spacing={3.5}>
+        <Grid container spacing={3}>
           {summaries.map((s) => (
-            <Grid item xs={12} md={6} lg={4} key={s.userId}>
-              <Card sx={{
-                p: 0, borderRadius: 3.5, overflow: 'hidden', height: '100%',
-                border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
-                boxShadow: theme.customShadows.z12,
-                transition: '0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': { transform: 'translateY(-6px)', boxShadow: theme.customShadows.z24, borderColor: 'secondary.main' }
-              }}>
-                <Box sx={{ p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.03), borderBottom: '1px dashed', borderColor: alpha(theme.palette.divider, 0.2) }}>
-                  <Stack direction="row" spacing={2.5} alignItems="center">
-                    <Avatar sx={{
-                      width: 56, height: 56, bgcolor: '#1B1F3A', color: '#C8972A',
-                      fontWeight: 900, fontSize: '1.4rem', boxShadow: theme.customShadows.card
-                    }}>{s.userName?.[0] || '?'}</Avatar>
+            <Grid item xs={12} sm={6} lg={4} key={s.userId}>
+              <Card
+                sx={{
+                  p: 0,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderRadius: 2.5,
+                  overflow: 'hidden',
+                  border: '1px solid',
+                  borderColor: alpha(theme.palette.divider, 0.08),
+                  boxShadow: theme.customShadows.z8,
+                  transition: 'transform .2s, box-shadow .2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: theme.customShadows.z12,
+                  },
+                }}
+              >
+                {/* Staff identity header */}
+                <Box sx={{ p: 2.5 }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar
+                      sx={{
+                        width: 52,
+                        height: 52,
+                        bgcolor: INK,
+                        color: GOLD,
+                        fontWeight: 900,
+                        fontSize: '1.3rem',
+                      }}
+                    >
+                      {s.userName?.[0]?.toUpperCase() || '?'}
+                    </Avatar>
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography variant="h6" fontWeight={900}>{(s.userName || 'Unknown').toUpperCase()}</Typography>
-                      <Typography variant="caption" color="text.secondary" fontWeight={900}>
-                        Commission Rate: {s.commissionRate}
+                      <Typography
+                        variant="subtitle1"
+                        noWrap
+                        sx={{ fontWeight: 800, letterSpacing: '-0.01em', color: INK }}
+                      >
+                        {s.userName || 'Unknown'}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        label={`Rate ${s.commissionRate}`}
+                        sx={{
+                          mt: 0.5,
+                          height: 22,
+                          fontWeight: 800,
+                          fontSize: 11,
+                          color: GOLD,
+                          bgcolor: alpha(GOLD, 0.1),
+                          border: '1px solid',
+                          borderColor: alpha(GOLD, 0.2),
+                        }}
+                      />
+                    </Box>
+                  </Stack>
+                </Box>
+
+                {/* Hero commission figure */}
+                <Box
+                  sx={{
+                    mx: 2.5,
+                    p: 2.5,
+                    borderRadius: 2,
+                    bgcolor: alpha(GOLD, 0.05),
+                    border: '1px solid',
+                    borderColor: alpha(GOLD, 0.15),
+                  }}
+                >
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography sx={labelSx}>Commission Earned</Typography>
+                      <Typography
+                        variant="h3"
+                        sx={{ fontWeight: 900, color: GOLD, ...moneySx, lineHeight: 1.1, mt: 0.5 }}
+                      >
+                        {fmt(s.commissionAmount)}{' '}
+                        <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+                          Br
+                        </Typography>
                       </Typography>
                     </Box>
-                    <Tooltip title="View Earnings Detail">
-                      <IconButton
-                        onClick={() => navigateToDetail(s.userId)}
-                        sx={{ bgcolor: 'background.paper', boxShadow: theme.customShadows.z4, '&:hover': { bgcolor: 'secondary.main', color: 'white' } }}
-                      >
-                        <Iconify icon="solar:alt-arrow-right-bold-duotone" />
-                      </IconButton>
-                    </Tooltip>
+                    <Iconify
+                      icon="solar:round-transfer-horizontal-bold-duotone"
+                      width={36}
+                      sx={{ color: GOLD, opacity: 0.45, flexShrink: 0 }}
+                    />
                   </Stack>
                 </Box>
 
-                <Box sx={{ p: 3.5 }}>
-                  <Stack spacing={3}>
-                    <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.5), borderRadius: 2 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Box>
-                          <Typography variant="caption" color="text.disabled" fontWeight={900} sx={{ letterSpacing: 1.5 }}>COMMISSION EARNED</Typography>
-                          <Typography variant="h3" fontWeight={900} color="#C8972A" sx={{ mt: 0.5 }}>
-                            {s.commissionAmount} <Typography variant="caption" fontWeight={900} sx={{ color: 'text.secondary' }}>ETB</Typography>
-                          </Typography>
-                        </Box>
-                        <Iconify icon="solar:round-transfer-horizontal-bold-duotone" width={40} sx={{ color: 'secondary.main', opacity: 0.5 }} />
-                      </Stack>
+                {/* Secondary stats — 2-col mini grid */}
+                <Grid container sx={{ mt: 2, px: 2.5 }}>
+                  <Grid item xs={6} sx={{ pr: 1.25 }}>
+                    <Box
+                      sx={{
+                        p: 1.75,
+                        height: '100%',
+                        borderRadius: 1.75,
+                        bgcolor: alpha(theme.palette.divider, 0.04),
+                      }}
+                    >
+                      <Typography sx={labelSx}>Revenue</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 900, color: INK, ...moneySx, mt: 0.25 }}>
+                        {fmt(s.totalRevenue)}{' '}
+                        <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                          Br
+                        </Typography>
+                      </Typography>
                     </Box>
+                  </Grid>
+                  <Grid item xs={6} sx={{ pl: 1.25 }}>
+                    <Box
+                      sx={{
+                        p: 1.75,
+                        height: '100%',
+                        borderRadius: 1.75,
+                        bgcolor: alpha(theme.palette.divider, 0.04),
+                      }}
+                    >
+                      <Typography sx={labelSx}>Tasks</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 900, color: INK, ...moneySx, mt: 0.25 }}>
+                        {fmt(s.totalAssignments)}{' '}
+                        <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                          done
+                        </Typography>
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
 
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="overline" color="text.disabled" fontWeight={900} sx={{ letterSpacing: 1 }}>REVENUE</Typography>
-                        <Typography variant="h6" fontWeight={900} sx={{ mt: 0.5 }}>{s.totalRevenue} <Typography variant="caption" fontWeight={700}>ETB</Typography></Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="overline" color="text.disabled" fontWeight={900} sx={{ letterSpacing: 1 }}>TASKS</Typography>
-                        <Typography variant="h6" fontWeight={900} sx={{ mt: 0.5 }}>{s.totalAssignments} <Typography variant="caption" fontWeight={700}>DONE</Typography></Typography>
-                      </Grid>
-                    </Grid>
-                  </Stack>
-                </Box>
+                {/* Spacer pushes action to the bottom so buttons align across cards */}
+                <Box sx={{ flexGrow: 1 }} />
 
-                <Divider sx={{ borderStyle: 'dashed' }} />
+                <Divider sx={{ mt: 2.5, borderStyle: 'dashed', borderColor: alpha(theme.palette.divider, 0.12) }} />
 
-                <Box sx={{ p: 2.5, bgcolor: '#1B1F3A' }}>
+                <Box sx={{ p: 2.5 }}>
                   <Button
                     fullWidth
                     variant="contained"
-                    color="secondary"
                     onClick={() => navigateToDetail(s.userId)}
                     startIcon={<Iconify icon="solar:eye-bold-duotone" />}
                     sx={{
-                      height: 52, fontWeight: 900, borderRadius: 2, fontSize: '0.9rem',
+                      height: 48,
+                      fontWeight: 800,
+                      borderRadius: 2,
+                      fontSize: '0.875rem',
+                      letterSpacing: '0.02em',
+                      bgcolor: INK,
                       boxShadow: theme.customShadows.z8,
-                      '&:hover': { bgcolor: '#C8972A' }
+                      '&:hover': { bgcolor: GOLD },
+                      '&:active': { transform: 'scale(0.98)' },
                     }}
                   >
-                    VIEW DETAILS
+                    View Details
                   </Button>
                 </Box>
               </Card>
             </Grid>
           ))}
+
           {summaries.length === 0 && (
             <Grid item xs={12}>
-              <Box sx={{ py: 20, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.02), borderRadius: 4, border: '2px dashed', borderColor: alpha(theme.palette.secondary.main, 0.1) }}>
-                <Iconify icon="solar:bank-note-bold-duotone" width={80} sx={{ color: 'text.disabled', opacity: 0.2, mb: 2 }} />
-                <Typography variant="h4" color="text.disabled" fontWeight={900}>No Earnings Yet</Typography>
-                <Typography variant="body1" color="text.disabled" fontWeight={700}>We couldn't find any commissions for this date range.</Typography>
+              <Box
+                sx={{
+                  py: { xs: 10, md: 16 },
+                  px: 3,
+                  textAlign: 'center',
+                  borderRadius: 2.5,
+                  bgcolor: alpha(GOLD, 0.02),
+                  border: '1px dashed',
+                  borderColor: alpha(GOLD, 0.2),
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 88,
+                    height: 88,
+                    mx: 'auto',
+                    mb: 2.5,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: alpha(GOLD, 0.08),
+                  }}
+                >
+                  <Iconify icon="solar:bank-note-bold-duotone" width={44} sx={{ color: GOLD, opacity: 0.7 }} />
+                </Box>
+                <Typography variant="h5" sx={{ fontWeight: 900, letterSpacing: '-0.02em', color: INK }}>
+                  No earnings yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontWeight: 600 }}>
+                  We couldn&apos;t find any commissions for this date range. Try adjusting the dates above.
+                </Typography>
               </Box>
             </Grid>
           )}

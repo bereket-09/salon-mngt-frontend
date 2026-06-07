@@ -875,75 +875,109 @@ export default function CustomerDetails({
         }}
       >
         {receiptData && (
-          <DialogContent sx={{ p: 4 }}>
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Typography variant="h5" fontWeight={900} letterSpacing={2} gutterBottom>OFFICIAL RECEIPT</Typography>
-              <Typography variant="subtitle2" color="secondary.main" fontWeight={900} sx={{ letterSpacing: 1, mb: 0.5 }}>
-                {receiptData.session?.Branch?.name?.toUpperCase() || localStorage.getItem('selectedBranchName')?.toUpperCase() || 'MAIN BRANCH'}
+          <DialogContent id="printable-bill" sx={{ p: { xs: 3.5, sm: 4.5 }, fontVariantNumeric: 'tabular-nums' }}>
+            {/* Brand header */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              <Typography sx={{ fontWeight: 900, fontSize: 34, lineHeight: 1, letterSpacing: '-0.04em', color: '#1B1F3A' }}>
+                MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
               </Typography>
-              <Typography variant="caption" color="text.secondary" fontWeight={800}>
-                {receiptData.date.toLocaleDateString()} {receiptData.date.toLocaleTimeString()}
+              <Typography sx={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.42em', color: 'text.secondary', mt: 0.75, ml: '0.42em' }}>
+                BOUTIQUE SALON
               </Typography>
             </Box>
 
-            <Divider sx={{ borderStyle: 'dashed', my: 3 }} />
+            <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#C8972A', mb: 2.5 }} />
 
-            <Stack spacing={2} mb={4}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" fontWeight={800} color="text.disabled">CUSTOMER</Typography>
-                <Typography variant="subtitle2" fontWeight={900}>{receiptData.customer.name.toUpperCase()}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" fontWeight={800} color="text.disabled">PHONE</Typography>
-                <Typography variant="subtitle2" fontWeight={900}>{receiptData.customer.phone}</Typography>
+            {/* Meta row */}
+            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
+              <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>RECEIPT</Typography>
+              <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1B1F3A' }}>
+                #MIL-{String(receiptData.session?.id || 0).padStart(5, '0')}
+              </Typography>
+            </Stack>
+            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
+              <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>BRANCH</Typography>
+              <Typography sx={{ fontSize: 12, fontWeight: 900, color: 'secondary.main', letterSpacing: 0.5 }}>
+                {(receiptData.session?.Branch?.name || localStorage.getItem('selectedBranchName') || 'Main Branch').toUpperCase()}
+              </Typography>
+            </Stack>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>DATE</Typography>
+              <Typography sx={{ fontSize: 12, fontWeight: 800 }}>
+                {receiptData.date.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' })} · {receiptData.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Typography>
+            </Stack>
+
+            <Divider sx={{ borderStyle: 'dashed', my: 2.5 }} />
+
+            {/* Billed to */}
+            <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+              <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>BILLED TO</Typography>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography sx={{ fontSize: 14, fontWeight: 900, color: '#1B1F3A' }}>{receiptData.customer.name.toUpperCase()}</Typography>
+                <Typography sx={{ fontSize: 12, fontWeight: 700, color: 'text.secondary' }}>{receiptData.customer.phone}</Typography>
               </Box>
             </Stack>
 
-            <Typography variant="overline" color="text.disabled" fontWeight={900} sx={{ letterSpacing: 1.5 }}>SERVICES</Typography>
-            <Stack spacing={1.5} mt={1}>
-              {receiptData.assignments.map((a, i) => (
-                <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Box>
-                    <Typography variant="body2" fontWeight={800}>
-                      {a.Services?.map(s => `${s.code ? '['+s.code+'] ' : ''}${s.name.toUpperCase()}`).join(', ')}
-                    </Typography>
-                    <Typography variant="caption" color="text.disabled" fontWeight={700}>
-                      By: {a.Employee?.name || 'Unassigned'}
+            <Divider sx={{ borderStyle: 'dashed', my: 2.5 }} />
+
+            {/* Items with dotted leaders */}
+            <Stack spacing={1.75}>
+              {receiptData.assignments.map((a, i) => {
+                const line = a.Services?.reduce((sum, s) => sum + Number(s.price), 0) || 0;
+                return (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography sx={{ fontSize: 13, fontWeight: 800, color: '#1B1F3A', lineHeight: 1.3 }}>
+                        {a.Services?.map(s => `${s.name.toUpperCase()}`).join(', ') || 'SERVICE'}
+                      </Typography>
+                      <Typography sx={{ fontSize: 11, fontWeight: 700, color: 'text.disabled' }}>
+                        by {a.Employee?.name || 'Unassigned'}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ flexGrow: 1, borderBottom: '1px dotted', borderColor: 'divider', mb: '5px' }} />
+                    <Typography sx={{ fontSize: 13, fontWeight: 900, color: '#1B1F3A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                      {line.toLocaleString()} Br
                     </Typography>
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={900}>
-                    {a.Services?.reduce((sum, s) => sum + Number(s.price), 0)} Br
-                  </Typography>
-                </Box>
-              ))}
+                );
+              })}
             </Stack>
 
+            {/* Total band */}
             <Box sx={{
-              mt: 5, pt: 3,
-              borderTop: '2px solid', borderColor: 'divider',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              mt: 3, px: 2.5, py: 2, borderRadius: 2, bgcolor: '#1B1F3A',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
-              <Typography variant="h6" fontWeight={900}>TOTAL AMOUNT</Typography>
-              <Typography variant="h4" fontWeight={900} color="secondary.main">{receiptData.total} Br</Typography>
+              <Typography sx={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 1.5 }}>TOTAL</Typography>
+              <Typography sx={{ fontSize: 26, fontWeight: 900, color: '#C8972A', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+                {Number(receiptData.total).toLocaleString()} Br
+              </Typography>
             </Box>
 
-            {receiptData.paymentMethod && (
-              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" fontWeight={800} color="text.disabled">PAID VIA</Typography>
-                <Typography variant="caption" fontWeight={900}>
-                  {receiptData.paymentMethod.name.toUpperCase()}
-                  {receiptData.paymentMethod.accountInfo ? ` • ${receiptData.paymentMethod.accountInfo}` : ''}
+            {/* Payment + PAID stamp */}
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
+              <Box>
+                <Typography sx={{ fontSize: 10, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>PAID VIA</Typography>
+                <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1B1F3A' }}>
+                  {receiptData.paymentMethod
+                    ? `${receiptData.paymentMethod.name.toUpperCase()}${receiptData.paymentMethod.accountInfo ? ` · ${receiptData.paymentMethod.accountInfo}` : ''}`
+                    : 'CASH'}
                 </Typography>
               </Box>
-            )}
-
-            <Box sx={{ mt: 6, mb: 2, textAlign: 'center' }}>
-              <Typography variant="caption" color="text.disabled" fontWeight={800} sx={{ letterSpacing: 1 }}>
-                THANK YOU FOR VISITING US!
-              </Typography>
-              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', opacity: 0.1 }}>
-                <Iconify icon="solar:scissors-bold-duotone" width={32} />
+              <Box sx={{
+                px: 1.5, py: 0.5, border: '2px solid', borderColor: 'success.main', borderRadius: 1,
+                transform: 'rotate(-6deg)', color: 'success.main',
+              }}>
+                <Typography sx={{ fontSize: 14, fontWeight: 900, letterSpacing: 2 }}>PAID</Typography>
               </Box>
+            </Stack>
+
+            <Box sx={{ mt: 4, textAlign: 'center' }}>
+              <Iconify icon="solar:scissors-bold-duotone" width={22} sx={{ color: 'divider' }} />
+              <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.secondary', letterSpacing: 1.5, mt: 1 }}>
+                THANK YOU — SEE YOU SOON
+              </Typography>
             </Box>
           </DialogContent>
         )}
@@ -1088,8 +1122,8 @@ export default function CustomerDetails({
           </>
         ) : (
           <>
-            <DialogTitle sx={{ fontWeight: 900, bgcolor: 'error.darker', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Iconify icon="solar:shield-warning-bold-duotone" />
+            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1B1F3A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Iconify icon="solar:bill-check-bold-duotone" sx={{ color: '#C8972A' }} />
               Confirm & Close Visit
             </DialogTitle>
             <DialogContent sx={{ mt: 3 }}>
@@ -1143,9 +1177,9 @@ export default function CustomerDetails({
           }
           @media print {
             body * { visibility: hidden; }
-            .MuiDialog-container, .MuiDialog-container * { visibility: visible; }
-            .MuiDialog-container { position: absolute; left: 0; top: 0; width: 100%; }
-            .MuiDialogActions-root { display: none; }
+            #printable-bill, #printable-bill * { visibility: visible; }
+            #printable-bill { position: absolute; left: 0; top: 0; width: 100%; padding: 24px; }
+            .MuiBackdrop-root { display: none !important; }
           }
         `}
       </style>

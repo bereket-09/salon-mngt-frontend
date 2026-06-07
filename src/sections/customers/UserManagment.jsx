@@ -33,6 +33,17 @@ import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
+const GOLD = '#C8972A';
+const NAVY = '#1B1F3A';
+
+const ROLE_META = {
+  admin: { label: 'Admin', color: '#D14343', muiColor: 'error' },
+  receptionist: { label: 'Receptionist', color: '#1C7ED6', muiColor: 'info' },
+  employee: { label: 'Employee', color: GOLD, muiColor: 'secondary' },
+};
+
+const roleMeta = (role) => ROLE_META[role] || { label: role, color: GOLD, muiColor: 'secondary' };
+
 export default function UserManagement() {
   const theme = useTheme();
   const [users, setUsers] = useState([]);
@@ -189,17 +200,56 @@ export default function UserManagement() {
     }
   };
 
+  const labelSx = {
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 1,
+    color: 'text.disabled',
+    textTransform: 'uppercase',
+  };
+
+  const fieldSx = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      fontWeight: 700,
+      transition: 'all .2s',
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: GOLD, borderWidth: 1.5 },
+    },
+    '& label.Mui-focused': { color: GOLD },
+  };
+
   return (
     <Box>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+      {/* PAGE HEADER */}
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        justifyContent="space-between"
+        spacing={2}
+        mb={5}
+      >
         <Box>
-          <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Staff Management</Typography>
-          <Typography variant="body1" color="text.secondary" fontWeight={600}>Add and manage your team members and their roles.</Typography>
+          <Typography sx={{ ...labelSx, color: GOLD, mb: 0.75 }}>Team</Typography>
+          <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: '-0.02em', color: NAVY }}>
+            Staff Management
+          </Typography>
+          <Typography variant="body1" color="text.secondary" fontWeight={600} sx={{ mt: 0.5 }}>
+            Add and manage your team members, roles and commission.
+          </Typography>
         </Box>
         <Chip
+          icon={<Iconify icon="solar:users-group-rounded-bold-duotone" width={18} sx={{ ml: 0.5 }} />}
           label={`${users.length} Staff Members`}
-          color="secondary"
-          sx={{ fontWeight: 800, borderRadius: 1, px: 2, height: 40 }}
+          sx={{
+            fontWeight: 800,
+            borderRadius: 2,
+            px: 1.5,
+            height: 42,
+            color: NAVY,
+            bgcolor: alpha(GOLD, 0.12),
+            '& .MuiChip-icon': { color: GOLD },
+            fontVariantNumeric: 'tabular-nums',
+          }}
         />
       </Stack>
 
@@ -207,113 +257,162 @@ export default function UserManagement() {
         {/* STAFF FORM */}
         <Grid item xs={12} lg={4}>
           <Card sx={{
-            p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12,
-            position: 'sticky', top: 24, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1)
+            p: { xs: 3, sm: 4 }, borderRadius: 2.5, boxShadow: theme.customShadows.z12,
+            position: { lg: 'sticky' }, top: 24,
+            border: '1px solid', borderColor: alpha(theme.palette.divider, 0.08),
           }}>
             <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-              <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.5, color: '#C8972A' }}>
-                <Iconify icon="solar:user-plus-bold-duotone" width={24} />
+              <Box sx={{
+                width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: NAVY, borderRadius: 2, color: GOLD,
+              }}>
+                <Iconify icon={editingUser ? 'solar:user-id-bold-duotone' : 'solar:user-plus-bold-duotone'} width={26} />
               </Box>
-              <Typography variant="h5" sx={{ fontWeight: 800 }}>
-                {editingUser ? 'Edit Staff' : 'Add New Staff'}
-              </Typography>
+              <Box>
+                <Typography sx={labelSx}>{editingUser ? 'Editing Member' : 'New Member'}</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em', color: NAVY, lineHeight: 1.2 }}>
+                  {editingUser ? 'Edit Staff' : 'Add New Staff'}
+                </Typography>
+              </Box>
             </Stack>
 
-            <Stack spacing={3}>
-              <TextField
-                label="Full Name"
-                variant="outlined"
-                fullWidth
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
-              />
-              <Stack direction="row" spacing={2}>
+            <Stack spacing={3.5}>
+              {/* SECTION: Identity */}
+              <Stack spacing={2}>
+                <Typography sx={labelSx}>Profile</Typography>
                 <TextField
-                  label="Username" fullWidth value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
+                  label="Full Name"
+                  variant="outlined"
+                  fullWidth
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  sx={fieldSx}
                 />
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <TextField
+                    label="Username" fullWidth value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    sx={fieldSx}
+                  />
+                  <TextField
+                    label="Phone" fullWidth value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    sx={fieldSx}
+                  />
+                </Stack>
                 <TextField
-                  label="Phone" fullWidth value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700 } }}
+                  label={editingUser ? "New Password (leave blank to keep current)" : "Password"}
+                  type="password"
+                  fullWidth
+                  value={form.password}
+                  helperText={!editingUser ? "Default: Milan@123" : ""}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  sx={fieldSx}
                 />
               </Stack>
-              <TextField
-                label={editingUser ? "New Password (leave blank to keep current)" : "Password"}
-                type="password"
-                fullWidth
-                value={form.password}
-                helperText={!editingUser ? "Default: Milan@123" : ""}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-              />
 
-              <FormControl fullWidth>
-                <InputLabel sx={{ fontWeight: 800 }}>Job Role</InputLabel>
-                <Select
-                  value={form.role} label="Job Role"
-                  onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  sx={{ borderRadius: 1.5, fontWeight: 700 }}
-                >
-                  <MenuItem value="admin" sx={{ fontWeight: 700, color: 'error.main' }}>Admin</MenuItem>
-                  <MenuItem value="receptionist" sx={{ fontWeight: 700, color: 'info.main' }}>Receptionist</MenuItem>
-                  <Divider sx={{ my: 1 }} />
-                  <MenuItem value="employee" sx={{ fontWeight: 700 }}>Employee</MenuItem>
-                </Select>
-              </FormControl>
+              <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.08) }} />
 
-              <FormControl fullWidth>
-                <InputLabel sx={{ fontWeight: 800 }}>Assigned Branches</InputLabel>
-                <Select
-                  multiple
-                  value={form.branchIds}
-                  label="Assigned Branches"
-                  onChange={(e) => setForm({ ...form, branchIds: e.target.value })}
-                  sx={{ borderRadius: 1.5, fontWeight: 700 }}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((val) => (
-                            <Chip key={val} label={branches.find(b => b.id === val)?.name} size="small" variant="soft" color="secondary" sx={{ fontWeight: 800 }} />
-                        ))}
-                    </Box>
-                  )}
-                >
-                  {branches.map(b => (
-                    <MenuItem key={b.id} value={b.id} sx={{ fontWeight: 700 }}>
-                      {b.name.toUpperCase()}
+              {/* SECTION: Role & Assignment */}
+              <Stack spacing={2}>
+                <Typography sx={labelSx}>Role & Assignment</Typography>
+                <FormControl fullWidth sx={fieldSx}>
+                  <InputLabel sx={{ fontWeight: 700 }}>Job Role</InputLabel>
+                  <Select
+                    value={form.role} label="Job Role"
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}
+                    sx={{ borderRadius: 2, fontWeight: 700 }}
+                    renderValue={(val) => (
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Box sx={{ width: 9, height: 9, borderRadius: '50%', bgcolor: roleMeta(val).color }} />
+                        <span>{roleMeta(val).label}</span>
+                      </Stack>
+                    )}
+                  >
+                    <MenuItem value="admin" sx={{ fontWeight: 700 }}>
+                      <Box sx={{ width: 9, height: 9, borderRadius: '50%', bgcolor: ROLE_META.admin.color, mr: 1.5 }} />
+                      Admin
                     </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                    <MenuItem value="receptionist" sx={{ fontWeight: 700 }}>
+                      <Box sx={{ width: 9, height: 9, borderRadius: '50%', bgcolor: ROLE_META.receptionist.color, mr: 1.5 }} />
+                      Receptionist
+                    </MenuItem>
+                    <Divider sx={{ my: 1 }} />
+                    <MenuItem value="employee" sx={{ fontWeight: 700 }}>
+                      <Box sx={{ width: 9, height: 9, borderRadius: '50%', bgcolor: ROLE_META.employee.color, mr: 1.5 }} />
+                      Employee
+                    </MenuItem>
+                  </Select>
+                </FormControl>
 
-              {form.role === 'employee' && (
-                <FormControl fullWidth>
-                  <InputLabel sx={{ fontWeight: 800 }}>Specialties (Service Categories)</InputLabel>
+                <FormControl fullWidth sx={fieldSx}>
+                  <InputLabel sx={{ fontWeight: 700 }}>Assigned Branches</InputLabel>
                   <Select
                     multiple
-                    value={form.categoryIds}
-                    label="Specialties (Service Categories)"
-                    onChange={(e) => setForm({ ...form, categoryIds: e.target.value })}
-                    sx={{ borderRadius: 1.5, fontWeight: 700 }}
-                    MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
+                    value={form.branchIds}
+                    label="Assigned Branches"
+                    onChange={(e) => setForm({ ...form, branchIds: e.target.value })}
+                    sx={{ borderRadius: 2, fontWeight: 700 }}
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((val) => (
-                          <Chip key={val} label={categoryName(val)} size="small" variant="soft" color="warning" sx={{ fontWeight: 800 }} />
+                          <Chip key={val} label={branches.find(b => b.id === val)?.name} size="small" variant="soft" color="secondary" sx={{ fontWeight: 800, borderRadius: 1.5 }} />
                         ))}
                       </Box>
                     )}
                   >
-                    {categories.length === 0 && <MenuItem disabled>Create categories first</MenuItem>}
-                    {renderSpecialtyOptions()}
+                    {branches.map(b => (
+                      <MenuItem key={b.id} value={b.id} sx={{ fontWeight: 700 }}>
+                        {b.name.toUpperCase()}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
-              )}
 
-              <Box sx={{ p: 2, bgcolor: alpha(theme.palette.secondary.main, 0.02), borderRadius: 1.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+                {form.role === 'employee' && (
+                  <FormControl fullWidth sx={fieldSx}>
+                    <InputLabel sx={{ fontWeight: 700 }}>Specialties (Service Categories)</InputLabel>
+                    <Select
+                      multiple
+                      value={form.categoryIds}
+                      label="Specialties (Service Categories)"
+                      onChange={(e) => setForm({ ...form, categoryIds: e.target.value })}
+                      sx={{ borderRadius: 2, fontWeight: 700 }}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((val) => (
+                            <Chip
+                              key={val}
+                              label={categoryName(val)}
+                              size="small"
+                              sx={{ fontWeight: 800, borderRadius: 1.5, color: GOLD, bgcolor: alpha(GOLD, 0.12) }}
+                            />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {categories.length === 0 && <MenuItem disabled>Create categories first</MenuItem>}
+                      {renderSpecialtyOptions()}
+                    </Select>
+                  </FormControl>
+                )}
+              </Stack>
+
+              <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.08) }} />
+
+              {/* SECTION: Commission */}
+              <Box sx={{
+                p: 2.5,
+                bgcolor: form.commissionEnabled ? alpha(GOLD, 0.05) : 'background.neutral',
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: form.commissionEnabled ? alpha(GOLD, 0.3) : alpha(theme.palette.divider, 0.08),
+                transition: 'all .2s',
+              }}>
                 <FormControlLabel
+                  sx={{ m: 0, width: '100%', justifyContent: 'space-between' }}
+                  labelPlacement="start"
                   control={
                     <Switch
                       checked={!!form.commissionEnabled}
@@ -321,7 +420,17 @@ export default function UserManagement() {
                       onChange={(e) => setForm({ ...form, commissionEnabled: e.target.checked })}
                     />
                   }
-                  label={<Typography variant="overline" color="secondary.main" fontWeight={800} sx={{ letterSpacing: 1 }}>Eligible for Commission</Typography>}
+                  label={
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Iconify icon="solar:hand-money-bold-duotone" width={22} sx={{ color: GOLD }} />
+                      <Box>
+                        <Typography sx={{ ...labelSx, color: NAVY }}>Eligible for Commission</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                          Earns a percentage per service
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  }
                 />
                 {form.commissionEnabled && (
                   <TextField
@@ -336,29 +445,35 @@ export default function UserManagement() {
                     onChange={(e) => setForm({ ...form, commissionRate: e.target.value })}
                     InputProps={{
                       endAdornment: <Typography variant="caption" fontWeight={800} color="text.disabled">%</Typography>,
-                      sx: { borderRadius: 1, fontWeight: 700, bgcolor: 'background.paper' }
+                      sx: { borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper', fontVariantNumeric: 'tabular-nums' }
                     }}
-                    sx={{ mt: 1.5 }}
+                    sx={{ mt: 2 }}
                   />
                 )}
               </Box>
 
-              <Stack direction="row" spacing={2} pt={2}>
+              <Stack direction="row" spacing={2} pt={1}>
                 {editingUser && (
                   <Button
                     variant="soft" color="error" fullWidth
                     disabled={saving}
                     onClick={() => { setEditingUser(null); setForm(emptyForm); }}
-                    sx={{ borderRadius: 1.5, fontWeight: 800 }}
+                    sx={{ height: 56, borderRadius: 2, fontWeight: 800, '&:active': { transform: 'scale(0.98)' } }}
                   >
                     Cancel
                   </Button>
                 )}
                 <Button
-                  variant="contained" color="secondary" fullWidth
+                  variant="contained" fullWidth
                   onClick={handleSave}
                   disabled={saving}
-                  sx={{ height: 60, fontWeight: 900, borderRadius: 1.5, fontSize: '1rem' }}
+                  sx={{
+                    height: 56, fontWeight: 900, borderRadius: 2, fontSize: '1rem',
+                    bgcolor: GOLD, color: '#fff',
+                    boxShadow: `0 8px 20px 0 ${alpha(GOLD, 0.4)}`,
+                    '&:hover': { bgcolor: '#b3851f', boxShadow: `0 10px 24px 0 ${alpha(GOLD, 0.5)}` },
+                    '&:active': { transform: 'scale(0.98)' },
+                  }}
                   startIcon={saving ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:verified-check-bold-duotone" width={24} />}
                 >
                   {saving ? 'Saving…' : (editingUser ? 'Save Changes' : 'Add Staff')}
@@ -371,68 +486,90 @@ export default function UserManagement() {
         {/* STAFF LIST */}
         <Grid item xs={12} lg={8}>
           <Card sx={{
-            borderRadius: 2.5, overflow: 'hidden', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
-            boxShadow: theme.customShadows.z12
+            borderRadius: 2.5, overflow: 'hidden', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.08),
+            boxShadow: theme.customShadows.z8,
           }}>
-            <TableContainer>
-              <Table>
-                <TableHead sx={{ bgcolor: '#1B1F3A' }}>
+            <TableContainer sx={{ overflowX: 'auto' }}>
+              <Table sx={{ minWidth: 720 }}>
+                <TableHead sx={{ bgcolor: NAVY }}>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 800, py: 2.5, color: 'white' }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 800, color: 'white' }}>Role</TableCell>
-                    <TableCell sx={{ fontWeight: 800, color: 'white' }}>Branch</TableCell>
-                    <TableCell sx={{ fontWeight: 800, color: 'white' }}>Status</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 800, color: 'white' }}>Actions</TableCell>
+                    <TableCell sx={{ ...labelSx, color: alpha('#fff', 0.7), py: 2.5, borderBottom: 'none' }}>Member</TableCell>
+                    <TableCell sx={{ ...labelSx, color: alpha('#fff', 0.7), borderBottom: 'none' }}>Role</TableCell>
+                    <TableCell sx={{ ...labelSx, color: alpha('#fff', 0.7), borderBottom: 'none' }}>Branches & Specialties</TableCell>
+                    <TableCell sx={{ ...labelSx, color: alpha('#fff', 0.7), borderBottom: 'none' }}>Status</TableCell>
+                    <TableCell align="right" sx={{ ...labelSx, color: alpha('#fff', 0.7), borderBottom: 'none' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {loading ? (
-                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 15 }}><CircularProgress color="secondary" /></TableCell></TableRow>
-                  ) : users.map((u) => (
-                    <TableRow key={u.id} hover>
-                      <TableCell sx={{ py: 2.5 }}>
+                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 15, borderBottom: 'none' }}><CircularProgress sx={{ color: GOLD }} /></TableCell></TableRow>
+                  ) : users.map((u) => {
+                    const rm = roleMeta(u.role);
+                    const isEditing = editingUser?.id === u.id;
+                    return (
+                    <TableRow
+                      key={u.id}
+                      hover
+                      sx={{
+                        transition: 'all .2s',
+                        bgcolor: isEditing ? alpha(GOLD, 0.06) : 'transparent',
+                        '&:nth-of-type(even)': { bgcolor: isEditing ? alpha(GOLD, 0.06) : alpha(theme.palette.text.primary, 0.015) },
+                        '&:hover': { bgcolor: alpha(GOLD, 0.04) },
+                        '& td': { borderColor: alpha(theme.palette.divider, 0.06) },
+                      }}
+                    >
+                      <TableCell sx={{ py: 2 }}>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Avatar sx={{
                             width: 44, height: 44,
-                            bgcolor: u.role === 'admin' ? 'error.main' : u.role === 'receptionist' ? 'info.main' : 'secondary.main',
-                            fontWeight: 800, fontSize: '1.1rem',
+                            bgcolor: alpha(rm.color, 0.12),
+                            color: rm.color,
+                            fontWeight: 800, fontSize: '1.05rem',
+                            border: `2px solid ${alpha(rm.color, 0.4)}`,
                           }}>{u.name[0]}</Avatar>
                           <Box>
-                            <Typography variant="subtitle2" fontWeight={800}>{u.name.toUpperCase()}</Typography>
+                            <Typography variant="subtitle2" fontWeight={800} sx={{ color: NAVY, letterSpacing: '-0.01em' }}>{u.name.toUpperCase()}</Typography>
                             <Typography variant="caption" color="text.secondary" fontWeight={700}>@{u.username}</Typography>
                           </Box>
                         </Stack>
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={u.role.replace('_', ' ')}
+                          label={rm.label}
                           variant="soft"
                           size="small"
-                          color={u.role === 'admin' ? 'error' : u.role === 'receptionist' ? 'info' : 'secondary'}
-                          sx={{ fontWeight: 800, textTransform: 'capitalize' }}
+                          color={rm.muiColor}
+                          sx={{ fontWeight: 800, borderRadius: 1.5, textTransform: 'capitalize' }}
                         />
                       </TableCell>
                       <TableCell>
                         <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ rowGap: 0.5 }}>
                           {(u.Branches?.length > 0 ? u.Branches : (branches.find(b => b.id === u.BranchId) ? [branches.find(b => b.id === u.BranchId)] : [])).map(b => (
-                            <Chip key={b.id} label={b.name?.toUpperCase()} size="small" variant="soft" sx={{ fontWeight: 800, fontSize: '0.65rem' }} />
+                            <Chip key={b.id} label={b.name?.toUpperCase()} size="small" variant="soft" sx={{ fontWeight: 800, fontSize: '0.65rem', borderRadius: 1.25 }} />
                           ))}
-                          {(!u.Branches?.length && !u.BranchId) && <Typography variant="caption" sx={{ color: 'text.disabled' }}>None</Typography>}
+                          {(!u.Branches?.length && !u.BranchId) && <Typography variant="caption" sx={{ color: 'text.disabled' }}>No branch</Typography>}
                         </Stack>
                         {u.Specialties?.length > 0 && (
-                          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ rowGap: 0.5, mt: 0.5 }}>
+                          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ rowGap: 0.5, mt: 0.75 }}>
                             {u.Specialties.map((c) => (
-                              <Chip key={c.id} label={c.name} size="small" variant="soft" color="warning" sx={{ fontWeight: 800, fontSize: '0.6rem', height: 20 }} />
+                              <Chip
+                                key={c.id}
+                                label={c.name}
+                                size="small"
+                                sx={{ fontWeight: 800, fontSize: '0.6rem', height: 20, borderRadius: 1, color: GOLD, bgcolor: alpha(GOLD, 0.12) }}
+                              />
                             ))}
                           </Stack>
                         )}
                       </TableCell>
                       <TableCell>
                         <Chip
+                          icon={<Iconify icon={u.status === 'active' ? 'solar:check-circle-bold' : 'solar:close-circle-bold'} width={14} />}
                           label={u.status}
                           size="small"
+                          variant="soft"
                           color={u.status === 'active' ? 'success' : 'error'}
-                          sx={{ fontWeight: 800, textTransform: 'capitalize', borderRadius: 0.5 }}
+                          sx={{ fontWeight: 800, textTransform: 'capitalize', borderRadius: 1.5 }}
                         />
                       </TableCell>
                       <TableCell align="right">
@@ -449,24 +586,64 @@ export default function UserManagement() {
                               }}
                               sx={{
                                 color: u.status === 'active' ? 'success.main' : 'error.main',
-                                bgcolor: u.status === 'active' ? alpha(theme.palette.success.main, 0.05) : alpha(theme.palette.error.main, 0.05)
+                                bgcolor: u.status === 'active' ? alpha(theme.palette.success.main, 0.08) : alpha(theme.palette.error.main, 0.08),
+                                transition: 'all .2s',
+                                '&:hover': { transform: 'translateY(-2px)', boxShadow: theme.customShadows.z8 },
+                                '&:active': { transform: 'scale(0.98)' },
                               }}
                             >
                               <Iconify icon={u.status === 'active' ? 'solar:shield-check-bold-duotone' : 'solar:shield-cross-bold-duotone'} width={18} />
                             </IconButton>
                           </Tooltip>
-                          <IconButton size="small" onClick={() => handleEdit(u)} sx={{ color: 'secondary.main', bgcolor: alpha(theme.palette.secondary.main, 0.05) }}>
-                            <Iconify icon="solar:pen-bold-duotone" width={18} />
-                          </IconButton>
-                          <IconButton size="small" color="error" onClick={() => confirmDelete(u.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05) }}>
-                            <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />
-                          </IconButton>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleEdit(u)}
+                              sx={{
+                                color: GOLD, bgcolor: alpha(GOLD, 0.08), transition: 'all .2s',
+                                '&:hover': { transform: 'translateY(-2px)', boxShadow: theme.customShadows.z8 },
+                                '&:active': { transform: 'scale(0.98)' },
+                              }}
+                            >
+                              <Iconify icon="solar:pen-bold-duotone" width={18} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => confirmDelete(u.id)}
+                              sx={{
+                                bgcolor: alpha(theme.palette.error.main, 0.08), transition: 'all .2s',
+                                '&:hover': { transform: 'translateY(-2px)', boxShadow: theme.customShadows.z8 },
+                                '&:active': { transform: 'scale(0.98)' },
+                              }}
+                            >
+                              <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />
+                            </IconButton>
+                          </Tooltip>
                         </Stack>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  );})}
                   {users.length === 0 && !loading && (
-                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 10 }}><Typography color="text.disabled" variant="subtitle1" fontWeight={700}>No staff found</Typography></TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 10, borderBottom: 'none' }}>
+                        <Stack spacing={1.5} alignItems="center">
+                          <Box sx={{
+                            width: 72, height: 72, borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            bgcolor: alpha(GOLD, 0.1), color: GOLD,
+                          }}>
+                            <Iconify icon="solar:users-group-rounded-bold-duotone" width={36} />
+                          </Box>
+                          <Typography variant="h6" fontWeight={800} sx={{ color: NAVY }}>No staff yet</Typography>
+                          <Typography variant="body2" color="text.secondary" fontWeight={600} sx={{ maxWidth: 280 }}>
+                            Add your first team member using the form on the left to get started.
+                          </Typography>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>

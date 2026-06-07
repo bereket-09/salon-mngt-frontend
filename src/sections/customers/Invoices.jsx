@@ -278,13 +278,14 @@ export default function Invoices() {
       >
         <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
           {selectedInvoice && (
-            <Box id="printable-bill" sx={{ p: { xs: 3, sm: 5 }, color: 'black', fontFamily: '"Outfit", sans-serif' }}>
-              <Box sx={{ borderBottom: '2px solid black', pb: 3, mb: 4, textAlign: 'center' }}>
+            <Box id="printable-bill" sx={{ p: { xs: 3, sm: 5 }, color: 'black', fontFamily: '"Outfit", sans-serif', fontVariantNumeric: 'tabular-nums' }}>
+              <Box sx={{ pb: 3, mb: 4, textAlign: 'center' }}>
                 <Typography variant="h2" fontWeight={900} letterSpacing={-2} sx={{ color: 'black', fontSize: { xs: '2.25rem', sm: '3.75rem' } }}>
                   MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
                 </Typography>
                 <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 5, display: 'block', mt: -1 }}>BOUTIQUE SALON</Typography>
                 <Typography variant="caption" sx={{ color: 'grey.600', display: 'block', mt: 1 }}>OFFICIAL RECEIPT</Typography>
+                <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#C8972A', mt: 2.5 }} />
               </Box>
 
               <Stack spacing={4}>
@@ -312,7 +313,7 @@ export default function Invoices() {
                         <Typography variant="subtitle2" fontWeight={900} sx={{ wordBreak: 'break-word' }}>{(item.Service?.name || item.serviceName || 'Treatment').toUpperCase()}</Typography>
                         <Typography variant="caption" sx={{ color: 'grey.600' }}>Master Stylist Session</Typography>
                       </Box>
-                      <Typography variant="subtitle1" fontWeight={900} sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>{item.price}.00</Typography>
+                      <Typography variant="subtitle1" fontWeight={900} sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>{Number(item.price).toLocaleString()}.00</Typography>
                     </Box>
                   ))}
                 </Box>
@@ -321,7 +322,7 @@ export default function Invoices() {
                   <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" flexWrap="wrap">
                     <Typography variant="h4" fontWeight={900} sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>TOTAL DUE</Typography>
                     <Typography variant="h3" fontWeight={900} sx={{ fontSize: { xs: '1.75rem', sm: '3rem' }, whiteSpace: 'nowrap' }}>
-                      {selectedInvoice.totalAmount}<Typography component="span" variant="caption" sx={{ fontWeight: 900, ml: 1 }}>ETB</Typography>
+                      {Number(selectedInvoice.totalAmount).toLocaleString()}<Typography component="span" variant="caption" sx={{ fontWeight: 900, ml: 1 }}>ETB</Typography>
                     </Typography>
                   </Stack>
                 </Box>
