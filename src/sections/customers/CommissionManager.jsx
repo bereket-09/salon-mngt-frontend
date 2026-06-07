@@ -19,8 +19,8 @@ import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import dayjs from 'dayjs';
 
-const GOLD = '#C8972A';
-const INK = '#1B1F3A';
+const GOLD = '#9A7B4F';
+const INK = '#1A1A1A';
 
 export default function CommissionManager() {
   const theme = useTheme();
@@ -200,7 +200,7 @@ export default function CommissionManager() {
                     display: 'flex',
                   }}
                 >
-                  <Iconify icon="solar:wallet-money-bold-duotone" width={26} />
+                  <Iconify icon="solar:wallet-money-linear" width={26} />
                 </Box>
                 <Box>
                   <Typography sx={labelSx}>Total Payable</Typography>
@@ -236,7 +236,7 @@ export default function CommissionManager() {
                     display: 'flex',
                   }}
                 >
-                  <Iconify icon="solar:chart-2-bold-duotone" width={26} />
+                  <Iconify icon="solar:chart-2-linear" width={26} />
                 </Box>
                 <Box>
                   <Typography sx={labelSx}>Total Revenue</Typography>
@@ -272,7 +272,7 @@ export default function CommissionManager() {
                     display: 'flex',
                   }}
                 >
-                  <Iconify icon="solar:users-group-rounded-bold-duotone" width={26} />
+                  <Iconify icon="solar:users-group-rounded-linear" width={26} />
                 </Box>
                 <Box>
                   <Typography sx={labelSx}>Staff</Typography>
@@ -379,7 +379,7 @@ export default function CommissionManager() {
                       </Typography>
                     </Box>
                     <Iconify
-                      icon="solar:round-transfer-horizontal-bold-duotone"
+                      icon="solar:round-transfer-horizontal-linear"
                       width={36}
                       sx={{ color: GOLD, opacity: 0.45, flexShrink: 0 }}
                     />
@@ -436,7 +436,7 @@ export default function CommissionManager() {
                     fullWidth
                     variant="contained"
                     onClick={() => navigateToDetail(s.userId)}
-                    startIcon={<Iconify icon="solar:eye-bold-duotone" />}
+                    startIcon={<Iconify icon="solar:eye-linear" />}
                     sx={{
                       height: 48,
                       fontWeight: 800,
@@ -482,7 +482,7 @@ export default function CommissionManager() {
                     bgcolor: alpha(GOLD, 0.08),
                   }}
                 >
-                  <Iconify icon="solar:bank-note-bold-duotone" width={44} sx={{ color: GOLD, opacity: 0.7 }} />
+                  <Iconify icon="solar:bank-note-linear" width={44} sx={{ color: GOLD, opacity: 0.7 }} />
                 </Box>
                 <Typography variant="h5" sx={{ fontWeight: 900, letterSpacing: '-0.02em', color: INK }}>
                   No earnings yet

@@ -24,7 +24,7 @@ export default function NotFoundView() {
           content: '""',
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'radial-gradient(circle at 50% 50%, rgba(200, 151, 42, 0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(154, 123, 79, 0.05) 0%, transparent 70%)',
           zIndex: 1
         }
       }}
@@ -53,7 +53,7 @@ export default function NotFoundView() {
               zIndex: 5
             }}>
               <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: -2, color: 'white' }}>
-                Lost in <Box component="span" sx={{ color: '#C8972A' }}>Style</Box>
+                Lost in <Box component="span" sx={{ color: '#9A7B4F' }}>Style</Box>
               </Typography>
               <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 700, mt: 2, opacity: 0.8 }}>
                 The page you are looking for has been moved or doesn't exist.
@@ -67,17 +67,17 @@ export default function NotFoundView() {
               variant="contained"
               component={RouterLink}
               size="large"
-              startIcon={<Iconify icon="solar:home-2-bold-duotone" />}
+              startIcon={<Iconify icon="solar:home-2-linear" />}
               sx={{
                 height: 60,
                 px: 6,
                 borderRadius: 1.5,
                 fontWeight: 900,
                 fontSize: '1.1rem',
-                bgcolor: '#C8972A',
+                bgcolor: '#9A7B4F',
                 color: 'white',
-                boxShadow: '0 10px 40px rgba(200, 151, 42, 0.2)',
-                '&:hover': { bgcolor: '#b08425', transform: 'translateY(-2px)' },
+                boxShadow: '0 10px 40px rgba(154, 123, 79, 0.2)',
+                '&:hover': { bgcolor: '#7A6038', transform: 'translateY(-2px)' },
                 transition: '0.3s'
               }}
             >

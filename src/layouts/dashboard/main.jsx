@@ -27,19 +27,21 @@ export default function Main({ children, sx, ...other }) {
         minHeight: 1,
         display: 'flex',
         flexDirection: 'column',
-        py: `${HEADER.H_MOBILE + SPACING}px`,
+        // Editorial whitespace: generous gutters even on mobile.
+        px: 2.5,
+        py: `${HEADER.H_MOBILE + SPACING * 2}px`,
         ...(hasBottomNav && {
           pb: `${BOTTOM_NAV.HEIGHT + SPACING * 2}px`,
         }),
         // Tablet tier: between mobile and desktop.
         ...(mdUp &&
           !lgUp && {
-            px: 1.5,
-            py: `${HEADER.H_TABLET + SPACING}px`,
+            px: 4,
+            py: `${HEADER.H_TABLET + SPACING * 2}px`,
           }),
         ...(lgUp && {
-          px: 2,
-          py: `${HEADER.H_DESKTOP + SPACING}px`,
+          px: 6,
+          py: `${HEADER.H_DESKTOP + SPACING * 3}px`,
           width: `calc(100% - ${NAV.WIDTH}px)`,
         }),
         ...sx,

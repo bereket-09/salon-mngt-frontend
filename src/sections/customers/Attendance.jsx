@@ -39,8 +39,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
-const GOLD = '#C8972A';
-const NAVY = '#1B1F3A';
+const GOLD = '#9A7B4F';
+const NAVY = '#1A1A1A';
 
 // Shared label styling: small uppercase eyebrow / column label
 const labelSx = {
@@ -195,7 +195,7 @@ export default function Attendance() {
             display: 'flex', border: '1px solid', borderColor: alpha(GOLD, 0.2),
             boxShadow: theme.customShadows.z8,
           }}>
-            <Iconify icon="solar:user-speak-bold-duotone" width={32} />
+            <Iconify icon="solar:user-speak-linear" width={32} />
           </Box>
           <Box>
             <Typography sx={{ ...labelSx, color: GOLD, mb: 0.25 }}>ATTENDANCE</Typography>
@@ -249,7 +249,7 @@ export default function Attendance() {
                  '&:active': { transform: 'scale(0.98)' },
                }}
              >
-               <Iconify icon="solar:restart-bold-duotone" className={refreshing ? 'animate-spin' : ''} />
+               <Iconify icon="solar:restart-linear" className={refreshing ? 'animate-spin' : ''} />
              </IconButton>
            </Tooltip>
         </Stack>
@@ -272,7 +272,7 @@ export default function Attendance() {
 
               <Stack direction="row" spacing={1.5} alignItems="center" mb={3.5}>
                 <Box sx={{ p: 1, bgcolor: alpha(GOLD, 0.1), borderRadius: 1.5, color: GOLD, display: 'flex' }}>
-                  <Iconify icon="solar:display-bold-duotone" width={22} />
+                  <Iconify icon="solar:display-linear" width={22} />
                 </Box>
                 <Box>
                   <Typography sx={labelSx}>TIME CLOCK</Typography>
@@ -357,7 +357,7 @@ export default function Attendance() {
                       fullWidth variant="contained" color="success"
                       onClick={() => { setActionType('in'); setConfirmOpen(true); }}
                       disabled={!selectedUser && isAdmin}
-                      startIcon={<Iconify icon="solar:play-bold-duotone" />}
+                      startIcon={<Iconify icon="solar:play-linear" />}
                       sx={{ height: 64, fontSize: '1.05rem', fontWeight: 800, borderRadius: 2, boxShadow: theme.customShadows.z8, '&:active': { transform: 'scale(0.98)' } }}
                     >
                       Start Shift
@@ -367,7 +367,7 @@ export default function Attendance() {
                       <Button
                         fullWidth variant="soft" color={isUserOnBreak ? "warning" : "info"}
                         onClick={() => { setActionType('break'); setConfirmOpen(true); }}
-                        startIcon={<Iconify icon={isUserOnBreak ? "solar:restart-bold-duotone" : "solar:coffee-bold-duotone"} />}
+                        startIcon={<Iconify icon={isUserOnBreak ? "solar:restart-linear" : "solar:coffee-linear"} />}
                         sx={{ height: 56, fontSize: '0.95rem', fontWeight: 800, borderRadius: 2, '&:active': { transform: 'scale(0.98)' } }}
                       >
                         {isUserOnBreak ? 'End Break' : 'Start Break'}
@@ -375,7 +375,7 @@ export default function Attendance() {
                       <Button
                         fullWidth variant="contained"
                         onClick={() => { setActionType('out'); setConfirmOpen(true); }}
-                        startIcon={<Iconify icon="solar:stop-bold-duotone" />}
+                        startIcon={<Iconify icon="solar:stop-linear" />}
                         sx={{
                           height: 56, fontSize: '0.95rem', fontWeight: 800, borderRadius: 2,
                           bgcolor: NAVY, color: 'white', boxShadow: theme.customShadows.z8,
@@ -453,7 +453,7 @@ export default function Attendance() {
                     py: { xs: 8, md: 12 }, textAlign: 'center', bgcolor: alpha(theme.palette.background.neutral, 0.4),
                     borderRadius: 2.5, border: '1px dashed', borderColor: alpha(theme.palette.divider, 0.12)
                   }}>
-                    <Iconify icon="solar:ghost-bold-duotone" width={56} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1.5 }} />
+                    <Iconify icon="solar:ghost-linear" width={56} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1.5 }} />
                     <Typography variant="h6" color="text.disabled" fontWeight={800}>No activity detected</Typography>
                     <Typography variant="body2" color="text.disabled" fontWeight={600}>All specialists are currently off duty.</Typography>
                   </Box>
@@ -518,7 +518,7 @@ export default function Attendance() {
                           <Typography sx={{ ...labelSx, color: GOLD }}>Total Hours</Typography>
                           <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: '-0.02em', ...numSx }}>{totalHoursWorked}h</Typography>
                        </Box>
-                       <Iconify icon="solar:clock-circle-bold-duotone" width={30} sx={{ color: GOLD, opacity: 0.9 }} />
+                       <Iconify icon="solar:clock-circle-linear" width={30} sx={{ color: GOLD, opacity: 0.9 }} />
                     </Card>
                 </Box>
              </Stack>
@@ -619,7 +619,7 @@ export default function Attendance() {
               })}
               {attendance.length === 0 && (
                 <Box sx={{ py: 8, textAlign: 'center', bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 2.5, border: '1px dashed', borderColor: alpha(theme.palette.divider, 0.12) }}>
-                  <Iconify icon="solar:inbox-line-bold-duotone" width={48} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1 }} />
+                  <Iconify icon="solar:inbox-line-linear" width={48} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1 }} />
                   <Typography variant="subtitle1" color="text.disabled" fontWeight={800}>No records found</Typography>
                   <Typography variant="body2" color="text.disabled" fontWeight={600}>Try widening the date range or clearing filters.</Typography>
                 </Box>
@@ -695,7 +695,7 @@ export default function Attendance() {
                    {attendance.length === 0 && (
                       <TableRow>
                          <TableCell colSpan={7} align="center" sx={{ py: 8, border: 0 }}>
-                            <Iconify icon="solar:inbox-line-bold-duotone" width={48} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1 }} />
+                            <Iconify icon="solar:inbox-line-linear" width={48} sx={{ color: 'text.disabled', opacity: 0.4, mb: 1 }} />
                             <Typography variant="subtitle1" color="text.disabled" fontWeight={800}>No records found</Typography>
                             <Typography variant="body2" color="text.disabled" fontWeight={600}>Try widening the date range or clearing filters.</Typography>
                          </TableCell>

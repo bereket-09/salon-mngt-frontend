@@ -87,10 +87,10 @@ export default function MyEarningsView() {
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={{ xs: 4, md: 5 }} spacing={1.5}>
                 <Stack direction="row" spacing={{ xs: 1.5, md: 3 }} alignItems="center" sx={{ minWidth: 0 }}>
                     <Box sx={{
-                        p: 1.5, bgcolor: '#C8972A', borderRadius: 2, color: 'white', flexShrink: 0,
-                        display: 'flex', border: '1px solid', borderColor: alpha('#C8972A', 0.2)
+                        p: 1.5, bgcolor: '#9A7B4F', borderRadius: 2, color: 'white', flexShrink: 0,
+                        display: 'flex', border: '1px solid', borderColor: alpha('#9A7B4F', 0.2)
                     }}>
-                        <Iconify icon="solar:safe-square-bold-duotone" width={32} />
+                        <Iconify icon="solar:safe-square-linear" width={32} />
                     </Box>
                     <Box sx={{ minWidth: 0 }}>
                         <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.5rem', md: '3rem' } }}>My Earnings</Typography>
@@ -106,9 +106,9 @@ export default function MyEarningsView() {
 
             <Grid container spacing={3} mb={5}>
                 {[
-                    { label: 'My Share', value: `${report?.totalCommission || 0} Br`, icon: 'solar:wad-of-money-bold-duotone', color: '#C8972A', desc: 'Money you earned' },
-                    { label: 'Jobs Done', value: report?.history?.length || 0, icon: 'solar:verified-check-bold-duotone', color: '#2DD4BF', desc: 'Tasks completed' },
-                    { label: 'Total Revenue', value: `${report?.totalRevenue || 0} Br`, icon: 'solar:chart-square-bold-duotone', color: '#3B82F6', desc: 'Generated for salon' },
+                    { label: 'My Share', value: `${report?.totalCommission || 0} Br`, icon: 'solar:wad-of-money-linear', color: '#9A7B4F', desc: 'Money you earned' },
+                    { label: 'Jobs Done', value: report?.history?.length || 0, icon: 'solar:verified-check-linear', color: '#2DD4BF', desc: 'Tasks completed' },
+                    { label: 'Total Revenue', value: `${report?.totalRevenue || 0} Br`, icon: 'solar:chart-square-linear', color: '#3B82F6', desc: 'Generated for salon' },
                 ].map((kpi, i) => (
                     <Grid item xs={12} md={4} key={i}>
                         <Card sx={{
@@ -143,11 +143,11 @@ export default function MyEarningsView() {
                 overflow: 'hidden'
             }}>
                 <Box sx={{
-                    p: 3, bgcolor: '#1B1F3A', borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
+                    p: 3, bgcolor: '#1A1A1A', borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                 }}>
                     <Stack direction="row" spacing={1.5} alignItems="center">
-                        <Iconify icon="solar:history-bold-duotone" sx={{ color: '#C8972A' }} />
+                        <Iconify icon="solar:history-linear" sx={{ color: '#9A7B4F' }} />
                         <Typography variant="h5" fontWeight={800} color="white">Recent Jobs</Typography>
                     </Stack>
                     <Chip label="Current Month" color="secondary" size="small" sx={{ fontWeight: 800, borderRadius: 0.5 }} />
@@ -163,13 +163,13 @@ export default function MyEarningsView() {
                                             {row.serviceName.toUpperCase()}
                                         </Typography>
                                         <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.75, color: 'text.secondary', minWidth: 0 }}>
-                                            <Iconify icon="solar:calendar-mark-bold-duotone" width={16} sx={{ color: 'secondary.main', flexShrink: 0 }} />
+                                            <Iconify icon="solar:calendar-mark-linear" width={16} sx={{ color: 'secondary.main', flexShrink: 0 }} />
                                             <Typography variant="caption" fontWeight={800} noWrap sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' }, letterSpacing: 0 }}>
                                                 {dayjs(row.completedDate).format('MMM DD').toUpperCase()} · {dayjs(row.completedDate).format('hh:mm A')}
                                             </Typography>
                                         </Stack>
                                         <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 0.5, color: 'text.secondary' }}>
-                                            <Iconify icon="solar:user-bold-duotone" width={16} />
+                                            <Iconify icon="solar:user-linear" width={16} />
                                             <Typography variant="caption" fontWeight={800} noWrap>
                                                 {row.customerName.toUpperCase()}
                                             </Typography>
@@ -260,7 +260,7 @@ export default function MyEarningsView() {
                 )}
                 {!report?.history?.length && (
                     <Box sx={{ py: 15, textAlign: 'center', bgcolor: alpha(theme.palette.secondary.main, 0.01) }}>
-                        <Iconify icon="solar:safe-bold-duotone" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />
+                        <Iconify icon="solar:safe-linear" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />
                         <Typography color="text.disabled" variant="h5" fontWeight={800}>No jobs found</Typography>
                         <Typography variant="body2" color="text.disabled" fontWeight={600}>Complete some services to see your earnings here.</Typography>
                     </Box>

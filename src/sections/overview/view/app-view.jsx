@@ -40,7 +40,7 @@ export default function SalonDashboard() {
             chart: {
               labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
               series: [{ name: 'Check-ins', data: [5, 8, 7, 6, 10, 12, 9] }],
-              colors: ['#1B1F3A'],
+              colors: ['#1A1A1A'],
             },
           },
           todaysCheckins: {
@@ -51,7 +51,7 @@ export default function SalonDashboard() {
                 { label: 'In Progress', value: data.activeAssignments || 3 },
                 { label: 'Pending', value: 2 },
               ],
-              colors: ['#2e7d32', '#C8972A', '#1B1F3A'],
+              colors: ['#2e7d32', '#9A7B4F', '#1A1A1A'],
             },
           },
         });

@@ -32,10 +32,10 @@ export default function AnalyticsView() {
     const token = localStorage.getItem('authToken');
 
     const PERIOD_OPTIONS = [
-        { value: 'today', label: 'Today', icon: 'solar:clock-circle-bold-duotone' },
-        { value: 'week', label: 'This Week', icon: 'solar:calendar-bold-duotone' },
-        { value: 'month', label: 'This Month', icon: 'solar:calendar-bold-duotone' },
-        { value: 'year', label: 'This Year', icon: 'solar:calendar-date-bold-duotone' },
+        { value: 'today', label: 'Today', icon: 'solar:clock-circle-linear' },
+        { value: 'week', label: 'This Week', icon: 'solar:calendar-linear' },
+        { value: 'month', label: 'This Month', icon: 'solar:calendar-linear' },
+        { value: 'year', label: 'This Year', icon: 'solar:calendar-date-linear' },
     ];
 
     const fetchData = React.useCallback(async () => {
@@ -130,7 +130,7 @@ export default function AnalyticsView() {
                     <Button
                         variant="soft" color="secondary"
                         onClick={(e) => setOpenPopover(e.currentTarget)}
-                        startIcon={<Iconify icon={PERIOD_OPTIONS.find(o => o.value === period)?.icon || 'solar:calendar-bold-duotone'} />}
+                        startIcon={<Iconify icon={PERIOD_OPTIONS.find(o => o.value === period)?.icon || 'solar:calendar-linear'} />}
                         sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, px: 3, bgcolor: alpha(theme.palette.secondary.main, 0.1), flex: { xs: 1, sm: 'none' } }}
                     >
                         {PERIOD_OPTIONS.find(o => o.value === period)?.label}
@@ -160,7 +160,7 @@ export default function AnalyticsView() {
                     <Button
                         variant="contained" color="secondary"
                         onClick={fetchData}
-                        startIcon={<Iconify icon="solar:restart-bold-duotone" />}
+                        startIcon={<Iconify icon="solar:restart-linear" />}
                         sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, flex: { xs: 1, sm: 'none' } }}
                     >
                         Refresh
@@ -171,10 +171,10 @@ export default function AnalyticsView() {
             {/* KEY NUMBERS */}
             <Grid container spacing={3} mb={5}>
                 {[
-                    { label: "Today's Income", value: stats.todayRevenue || 0, sub: 'ETB', icon: 'solar:wad-of-money-bold-duotone', color: '#1B1F3A', accent: '#C8972A' },
-                    { label: 'Active Customers', value: stats.activeSessions || 0, sub: 'IN SALON', icon: 'solar:users-group-rounded-bold-duotone', color: '#1B1F3A', accent: '#2DD4BF' },
-                    { label: 'Bookings', value: stats.pendingBookings || 0, sub: 'WAITING', icon: 'solar:calendar-bold-duotone', color: '#1B1F3A', accent: '#3B82F6' },
-                    { label: 'Not Paid', value: stats.openInvoices || 0, sub: 'BILLS', icon: 'solar:bill-list-bold-duotone', color: '#1B1F3A', accent: '#F43F5E' },
+                    { label: "Today's Income", value: stats.todayRevenue || 0, sub: 'ETB', icon: 'solar:wad-of-money-linear', color: '#1A1A1A', accent: '#9A7B4F' },
+                    { label: 'Active Customers', value: stats.activeSessions || 0, sub: 'IN SALON', icon: 'solar:users-group-rounded-linear', color: '#1A1A1A', accent: '#2DD4BF' },
+                    { label: 'Bookings', value: stats.pendingBookings || 0, sub: 'WAITING', icon: 'solar:calendar-linear', color: '#1A1A1A', accent: '#3B82F6' },
+                    { label: 'Not Paid', value: stats.openInvoices || 0, sub: 'BILLS', icon: 'solar:bill-list-linear', color: '#1A1A1A', accent: '#F43F5E' },
                 ].map((kpi, i) => (
                     <Grid item xs={12} sm={6} md={3} key={kpi.label}>
                         <Card sx={{
@@ -252,7 +252,7 @@ export default function AnalyticsView() {
                                     border: '1px solid', borderColor: i === 0 ? 'secondary.main' : alpha(theme.palette.divider, 0.05)
                                 }}>
                                     <Stack direction="row" spacing={2} alignItems="center">
-                                        <Avatar sx={{ bgcolor: i === 0 ? 'secondary.main' : '#1B1F3A', color: 'white', fontWeight: 800 }}>{p.name[0]}</Avatar>
+                                        <Avatar sx={{ bgcolor: i === 0 ? 'secondary.main' : '#1A1A1A', color: 'white', fontWeight: 800 }}>{p.name[0]}</Avatar>
                                         <Box>
                                             <Typography variant="subtitle2" fontWeight={800}>{p.name.toUpperCase()}</Typography>
                                             <Typography variant="caption" color="text.secondary">{p.completedAssignments || 0} jobs done</Typography>

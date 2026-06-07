@@ -23,7 +23,7 @@ import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
-const EMPTY_FORM = { name: '', parentId: '', icon: '', color: '#C8972A' };
+const EMPTY_FORM = { name: '', parentId: '', icon: '', color: '#9A7B4F' };
 
 export default function ServiceCategoriesPage() {
   const theme = useTheme();
@@ -132,7 +132,7 @@ export default function ServiceCategoriesPage() {
         <IconButton onClick={fetchTree} disabled={loading} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), width: 44, height: 44 }}>
           {loading
             ? <CircularProgress size={18} sx={{ color: 'secondary.main' }} />
-            : <Iconify icon="solar:restart-bold-duotone" sx={{ color: 'secondary.main' }} />}
+            : <Iconify icon="solar:restart-linear" sx={{ color: 'secondary.main' }} />}
         </IconButton>
       </Stack>
 
@@ -146,8 +146,8 @@ export default function ServiceCategoriesPage() {
             bgcolor: alpha(theme.palette.background.neutral, 0.4),
           }}>
             <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-              <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.5, color: '#C8972A' }}>
-                <Iconify icon="solar:widget-add-bold-duotone" width={28} />
+              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
+                <Iconify icon="solar:widget-add-linear" width={28} />
               </Box>
               <Typography variant="h5" sx={{ fontWeight: 800 }}>Add Category</Typography>
             </Stack>
@@ -213,7 +213,7 @@ export default function ServiceCategoriesPage() {
         <Grid item xs={12} lg={8}>
           {supers.length === 0 && !loading && (
             <Card sx={{ p: 6, textAlign: 'center', borderRadius: 2.5, borderStyle: 'dashed', border: '1px dashed', borderColor: 'divider' }}>
-              <Iconify icon="solar:widget-5-bold-duotone" width={48} sx={{ color: 'text.disabled', mb: 2 }} />
+              <Iconify icon="solar:widget-5-linear" width={48} sx={{ color: 'text.disabled', mb: 2 }} />
               <Typography variant="h6" fontWeight={800}>No categories yet</Typography>
               <Typography variant="body2" color="text.secondary">Create your first super-category (e.g. Hair) to get started.</Typography>
             </Card>
@@ -225,7 +225,7 @@ export default function ServiceCategoriesPage() {
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: alpha(sup.color || theme.palette.secondary.main, 0.12), color: sup.color || 'secondary.main' }}>
-                      <Iconify icon={sup.icon || 'solar:widget-5-bold-duotone'} width={24} />
+                      <Iconify icon={sup.icon || 'solar:widget-5-linear'} width={24} />
                     </Box>
                     {edit?.id === sup.id ? (
                       <TextField
@@ -241,13 +241,13 @@ export default function ServiceCategoriesPage() {
                   <Stack direction="row" spacing={0.5}>
                     {edit?.id === sup.id ? (
                       <>
-                        <IconButton size="small" color="secondary" onClick={handleUpdate} disabled={saving}><Iconify icon="solar:check-circle-bold-duotone" /></IconButton>
-                        <IconButton size="small" onClick={() => setEdit(null)}><Iconify icon="solar:close-circle-bold-duotone" /></IconButton>
+                        <IconButton size="small" color="secondary" onClick={handleUpdate} disabled={saving}><Iconify icon="solar:check-circle-linear" /></IconButton>
+                        <IconButton size="small" onClick={() => setEdit(null)}><Iconify icon="solar:close-circle-linear" /></IconButton>
                       </>
                     ) : (
                       <>
-                        <IconButton size="small" onClick={() => setEdit({ id: sup.id, name: sup.name, icon: sup.icon, color: sup.color })} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}><Iconify icon="solar:pen-bold-duotone" width={18} /></IconButton>
-                        <IconButton size="small" onClick={() => setDeleteTarget(sup)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}><Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} /></IconButton>
+                        <IconButton size="small" onClick={() => setEdit({ id: sup.id, name: sup.name, icon: sup.icon, color: sup.color })} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}><Iconify icon="solar:pen-linear" width={18} /></IconButton>
+                        <IconButton size="small" onClick={() => setDeleteTarget(sup)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}><Iconify icon="solar:trash-bin-trash-linear" width={18} /></IconButton>
                       </>
                     )}
                   </Stack>
@@ -264,7 +264,7 @@ export default function ServiceCategoriesPage() {
                       key={child.id}
                       label={child.name}
                       onDelete={() => setDeleteTarget(child)}
-                      deleteIcon={<Iconify icon="solar:close-circle-bold-duotone" width={16} />}
+                      deleteIcon={<Iconify icon="solar:close-circle-linear" width={16} />}
                       variant="soft" color="warning"
                       sx={{ fontWeight: 800, borderRadius: 1 }}
                     />

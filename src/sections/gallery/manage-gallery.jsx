@@ -145,7 +145,7 @@ export default function ManageGallery() {
           <Button
             variant="outlined" color="inherit"
             onClick={fetchImages} disabled={fetching}
-            startIcon={fetching ? <CircularProgress size={16} /> : <Iconify icon="solar:restart-bold-duotone" />}
+            startIcon={fetching ? <CircularProgress size={16} /> : <Iconify icon="solar:restart-linear" />}
             sx={{ fontWeight: 800, height: 48, px: 3, borderRadius: 1.5 }}
           >
             Refresh
@@ -227,7 +227,7 @@ export default function ManageGallery() {
         {images.length === 0 && (
             <Grid item xs={12}>
                 <Box sx={{ py: 10, textAlign: 'center', bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 3, border: '2px dashed', borderColor: 'divider' }}>
-                    <Iconify icon="solar:gallery-bold-duotone" width={80} sx={{ color: 'text.disabled', mb: 2 }} />
+                    <Iconify icon="solar:gallery-linear" width={80} sx={{ color: 'text.disabled', mb: 2 }} />
                     <Typography variant="h5" color="text.disabled" fontWeight={800}>No Images Yet</Typography>
                     <Typography variant="body2" color="text.disabled" fontWeight={600}>Click 'Add New Image' to start customizing your gallery.</Typography>
                 </Box>

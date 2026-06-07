@@ -10,8 +10,6 @@ import IconButton from '@mui/material/IconButton';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { bgBlur } from 'src/theme/css';
-
 import Iconify from 'src/components/iconify';
 
 import Searchbar from './common/searchbar';
@@ -30,8 +28,8 @@ export default function Header({ onOpenNav }) {
   const renderContent = (
     <>
       {!lgUp && (
-        <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
-          <Iconify icon="eva:menu-2-fill" />
+        <IconButton onClick={onOpenNav} sx={{ mr: 1, color: 'text.primary' }}>
+          <Iconify icon="solar:hamburger-menu-linear" />
         </IconButton>
       )}
 
@@ -39,7 +37,7 @@ export default function Header({ onOpenNav }) {
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={{ xs: 1, md: 2 }}>
         <BranchSwitcher />
         <AccountPopover />
       </Stack>
@@ -52,10 +50,10 @@ export default function Header({ onOpenNav }) {
         boxShadow: 'none',
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
+        bgcolor: 'background.default',
+        color: 'text.primary',
+        backgroundImage: 'none',
         borderBottom: `1px solid ${theme.palette.divider}`,
-        ...bgBlur({
-          color: theme.palette.background.default,
-        }),
         transition: theme.transitions.create(['height'], {
           duration: theme.transitions.duration.shorter,
         }),
@@ -72,7 +70,7 @@ export default function Header({ onOpenNav }) {
       <Toolbar
         sx={{
           height: 1,
-          px: { md: 3, lg: 5 },
+          px: { xs: 2.5, md: 4, lg: 6 },
         }}
       >
         {renderContent}

@@ -67,95 +67,88 @@ export default function Nav({ openNav, onCloseNav }) {
   }, [pathname]);
 
   const renderAccount = (
-    <Box sx={{ px: 2, mb: 2 }}>
+    <Box sx={{ px: 3, mb: 2.5 }}>
       <ListItemButton
         onClick={handleOpenAccount}
         sx={{
-          p: 1.25,
-          borderRadius: 1.5,
+          p: 0,
+          minHeight: 44,
+          borderRadius: 0,
           alignItems: 'center',
-          bgcolor: alpha('#FFFFFF', 0.04),
-          border: '1px solid',
-          borderColor: alpha('#FFFFFF', 0.08),
-          '&:hover': {
-            bgcolor: alpha('#FFFFFF', 0.06),
-            borderColor: alpha('#C8972A', 0.4),
-          },
+          bgcolor: 'transparent',
+          '&:hover': { bgcolor: 'transparent' },
         }}
       >
         <Avatar
+          variant="square"
           sx={{
-            width: 40,
-            height: 40,
-            bgcolor: 'secondary.main',
-            fontWeight: 900,
-            fontSize: '0.95rem',
+            width: 38,
+            height: 38,
+            borderRadius: '4px',
+            bgcolor: 'transparent',
+            color: 'secondary.main',
+            border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.5)}`,
+            fontFamily: (theme) => theme.typography.h4.fontFamily,
+            fontWeight: 600,
+            fontSize: '1.05rem',
           }}
         >
           {userData.name?.[0]?.toUpperCase() || 'U'}
         </Avatar>
-        <Box sx={{ ml: 1.25, minWidth: 0, flexGrow: 1 }}>
+        <Box sx={{ ml: 1.5, minWidth: 0, flexGrow: 1 }}>
           <Typography
             variant="subtitle2"
             noWrap
-            sx={{ color: 'common.white', fontWeight: 800, fontSize: '0.825rem' }}
+            sx={{ color: 'common.white', fontWeight: 600, fontSize: '0.825rem' }}
           >
             {userData.name || 'User'}
           </Typography>
           <Typography
-            variant="caption"
             noWrap
             sx={{
               display: 'block',
               color: 'secondary.main',
               textTransform: 'uppercase',
-              fontWeight: 800,
+              fontWeight: 700,
               fontSize: '0.6rem',
-              letterSpacing: 0.5,
+              letterSpacing: '0.15em',
             }}
           >
             {userData.role || 'Staff'}
           </Typography>
         </Box>
         <Iconify
-          icon="solar:alt-arrow-down-bold"
+          icon="solar:alt-arrow-down-linear"
           width={16}
-          sx={{ color: 'grey.600', flexShrink: 0 }}
+          sx={{ color: alpha('#FFFFFF', 0.4), flexShrink: 0 }}
         />
       </ListItemButton>
 
       {branchName && (
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{
-            mt: 1,
-            px: 1.25,
-            py: 0.75,
-            borderRadius: 1.5,
-            bgcolor: alpha('#C8972A', 0.1),
-            border: '1px solid',
-            borderColor: alpha('#C8972A', 0.25),
-          }}
-        >
-          <Iconify icon="solar:shop-bold-duotone" width={18} sx={{ color: 'secondary.main' }} />
-          <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ mt: 2 }}>
+          <Typography
+            sx={{
+              display: 'block',
+              color: alpha('#FFFFFF', 0.4),
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              mb: 0.25,
+            }}
+          >
+            Branch
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Iconify icon="solar:shop-linear" width={16} sx={{ color: 'secondary.main', flexShrink: 0 }} />
             <Typography
-              variant="caption"
-              sx={{ display: 'block', color: 'grey.500', fontSize: '0.55rem', fontWeight: 700, letterSpacing: 0.5 }}
-            >
-              ACTIVE BRANCH
-            </Typography>
-            <Typography
-              variant="caption"
               noWrap
-              sx={{ display: 'block', color: 'common.white', fontWeight: 800, fontSize: '0.7rem' }}
+              sx={{ color: 'common.white', fontWeight: 500, fontSize: '0.8125rem' }}
             >
               {branchName}
             </Typography>
-          </Box>
-        </Stack>
+          </Stack>
+        </Box>
       )}
 
       <Popover
@@ -164,19 +157,19 @@ export default function Nav({ openNav, onCloseNav }) {
         onClose={handleCloseAccount}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        PaperProps={{ sx: { mt: 1, width: 200, p: 0.5 } }}
+        PaperProps={{ sx: { mt: 1, width: 210, p: 0.5, borderRadius: 1 } }}
       >
-        <MenuItem onClick={() => handleAccountNav('/profile')} sx={{ borderRadius: 1, fontWeight: 700 }}>
-          <Iconify icon="solar:user-id-bold-duotone" sx={{ mr: 1.5 }} width={20} />
+        <MenuItem onClick={() => handleAccountNav('/profile')} sx={{ borderRadius: 0.5, fontWeight: 500 }}>
+          <Iconify icon="solar:user-id-linear" sx={{ mr: 1.5 }} width={20} />
           Profile Settings
         </MenuItem>
-        <MenuItem onClick={() => handleAccountNav('/setting')} sx={{ borderRadius: 1, fontWeight: 700 }}>
-          <Iconify icon="solar:settings-bold-duotone" sx={{ mr: 1.5 }} width={20} />
+        <MenuItem onClick={() => handleAccountNav('/setting')} sx={{ borderRadius: 0.5, fontWeight: 500 }}>
+          <Iconify icon="solar:settings-linear" sx={{ mr: 1.5 }} width={20} />
           General Settings
         </MenuItem>
-        <Divider sx={{ my: 0.5, borderStyle: 'dashed' }} />
-        <MenuItem onClick={handleLogout} sx={{ borderRadius: 1, fontWeight: 700, color: 'error.main' }}>
-          <Iconify icon="ri:logout-circle-line" sx={{ mr: 1.5 }} width={20} />
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem onClick={handleLogout} sx={{ borderRadius: 0.5, fontWeight: 500, color: 'error.main' }}>
+          <Iconify icon="solar:logout-2-linear" sx={{ mr: 1.5 }} width={20} />
           Logout
         </MenuItem>
       </Popover>
@@ -196,49 +189,42 @@ export default function Nav({ openNav, onCloseNav }) {
   };
 
   const renderMenu = (
-    <Stack component="nav" spacing={0.5} sx={{ px: 1.5, pb: 3 }}>
+    <Stack component="nav" spacing={0.25} sx={{ px: 2, pb: 3 }}>
       {navConfig
         .filter((item) => !item.roles || item.roles.includes(userData.role))
         .map((item) => {
           const isOpen = openGroups[item.title];
           return item.children ? (
-            <Box key={item.title} sx={{ mb: 1 }}>
+            <Box key={item.title} sx={{ mb: 1.5 }}>
               <ListItemButton
                 onClick={() => toggleGroup(item.title)}
                 sx={{
-                  px: 1.5,
-                  minHeight: 36,
-                  borderRadius: 1,
-                  color: 'grey.500',
-                  '&:hover': { bgcolor: alpha('#FFFFFF', 0.04) },
+                  px: 1,
+                  minHeight: 32,
+                  borderRadius: 0,
+                  color: alpha('#FFFFFF', 0.4),
+                  '&:hover': { bgcolor: 'transparent', color: alpha('#FFFFFF', 0.6) },
                 }}
               >
-                <Iconify
-                  icon={item.icon || 'solar:folder-bold-duotone'}
-                  sx={{ width: 18, height: 18, mr: 1.5, color: isOpen ? 'secondary.main' : 'inherit' }}
-                />
                 <Typography
-                  variant="overline"
                   sx={{
                     flexGrow: 1,
-                    fontWeight: 800,
-                    fontSize: '0.625rem',
-                    letterSpacing: '0.08em',
-                    color: isOpen ? 'common.white' : 'inherit',
+                    fontWeight: 700,
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: 'inherit',
                   }}
                 >
                   {item.title}
                 </Typography>
                 <Iconify
-                  icon={isOpen ? 'solar:alt-arrow-down-bold' : 'solar:alt-arrow-right-bold'}
+                  icon={isOpen ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'}
                   sx={{ width: 14, height: 14 }}
                 />
               </ListItemButton>
               <Collapse in={isOpen} unmountOnExit>
-                <Stack
-                  spacing={0.25}
-                  sx={{ mt: 0.5, ml: 2.25, pl: 1, borderLeft: '1px solid', borderColor: alpha('#FFFFFF', 0.08) }}
-                >
+                <Stack spacing={0.25} sx={{ mt: 0.5 }}>
                   {item.children
                     .filter((child) => !child.roles || child.roles.includes(userData.role))
                     .map((child) => (
@@ -265,28 +251,31 @@ export default function Nav({ openNav, onCloseNav }) {
         },
       }}
     >
-      <Box sx={{ px: 3, pt: 3.5, pb: 2.5 }}>
+      <Box sx={{ px: 3, pt: 4, pb: 3 }}>
         <Typography
-          variant="h4"
+          variant="h3"
           sx={{
             color: 'common.white',
-            fontWeight: 900,
-            letterSpacing: -1.5,
-            fontFamily: "'Outfit', sans-serif",
+            fontWeight: 500,
+            letterSpacing: '0.01em',
+            lineHeight: 1,
           }}
         >
-          MILANA
-          <Box component="span" sx={{ color: 'secondary.main', fontSize: '1.2em' }}>
+          Milana
+          <Box
+            component="span"
+            sx={{ color: 'secondary.main', ml: '2px', fontSize: '1em' }}
+          >
             .
           </Box>
         </Typography>
       </Box>
 
-      <Divider sx={{ borderColor: alpha('#FFFFFF', 0.08), mb: 2.5 }} />
+      <Divider sx={{ borderColor: alpha('#FFFFFF', 0.1), mb: 3 }} />
 
       {renderAccount}
 
-      <Divider sx={{ borderColor: alpha('#FFFFFF', 0.08), mb: 2 }} />
+      <Divider sx={{ borderColor: alpha('#FFFFFF', 0.1), mb: 2.5 }} />
 
       {renderMenu}
       <Box sx={{ flexGrow: 1 }} />
@@ -302,9 +291,9 @@ export default function Nav({ openNav, onCloseNav }) {
             height: 1,
             position: 'fixed',
             width: navWidth,
-            bgcolor: 'primary.darker',
+            bgcolor: 'background.sidebar',
             borderRight: '1px solid',
-            borderColor: alpha('#FFFFFF', 0.08),
+            borderColor: alpha('#FFFFFF', 0.1),
           }}
         >
           {renderContent}
@@ -316,7 +305,8 @@ export default function Nav({ openNav, onCloseNav }) {
           PaperProps={{
             sx: {
               width: NAV.WIDTH,
-              bgcolor: 'primary.darker',
+              bgcolor: 'background.sidebar',
+              borderRight: 'none',
             },
           }}
         >
@@ -344,46 +334,36 @@ function NavItem({ item }) {
       href={item.path}
       sx={{
         minHeight: 44,
-        borderRadius: 1,
+        borderRadius: 0,
         typography: 'body2',
-        color: active ? 'common.white' : 'grey.500',
-        fontWeight: active ? 800 : 600,
-        px: 2,
+        color: active ? 'common.white' : alpha('#FFFFFF', 0.55),
+        fontWeight: active ? 600 : 400,
+        pl: 2,
+        pr: 1.5,
         position: 'relative',
-        transition: 'all 0.2s ease',
-        bgcolor: active ? alpha('#C8972A', 0.1) : 'transparent',
+        transition: 'color 0.2s ease',
+        bgcolor: 'transparent',
+        // Thin bronze left rule on active.
+        borderLeft: '2px solid',
+        borderColor: active ? 'secondary.main' : 'transparent',
         '&:hover': {
-          bgcolor: active ? alpha('#C8972A', 0.14) : alpha('#FFFFFF', 0.04),
-          color: active ? 'common.white' : 'grey.300',
+          bgcolor: 'transparent',
+          color: active ? 'common.white' : alpha('#FFFFFF', 0.85),
         },
-        ...(active && {
-          // Gold accent indicator on the left edge.
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            left: -9,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: 3,
-            height: 18,
-            borderRadius: 1,
-            bgcolor: 'secondary.main',
-          },
-        }),
       }}
     >
       {item.icon && (
         <Iconify
           icon={item.icon}
           sx={{
-            width: 20,
-            height: 20,
+            width: 19,
+            height: 19,
             mr: 1.5,
             color: active ? 'secondary.main' : 'inherit',
           }}
         />
       )}
-      <Box component="span" sx={{ flexGrow: 1, letterSpacing: 0.2, fontSize: '0.8rem' }}>
+      <Box component="span" sx={{ flexGrow: 1, letterSpacing: 0.1, fontSize: '0.8125rem' }}>
         {item.title}
       </Box>
     </ListItemButton>

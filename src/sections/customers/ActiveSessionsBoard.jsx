@@ -117,11 +117,11 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={6}>
                 <Stack direction="row" spacing={2.5} alignItems="center">
                     <Box sx={{
-                        p: 1.5, bgcolor: '#0D0E1C', borderRadius: 2, color: '#C8972A',
+                        p: 1.5, bgcolor: '#141312', borderRadius: 2, color: '#9A7B4F',
                         display: 'flex', boxShadow: theme.customShadows.z12,
-                        border: '1px solid', borderColor: alpha('#C8972A', 0.2)
+                        border: '1px solid', borderColor: alpha('#9A7B4F', 0.2)
                     }}>
-                        <Iconify icon="solar:pulse-bold-duotone" width={32} />
+                        <Iconify icon="solar:pulse-linear" width={32} />
                     </Box>
                     <Box>
                         <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Active CLIENTS</Typography>
@@ -138,17 +138,17 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                         onClick={() => { setRefreshKey(k => k + 1); setLoading(true); }}
                         sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05), width: 44, height: 44, '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.1) } }}
                     >
-                        <Iconify icon="solar:restart-bold" className={loading ? 'animate-spin' : ''} sx={{ color: '#C8972A' }} />
+                        <Iconify icon="solar:restart-bold" className={loading ? 'animate-spin' : ''} sx={{ color: '#9A7B4F' }} />
                     </IconButton>
                 </Stack>
             </Stack>
 
             {sessions.length === 0 && !loading && (
                 <Box sx={{
-                    py: 15, textAlign: 'center', bgcolor: alpha('#1B1F3A', 0.02),
-                    borderRadius: 4, border: '2px dashed', borderColor: alpha('#1B1F3A', 0.1)
+                    py: 15, textAlign: 'center', bgcolor: alpha('#1A1A1A', 0.02),
+                    borderRadius: 4, border: '2px dashed', borderColor: alpha('#1A1A1A', 0.1)
                 }}>
-                    <Iconify icon="solar:users-group-rounded-bold-duotone" width={64} sx={{ color: alpha('#C8972A', 0.1), mb: 2 }} />
+                    <Iconify icon="solar:users-group-rounded-linear" width={64} sx={{ color: alpha('#9A7B4F', 0.1), mb: 2 }} />
                     <Typography variant="h4" color="text.disabled" fontWeight={900}>No customers in salon</Typography>
                     <Typography variant="body1" color="text.disabled" fontWeight={700}>Everything is quiet right now.</Typography>
                 </Box>
@@ -172,7 +172,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                 }}>
                                     <Box sx={{
                                         p: { xs: 2.5, md: 3.5 },
-                                        bgcolor: isAtPay ? alpha('#4caf50', 0.03) : alpha('#0D0E1C', 0.01),
+                                        bgcolor: isAtPay ? alpha('#4caf50', 0.03) : alpha('#141312', 0.01),
                                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                         borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.05)
                                     }}>
@@ -186,7 +186,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                             >
                                                 <Avatar sx={{
                                                     width: 56, height: 56,
-                                                    bgcolor: isAtPay ? '#4caf50' : '#0D0E1C',
+                                                    bgcolor: isAtPay ? '#4caf50' : '#141312',
                                                     color: 'white', fontWeight: 900, fontSize: '1.4rem',
                                                     boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                                                 }}>{customer.name[0]}</Avatar>
@@ -200,7 +200,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                             <IconButton
                                                 onClick={() => onSelectCustomer(customer)}
                                                 size="small"
-                                                sx={{ bgcolor: alpha('#C8972A', 0.05), color: '#C8972A', '&:hover': { bgcolor: '#C8972A', color: 'white' } }}
+                                                sx={{ bgcolor: alpha('#9A7B4F', 0.05), color: '#9A7B4F', '&:hover': { bgcolor: '#9A7B4F', color: 'white' } }}
                                             >
                                                 <Iconify icon="solar:maximize-bold" width={20} />
                                             </IconButton>
@@ -223,13 +223,13 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                                     <Box sx={{
                                                         position: 'absolute', left: 0, top: 4, width: 32, height: 32,
                                                         borderRadius: 1.2,
-                                                        bgcolor: a.status === 'completed' ? '#4caf50' : a.status === 'in_progress' ? '#C8972A' : alpha('#C8972A', 0.05),
+                                                        bgcolor: a.status === 'completed' ? '#4caf50' : a.status === 'in_progress' ? '#9A7B4F' : alpha('#9A7B4F', 0.05),
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                         boxShadow: a.status !== 'assigned' ? '0 8px 16px rgba(0,0,0,0.1)' : 'none'
                                                     }}>
                                                         <Iconify
                                                             icon={a.status === 'completed' ? 'solar:verified-check-bold' : a.status === 'in_progress' ? 'solar:play-bold' : 'solar:clock-circle-bold'}
-                                                            sx={{ color: a.status === 'completed' || a.status === 'in_progress' ? 'white' : '#C8972A', width: 18 }}
+                                                            sx={{ color: a.status === 'completed' || a.status === 'in_progress' ? 'white' : '#9A7B4F', width: 18 }}
                                                         />
                                                     </Box>
                                                     <Stack spacing={0.5}>
@@ -250,7 +250,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                                                 <Button
                                                                     size="small" variant={a.status === 'in_progress' ? 'contained' : 'soft'} color="warning"
                                                                     onClick={() => handleStatusClick(a.id, 'in_progress')}
-                                                                    sx={{ height: 28, fontSize: '0.7rem', fontWeight: 900, minWidth: 60, borderRadius: 1, bgcolor: a.status === 'in_progress' ? '#C8972A' : '' }}
+                                                                    sx={{ height: 28, fontSize: '0.7rem', fontWeight: 900, minWidth: 60, borderRadius: 1, bgcolor: a.status === 'in_progress' ? '#9A7B4F' : '' }}
                                                                 >START</Button>
                                                                 <Button
                                                                     size="small" variant="soft" color="success"
@@ -271,7 +271,7 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                     </Box>
 
                                     <Box sx={{
-                                        px: 3.5, py: 2.5, bgcolor: alpha('#0D0E1C', 0.02),
+                                        px: 3.5, py: 2.5, bgcolor: alpha('#141312', 0.02),
                                         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                                     }}>
                                         <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>
@@ -302,9 +302,9 @@ export default function ActiveSessionsBoard({ employees, services, token, onSele
                                         sx={{
                                             height: 6,
                                             '& .MuiLinearProgress-bar': {
-                                                bgcolor: progress === 100 ? '#4caf50' : '#C8972A',
+                                                bgcolor: progress === 100 ? '#4caf50' : '#9A7B4F',
                                             },
-                                            bgcolor: alpha('#C8972A', 0.1)
+                                            bgcolor: alpha('#9A7B4F', 0.1)
                                         }}
                                     />
                                 </Card>

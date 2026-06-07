@@ -1,47 +1,49 @@
 import { alpha } from '@mui/material/styles';
 
-// ─── Brand Tokens ─────────────────────────────────────────────────────────────
+// ─── Brand Tokens (Editorial Luxury: bone / ink / muted bronze) ───────────────
+// Key names kept (navy/gold) for backward-compat; values are the new palette.
 export const brand = {
-  navy: '#1B1F3A',
-  navyDark: '#12151F',
-  navyMid: '#252945',
-  gold: '#C8972A',
-  goldLight: '#E8B84B',
+  navy: '#1A1A1A',      // ink
+  navyDark: '#141312',  // near-black warm
+  navyMid: '#2A2722',   // warm charcoal
+  gold: '#9A7B4F',      // muted bronze (single accent)
+  goldLight: '#B8946A', // light bronze
   teal: '#2DD4BF',
   blue: '#3B82F6',
-  surface: '#F8F7F4',
+  surface: '#FAF8F3',   // bone
 };
 
+// Warm neutral grey scale (editorial)
 export const grey = {
   0: '#FFFFFF',
-  100: '#F9FAFB',
-  200: '#F4F6F8',
-  300: '#E5E7EB',
-  400: '#D1D5DB',
-  500: '#9CA3AF',
-  600: '#6B7280',
-  700: '#374151',
-  800: '#1F2937',
-  900: '#111827',
+  100: '#F8F6F1',
+  200: '#F1EEE7',
+  300: '#E5E0D6',
+  400: '#D4CEC1',
+  500: '#A39C8E',
+  600: '#6E685C',
+  700: '#3C382F',
+  800: '#221F1A',
+  900: '#14120E',
 };
 
-// Primary = deep navy
+// Primary = ink
 export const primary = {
-  lighter: '#E8EBF8',
-  light: '#8892CC',
-  main: '#1B1F3A',
-  dark: '#12151F',
-  darker: '#0A0C14',
+  lighter: '#EBE9E4',
+  light: '#4A4742',
+  main: '#1A1A1A',
+  dark: '#111111',
+  darker: '#000000',
   contrastText: '#FFFFFF',
 };
 
-// Secondary = warm gold
+// Secondary = muted bronze
 export const secondary = {
-  lighter: '#FDF3DC',
-  light: '#E8B84B',
-  main: '#C8972A',
-  dark: '#9B721A',
-  darker: '#6B4F12',
+  lighter: '#F1E9DD',
+  light: '#B8946A',
+  main: '#9A7B4F',
+  dark: '#7A6038',
+  darker: '#564326',
   contrastText: '#FFFFFF',
 };
 
@@ -104,13 +106,13 @@ export function palette() {
     mode: 'light',
     text: {
       primary: brand.navy,
-      secondary: '#5A607F',
+      secondary: '#6E685C',
       disabled: grey[500],
     },
     background: {
       paper: '#FFFFFF',
       default: brand.surface,
-      neutral: '#F1F0EC',
+      neutral: '#F1EEE7',
       dark: brand.navyDark,
       sidebar: brand.navyDark,
     },
@@ -123,6 +125,6 @@ export function palette() {
       glass: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%)',
     },
     brand,
-    action: { ...base.action, active: '#5A607F' },
+    action: { ...base.action, active: '#6E685C' },
   };
 }

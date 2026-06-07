@@ -109,10 +109,10 @@ export default function AttendanceClock() {
             <Box sx={{
                 p: 2,
                 borderRadius: 2,
-                bgcolor: alpha('#1B1F3A', 0.4),
+                bgcolor: alpha('#1A1A1A', 0.4),
                 border: '1px solid',
                 borderColor: isClockedIn ? (isOnBreak ? 'warning.main' : 'secondary.main') : (isFinished ? 'success.main' : 'rgba(255, 255, 255, 0.08)'),
-                boxShadow: isClockedIn && !isOnBreak ? '0 0 20px rgba(200, 151, 42, 0.1)' : 'none',
+                boxShadow: isClockedIn && !isOnBreak ? '0 0 20px rgba(154, 123, 79, 0.1)' : 'none',
                 transition: 'all 0.4s ease'
             }}>
                 <Stack spacing={1.5}>
@@ -124,7 +124,7 @@ export default function AttendanceClock() {
                             <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'secondary.main', animation: 'pulse 2s infinite' }} />
                         )}
                         {isFinished && (
-                            <Iconify icon="solar:check-circle-bold-duotone" width={16} sx={{ color: 'success.main' }} />
+                            <Iconify icon="solar:check-circle-linear" width={16} sx={{ color: 'success.main' }} />
                         )}
                     </Stack>
 
@@ -155,7 +155,7 @@ export default function AttendanceClock() {
                             <Button
                                 fullWidth variant="contained" color="secondary"
                                 onClick={() => openConfirm('check-in')} disabled={loading}
-                                startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Iconify icon="solar:play-bold-duotone" />}
+                                startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Iconify icon="solar:play-linear" />}
                                 sx={{ fontWeight: 900, borderRadius: 1.5, py: 1.2 }}
                             >
                                 CLOCK IN
@@ -167,7 +167,7 @@ export default function AttendanceClock() {
                                 <Button
                                     fullWidth variant="soft" color={isOnBreak ? "warning" : "info"}
                                     onClick={() => openConfirm('toggle-break')} disabled={loading}
-                                    startIcon={<Iconify icon={isOnBreak ? "solar:restart-bold-duotone" : "solar:coffee-bold-duotone"} />}
+                                    startIcon={<Iconify icon={isOnBreak ? "solar:restart-linear" : "solar:coffee-linear"} />}
                                     sx={{ fontWeight: 900, borderRadius: 1.5, py: 1 }}
                                 >
                                     {isOnBreak ? 'END BREAK' : 'START BREAK'}
@@ -175,7 +175,7 @@ export default function AttendanceClock() {
                                 <Button
                                     fullWidth variant="soft" color="error"
                                     onClick={() => openConfirm('check-out')} disabled={loading}
-                                    startIcon={<Iconify icon="solar:stop-bold-duotone" />}
+                                    startIcon={<Iconify icon="solar:stop-linear" />}
                                     sx={{ fontWeight: 900, borderRadius: 1.5, py: 1 }}
                                 >
                                     CLOCK OUT
@@ -187,7 +187,7 @@ export default function AttendanceClock() {
                             <Button
                                 fullWidth variant="soft" color="inherit"
                                 onClick={() => openConfirm('undo-checkout')} disabled={loading}
-                                startIcon={<Iconify icon="solar:undo-left-bold-duotone" />}
+                                startIcon={<Iconify icon="solar:undo-left-linear" />}
                                 sx={{ fontWeight: 900, borderRadius: 1.5, py: 1, color: 'text.primary', border: '1px solid rgba(255,255,255,0.1)' }}
                             >
                                 UNDO END
@@ -231,9 +231,9 @@ export default function AttendanceClock() {
             <style>
                 {`
                     @keyframes pulse {
-                        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 151, 42, 0.7); }
-                        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(200, 151, 42, 0); }
-                        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 151, 42, 0); }
+                        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(154, 123, 79, 0.7); }
+                        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(154, 123, 79, 0); }
+                        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(154, 123, 79, 0); }
                     }
                 `}
             </style>

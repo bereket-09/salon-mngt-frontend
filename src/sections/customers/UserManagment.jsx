@@ -33,8 +33,8 @@ import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
 
-const GOLD = '#C8972A';
-const NAVY = '#1B1F3A';
+const GOLD = '#9A7B4F';
+const NAVY = '#1A1A1A';
 
 const ROLE_META = {
   admin: { label: 'Admin', color: '#D14343', muiColor: 'error' },
@@ -238,7 +238,7 @@ export default function UserManagement() {
           </Typography>
         </Box>
         <Chip
-          icon={<Iconify icon="solar:users-group-rounded-bold-duotone" width={18} sx={{ ml: 0.5 }} />}
+          icon={<Iconify icon="solar:users-group-rounded-linear" width={18} sx={{ ml: 0.5 }} />}
           label={`${users.length} Staff Members`}
           sx={{
             fontWeight: 800,
@@ -266,7 +266,7 @@ export default function UserManagement() {
                 width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 bgcolor: NAVY, borderRadius: 2, color: GOLD,
               }}>
-                <Iconify icon={editingUser ? 'solar:user-id-bold-duotone' : 'solar:user-plus-bold-duotone'} width={26} />
+                <Iconify icon={editingUser ? 'solar:user-id-linear' : 'solar:user-plus-linear'} width={26} />
               </Box>
               <Box>
                 <Typography sx={labelSx}>{editingUser ? 'Editing Member' : 'New Member'}</Typography>
@@ -422,7 +422,7 @@ export default function UserManagement() {
                   }
                   label={
                     <Stack direction="row" spacing={1.5} alignItems="center">
-                      <Iconify icon="solar:hand-money-bold-duotone" width={22} sx={{ color: GOLD }} />
+                      <Iconify icon="solar:hand-money-linear" width={22} sx={{ color: GOLD }} />
                       <Box>
                         <Typography sx={{ ...labelSx, color: NAVY }}>Eligible for Commission</Typography>
                         <Typography variant="caption" color="text.secondary" fontWeight={600}>
@@ -474,7 +474,7 @@ export default function UserManagement() {
                     '&:hover': { bgcolor: '#b3851f', boxShadow: `0 10px 24px 0 ${alpha(GOLD, 0.5)}` },
                     '&:active': { transform: 'scale(0.98)' },
                   }}
-                  startIcon={saving ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:verified-check-bold-duotone" width={24} />}
+                  startIcon={saving ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:verified-check-linear" width={24} />}
                 >
                   {saving ? 'Saving…' : (editingUser ? 'Save Changes' : 'Add Staff')}
                 </Button>
@@ -592,7 +592,7 @@ export default function UserManagement() {
                                 '&:active': { transform: 'scale(0.98)' },
                               }}
                             >
-                              <Iconify icon={u.status === 'active' ? 'solar:shield-check-bold-duotone' : 'solar:shield-cross-bold-duotone'} width={18} />
+                              <Iconify icon={u.status === 'active' ? 'solar:shield-check-linear' : 'solar:shield-cross-linear'} width={18} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Edit">
@@ -605,7 +605,7 @@ export default function UserManagement() {
                                 '&:active': { transform: 'scale(0.98)' },
                               }}
                             >
-                              <Iconify icon="solar:pen-bold-duotone" width={18} />
+                              <Iconify icon="solar:pen-linear" width={18} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete">
@@ -619,7 +619,7 @@ export default function UserManagement() {
                                 '&:active': { transform: 'scale(0.98)' },
                               }}
                             >
-                              <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />
+                              <Iconify icon="solar:trash-bin-trash-linear" width={18} />
                             </IconButton>
                           </Tooltip>
                         </Stack>
@@ -635,7 +635,7 @@ export default function UserManagement() {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             bgcolor: alpha(GOLD, 0.1), color: GOLD,
                           }}>
-                            <Iconify icon="solar:users-group-rounded-bold-duotone" width={36} />
+                            <Iconify icon="solar:users-group-rounded-linear" width={36} />
                           </Box>
                           <Typography variant="h6" fontWeight={800} sx={{ color: NAVY }}>No staff yet</Typography>
                           <Typography variant="body2" color="text.secondary" fontWeight={600} sx={{ maxWidth: 280 }}>

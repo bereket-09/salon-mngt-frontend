@@ -171,15 +171,15 @@ export default function CheckInView() {
         <Box>
             {/* HEADER */}
             <Paper sx={{
-                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
+                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1A1A1A', color: 'white',
                 boxShadow: theme.customShadows.z24, position: 'relative', overflow: 'hidden'
             }}>
                 <Box sx={{ position: 'absolute', top: -30, right: -30, opacity: 0.1 }}>
-                    <Iconify icon="solar:ticket-bold-duotone" width={200} />
+                    <Iconify icon="solar:ticket-linear" width={200} />
                 </Box>
                 <Stack direction="row" alignItems="center" spacing={{ xs: 2, md: 3 }}>
-                    <Box sx={{ p: 2, bgcolor: alpha('#C8972A', 0.2), borderRadius: 2, color: '#C8972A', flexShrink: 0 }}>
-                        <Iconify icon="solar:user-plus-bold-duotone" width={40} />
+                    <Box sx={{ p: 2, bgcolor: alpha('#9A7B4F', 0.2), borderRadius: 2, color: '#9A7B4F', flexShrink: 0 }}>
+                        <Iconify icon="solar:user-plus-linear" width={40} />
                     </Box>
                     <Box>
                         <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '3rem' } }}>Customer Check-In</Typography>
@@ -193,7 +193,7 @@ export default function CheckInView() {
                 <Grid item xs={12} lg={7}>
                     <Card sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2.5, boxShadow: theme.customShadows.z12, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                         <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-                            <Iconify icon="solar:shield-user-bold-duotone" sx={{ color: 'secondary.main' }} width={28} />
+                            <Iconify icon="solar:shield-user-linear" sx={{ color: 'secondary.main' }} width={28} />
                             <Typography variant="h5" fontWeight={800}>Find Customer</Typography>
                         </Stack>
 
@@ -222,13 +222,13 @@ export default function CheckInView() {
                                     }}
                                     InputProps={{
                                         ...params.InputProps,
-                                        startAdornment: <Iconify icon="solar:magnifier-bold-duotone" sx={{ mr: 1, color: 'secondary.main' }} />,
+                                        startAdornment: <Iconify icon="solar:magnifier-linear" sx={{ mr: 1, color: 'secondary.main' }} />,
                                     }}
                                 />
                             )}
                             renderOption={(props, option) => (
                                 <Box component="li" {...props} sx={{ py: 1.5, px: 2, borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.05) }}>
-                                    <Avatar sx={{ mr: 2, bgcolor: '#1B1F3A', color: '#C8972A', fontWeight: 800, width: 36, height: 36 }}>{option.name[0]}</Avatar>
+                                    <Avatar sx={{ mr: 2, bgcolor: '#1A1A1A', color: '#9A7B4F', fontWeight: 800, width: 36, height: 36 }}>{option.name[0]}</Avatar>
                                     <Box flexGrow={1}>
                                         <Typography fontWeight={800} variant="body2">{option.name.toUpperCase()}</Typography>
                                         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>Phone: {option.phone}</Typography>
@@ -289,7 +289,7 @@ export default function CheckInView() {
                         border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
                     }}>
                         <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-                            <Iconify icon="solar:clipboard-check-bold-duotone" sx={{ color: 'secondary.main' }} width={28} />
+                            <Iconify icon="solar:clipboard-check-linear" sx={{ color: 'secondary.main' }} width={28} />
                             <Typography variant="h5" fontWeight={800}>Service Details</Typography>
                         </Stack>
 
@@ -336,7 +336,7 @@ export default function CheckInView() {
                                         {displayedEmployees.map((e) => (
                                             <MenuItem key={e.id} value={e.id}>
                                                 <Stack direction="row" spacing={2} alignItems="center" sx={{ width: '100%' }}>
-                                                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', bgcolor: '#1B1F3A', color: 'white', fontWeight: 800 }}>{e.name[0]}</Avatar>
+                                                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', bgcolor: '#1A1A1A', color: 'white', fontWeight: 800 }}>{e.name[0]}</Avatar>
                                                     <Typography variant="body2" fontWeight={700} sx={{ flexGrow: 1 }}>{e.name}</Typography>
                                                     {(e.Specialties || []).slice(0, 2).map((c) => (
                                                         <Chip key={c.id} label={c.name} size="small" variant="soft" color="warning" sx={{ fontWeight: 800, height: 20, fontSize: '0.6rem' }} />
@@ -374,7 +374,7 @@ export default function CheckInView() {
                                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' } }}
                             />
 
-                            <Box sx={{ p: 2.5, bgcolor: '#1B1F3A', borderRadius: 2, border: '1px solid', borderColor: alpha('#C8972A', 0.1) }}>
+                            <Box sx={{ p: 2.5, bgcolor: '#1A1A1A', borderRadius: 2, border: '1px solid', borderColor: alpha('#9A7B4F', 0.1) }}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={6}>
                                         <Typography variant="caption" color="secondary.main" fontWeight={800}>TOTAL PRICE</Typography>

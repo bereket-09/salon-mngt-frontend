@@ -381,7 +381,7 @@ export default function CustomerDetails({
                   }
                 >
                   <Avatar sx={{
-                    width: 100, height: 100, mx: 'auto', bgcolor: '#1B1F3A', color: 'white',
+                    width: 100, height: 100, mx: 'auto', bgcolor: '#1A1A1A', color: 'white',
                     fontSize: '2rem', fontWeight: 800
                   }}>
                     {customer.name[0]}
@@ -402,7 +402,7 @@ export default function CustomerDetails({
               <Stack spacing={2}>
                 <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
                   <Stack direction="row" spacing={2} alignItems="center">
-                    <Iconify icon="solar:phone-bold-duotone" width={20} sx={{ color: 'secondary.main' }} />
+                    <Iconify icon="solar:phone-linear" width={20} sx={{ color: 'secondary.main' }} />
                     <Box>
                       <Typography variant="caption" color="text.disabled" fontWeight={800}>PHONE</Typography>
                       <Typography variant="body2" fontWeight={800}>{customer.phone || 'N/A'}</Typography>
@@ -412,7 +412,7 @@ export default function CustomerDetails({
 
                 <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.neutral, 0.4), borderRadius: 1.5 }}>
                   <Stack direction="row" spacing={2} alignItems="center">
-                    <Iconify icon="solar:map-point-bold-duotone" width={20} sx={{ color: 'info.main' }} />
+                    <Iconify icon="solar:map-point-linear" width={20} sx={{ color: 'info.main' }} />
                     <Box>
                       <Typography variant="caption" color="text.disabled" fontWeight={800}>BRANCH</Typography>
                       <Typography variant="body2" fontWeight={800}>{currentBranch.toUpperCase()}</Typography>
@@ -430,7 +430,7 @@ export default function CustomerDetails({
                     sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
                     startIcon={actionBusy
                       ? <CircularProgress size={20} sx={{ color: 'inherit' }} />
-                      : <Iconify icon="solar:play-bold-duotone" />}
+                      : <Iconify icon="solar:play-linear" />}
                   >
                     {actionBusy ? 'Checking in…' : 'Check In'}
                   </Button>
@@ -441,7 +441,7 @@ export default function CustomerDetails({
                       onClick={openPayDialog}
                       disabled={actionBusy}
                       sx={{ height: 60, fontSize: '1.1rem', fontWeight: 900, borderRadius: 1.5 }}
-                      startIcon={<Iconify icon="solar:verified-check-bold-duotone" />}
+                      startIcon={<Iconify icon="solar:verified-check-linear" />}
                     >
                       Finish & Pay
                     </Button>
@@ -502,7 +502,7 @@ export default function CustomerDetails({
                 border: '2px dashed', borderColor: alpha(theme.palette.divider, 0.1),
                 borderRadius: 2.5, bgcolor: alpha(theme.palette.secondary.main, 0.01)
               }}>
-                <Iconify icon="solar:sleeping-circle-bold-duotone" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />
+                <Iconify icon="solar:sleeping-circle-linear" width={64} sx={{ color: 'text.disabled', opacity: 0.1, mb: 2 }} />
                 <Typography variant="h5" color="text.disabled" fontWeight={800}>No active visit</Typography>
                 <Typography variant="body2" color="text.disabled" fontWeight={600} textAlign="center">
                   Check in the customer to add services.
@@ -558,7 +558,7 @@ export default function CustomerDetails({
                           {employees.map(e => (
                             <MenuItem key={e.id} value={e.id} sx={{ fontWeight: 700 }}>
                               <Stack direction="row" spacing={1.5} alignItems="center">
-                                <Avatar sx={{ width: 24, height: 24, fontSize: '0.6rem', bgcolor: '#1B1F3A', color: 'white' }}>{e.name[0]}</Avatar>
+                                <Avatar sx={{ width: 24, height: 24, fontSize: '0.6rem', bgcolor: '#1A1A1A', color: 'white' }}>{e.name[0]}</Avatar>
                                 <Typography variant="body2" fontWeight={700}>{e.name.toUpperCase()}</Typography>
                               </Stack>
                             </MenuItem>
@@ -574,7 +574,7 @@ export default function CustomerDetails({
                         sx={{ height: 56, fontWeight: 900, borderRadius: 1.5 }}
                         startIcon={addingService
                           ? <CircularProgress size={18} sx={{ color: 'inherit' }} />
-                          : <Iconify icon="solar:bolt-circle-bold-duotone" />}
+                          : <Iconify icon="solar:bolt-circle-linear" />}
                       >
                         {addingService ? 'Adding…' : 'Add Now'}
                       </Button>
@@ -591,7 +591,7 @@ export default function CustomerDetails({
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography variant="caption" color="text.disabled" fontWeight={800}>TOTAL</Typography>
-                      <Typography variant="h4" fontWeight={900} color="#C8972A">{totalEstimation} Br</Typography>
+                      <Typography variant="h4" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
                     </Box>
                   </Stack>
 
@@ -605,8 +605,8 @@ export default function CustomerDetails({
                         <Grid container spacing={2} alignItems="center">
                           <Grid item xs={12} sm={4}>
                             <Stack direction="row" spacing={2} alignItems="center">
-                              <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.2, color: '#C8972A' }}>
-                                <Iconify icon="solar:hashtag-bold-duotone" width={18} />
+                              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.2, color: '#9A7B4F' }}>
+                                <Iconify icon="solar:hashtag-linear" width={18} />
                               </Box>
                               <Box>
                                 <Typography variant="subtitle2" fontWeight={800}>
@@ -653,7 +653,7 @@ export default function CustomerDetails({
                                         onClick={(e) => { setReassignAnchor(e.currentTarget); setReassignTarget(a); }}
                                         sx={{ p: 0.25 }}
                                       >
-                                        <Iconify icon="solar:pen-2-bold-duotone" width={14} sx={{ color: 'secondary.main' }} />
+                                        <Iconify icon="solar:pen-2-linear" width={14} sx={{ color: 'secondary.main' }} />
                                       </IconButton>
                                     </Tooltip>
                                   )}
@@ -692,7 +692,7 @@ export default function CustomerDetails({
                                 >
                                   {deleteAssignmentId === a.id
                                     ? <CircularProgress size={16} />
-                                    : <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />}
+                                    : <Iconify icon="solar:trash-bin-trash-linear" width={18} />}
                                 </IconButton>
                               </Tooltip>
                             </Stack>
@@ -717,7 +717,7 @@ export default function CustomerDetails({
                   <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
                     <Stack direction="row" spacing={1.5} alignItems="center">
                       <Box sx={{ p: 1, bgcolor: alpha(theme.palette.info.main, 0.1), color: 'info.main', borderRadius: 1 }}>
-                        <Iconify icon="solar:calendar-date-bold-duotone" width={20} />
+                        <Iconify icon="solar:calendar-date-linear" width={20} />
                       </Box>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={900}>
@@ -768,7 +768,7 @@ export default function CustomerDetails({
               ))}
               {history.length === 0 && (
                 <Box sx={{ py: 10, textAlign: 'center', opacity: 0.5 }}>
-                  <Iconify icon="solar:history-bold-duotone" width={48} sx={{ mb: 2, color: 'text.disabled' }} />
+                  <Iconify icon="solar:history-linear" width={48} sx={{ mb: 2, color: 'text.disabled' }} />
                   <Typography variant="h6" fontWeight={800} color="text.disabled">No visit history found</Typography>
                 </Box>
               )}
@@ -789,9 +789,9 @@ export default function CustomerDetails({
             confirm.type === 'finish-session' ? (
               <Box>
                 <Typography variant="body1" mb={2}>This will finish the visit and generate the final bill.</Typography>
-                <Box sx={{ p: 2, bgcolor: alpha('#C8972A', 0.1), borderRadius: 1.5, textAlign: 'center' }}>
+                <Box sx={{ p: 2, bgcolor: alpha('#9A7B4F', 0.1), borderRadius: 1.5, textAlign: 'center' }}>
                   <Typography variant="caption" fontWeight={900} color="text.disabled">TOTAL AMOUNT DUE</Typography>
-                  <Typography variant="h3" fontWeight={900} color="#C8972A">{totalEstimation} Br</Typography>
+                  <Typography variant="h3" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
                 </Box>
               </Box>
             ) :
@@ -878,20 +878,20 @@ export default function CustomerDetails({
           <DialogContent id="printable-bill" sx={{ p: { xs: 3.5, sm: 4.5 }, fontVariantNumeric: 'tabular-nums' }}>
             {/* Brand header */}
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-              <Typography sx={{ fontWeight: 900, fontSize: 34, lineHeight: 1, letterSpacing: '-0.04em', color: '#1B1F3A' }}>
-                MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
+              <Typography sx={{ fontWeight: 900, fontSize: 34, lineHeight: 1, letterSpacing: '-0.04em', color: '#1A1A1A' }}>
+                MILANA<Box component="span" sx={{ color: '#9A7B4F' }}>.</Box>
               </Typography>
               <Typography sx={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.42em', color: 'text.secondary', mt: 0.75, ml: '0.42em' }}>
                 BOUTIQUE SALON
               </Typography>
             </Box>
 
-            <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#C8972A', mb: 2.5 }} />
+            <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#9A7B4F', mb: 2.5 }} />
 
             {/* Meta row */}
             <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
               <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>RECEIPT</Typography>
-              <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1B1F3A' }}>
+              <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1A1A1A' }}>
                 #MIL-{String(receiptData.session?.id || 0).padStart(5, '0')}
               </Typography>
             </Stack>
@@ -914,7 +914,7 @@ export default function CustomerDetails({
             <Stack direction="row" justifyContent="space-between" alignItems="baseline">
               <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>BILLED TO</Typography>
               <Box sx={{ textAlign: 'right' }}>
-                <Typography sx={{ fontSize: 14, fontWeight: 900, color: '#1B1F3A' }}>{receiptData.customer.name.toUpperCase()}</Typography>
+                <Typography sx={{ fontSize: 14, fontWeight: 900, color: '#1A1A1A' }}>{receiptData.customer.name.toUpperCase()}</Typography>
                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: 'text.secondary' }}>{receiptData.customer.phone}</Typography>
               </Box>
             </Stack>
@@ -928,7 +928,7 @@ export default function CustomerDetails({
                 return (
                   <Box key={i} sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
                     <Box sx={{ minWidth: 0 }}>
-                      <Typography sx={{ fontSize: 13, fontWeight: 800, color: '#1B1F3A', lineHeight: 1.3 }}>
+                      <Typography sx={{ fontSize: 13, fontWeight: 800, color: '#1A1A1A', lineHeight: 1.3 }}>
                         {a.Services?.map(s => `${s.name.toUpperCase()}`).join(', ') || 'SERVICE'}
                       </Typography>
                       <Typography sx={{ fontSize: 11, fontWeight: 700, color: 'text.disabled' }}>
@@ -936,7 +936,7 @@ export default function CustomerDetails({
                       </Typography>
                     </Box>
                     <Box sx={{ flexGrow: 1, borderBottom: '1px dotted', borderColor: 'divider', mb: '5px' }} />
-                    <Typography sx={{ fontSize: 13, fontWeight: 900, color: '#1B1F3A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                    <Typography sx={{ fontSize: 13, fontWeight: 900, color: '#1A1A1A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
                       {line.toLocaleString()} Br
                     </Typography>
                   </Box>
@@ -946,11 +946,11 @@ export default function CustomerDetails({
 
             {/* Total band */}
             <Box sx={{
-              mt: 3, px: 2.5, py: 2, borderRadius: 2, bgcolor: '#1B1F3A',
+              mt: 3, px: 2.5, py: 2, borderRadius: 2, bgcolor: '#1A1A1A',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
               <Typography sx={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 1.5 }}>TOTAL</Typography>
-              <Typography sx={{ fontSize: 26, fontWeight: 900, color: '#C8972A', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontSize: 26, fontWeight: 900, color: '#9A7B4F', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
                 {Number(receiptData.total).toLocaleString()} Br
               </Typography>
             </Box>
@@ -959,7 +959,7 @@ export default function CustomerDetails({
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
               <Box>
                 <Typography sx={{ fontSize: 10, fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>PAID VIA</Typography>
-                <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1B1F3A' }}>
+                <Typography sx={{ fontSize: 12, fontWeight: 900, color: '#1A1A1A' }}>
                   {receiptData.paymentMethod
                     ? `${receiptData.paymentMethod.name.toUpperCase()}${receiptData.paymentMethod.accountInfo ? ` · ${receiptData.paymentMethod.accountInfo}` : ''}`
                     : 'CASH'}
@@ -974,7 +974,7 @@ export default function CustomerDetails({
             </Stack>
 
             <Box sx={{ mt: 4, textAlign: 'center' }}>
-              <Iconify icon="solar:scissors-bold-duotone" width={22} sx={{ color: 'divider' }} />
+              <Iconify icon="solar:scissors-linear" width={22} sx={{ color: 'divider' }} />
               <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'text.secondary', letterSpacing: 1.5, mt: 1 }}>
                 THANK YOU — SEE YOU SOON
               </Typography>
@@ -992,7 +992,7 @@ export default function CustomerDetails({
           <Button
             variant="soft" color="inherit" size="large"
             onClick={() => window.print()}
-            startIcon={<Iconify icon="solar:printer-minimalistic-bold-duotone" />}
+            startIcon={<Iconify icon="solar:printer-minimalistic-linear" />}
             sx={{ fontWeight: 900, borderRadius: 1.5 }}
           >
             PRINT
@@ -1028,7 +1028,7 @@ export default function CustomerDetails({
               sx={{ fontWeight: 700, py: 1 }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: '100%' }}>
-                <Avatar sx={{ width: 28, height: 28, fontSize: '0.7rem', bgcolor: '#1B1F3A', color: 'white' }}>
+                <Avatar sx={{ width: 28, height: 28, fontSize: '0.7rem', bgcolor: '#1A1A1A', color: 'white' }}>
                   {emp.name[0]}
                 </Avatar>
                 <Typography variant="body2" fontWeight={700} sx={{ flexGrow: 1 }}>
@@ -1045,18 +1045,18 @@ export default function CustomerDetails({
       <Dialog open={payOpen} onClose={() => !finishing && setPayOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
         {payStep === 1 ? (
           <>
-            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1B1F3A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Iconify icon="solar:wallet-money-bold-duotone" />
+            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1A1A1A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Iconify icon="solar:wallet-money-linear" />
               How was the payment received?
             </DialogTitle>
             <DialogContent sx={{ mt: 3 }}>
-              <Box sx={{ p: 2.5, bgcolor: alpha('#C8972A', 0.08), borderRadius: 2, textAlign: 'center', mb: 3 }}>
+              <Box sx={{ p: 2.5, bgcolor: alpha('#9A7B4F', 0.08), borderRadius: 2, textAlign: 'center', mb: 3 }}>
                 <Typography variant="caption" fontWeight={900} color="text.disabled" letterSpacing={1}>TOTAL DUE</Typography>
-                <Typography variant="h3" fontWeight={900} color="#C8972A">{totalEstimation} Br</Typography>
+                <Typography variant="h3" fontWeight={900} color="#9A7B4F">{totalEstimation} Br</Typography>
               </Box>
               {paymentMethods.length === 0 ? (
                 <Box sx={{ py: 4, textAlign: 'center', border: '2px dashed', borderColor: 'divider', borderRadius: 2 }}>
-                  <Iconify icon="solar:card-search-bold-duotone" width={48} sx={{ color: 'text.disabled', mb: 1 }} />
+                  <Iconify icon="solar:card-search-linear" width={48} sx={{ color: 'text.disabled', mb: 1 }} />
                   <Typography variant="body2" fontWeight={800} color="text.disabled">No payment methods configured</Typography>
                   <Typography variant="caption" color="text.disabled">Admin can set them up in Settings.</Typography>
                 </Box>
@@ -1072,10 +1072,10 @@ export default function CustomerDetails({
                           sx={{
                             p: 2, cursor: 'pointer', borderRadius: 2,
                             border: '2px solid',
-                            borderColor: selected ? '#C8972A' : alpha(theme.palette.divider, 0.15),
-                            bgcolor: selected ? alpha('#C8972A', 0.05) : 'background.paper',
+                            borderColor: selected ? '#9A7B4F' : alpha(theme.palette.divider, 0.15),
+                            bgcolor: selected ? alpha('#9A7B4F', 0.05) : 'background.paper',
                             transition: '0.2s',
-                            '&:hover': { borderColor: '#C8972A' },
+                            '&:hover': { borderColor: '#9A7B4F' },
                           }}
                         >
                           <Stack direction="row" spacing={2} alignItems="center">
@@ -1087,8 +1087,8 @@ export default function CustomerDetails({
                                 sx={{ width: 44, height: 44, bgcolor: 'background.neutral' }}
                               />
                             ) : (
-                              <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: '#1B1F3A', color: '#C8972A' }}>
-                                <Iconify icon={pm.type === 'cash' ? 'solar:wallet-bold-duotone' : 'solar:card-bold-duotone'} />
+                              <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: '#1A1A1A', color: '#9A7B4F' }}>
+                                <Iconify icon={pm.type === 'cash' ? 'solar:wallet-linear' : 'solar:card-linear'} />
                               </Avatar>
                             )}
                             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
@@ -1122,8 +1122,8 @@ export default function CustomerDetails({
           </>
         ) : (
           <>
-            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1B1F3A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Iconify icon="solar:bill-check-bold-duotone" sx={{ color: '#C8972A' }} />
+            <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1A1A1A', color: 'white', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Iconify icon="solar:bill-check-linear" sx={{ color: '#9A7B4F' }} />
               Confirm & Close Visit
             </DialogTitle>
             <DialogContent sx={{ mt: 3 }}>
@@ -1133,7 +1133,7 @@ export default function CustomerDetails({
               {(() => {
                 const m = paymentMethods.find(p => p.id === selectedPaymentMethodId);
                 return (
-                  <Box sx={{ p: 3, bgcolor: alpha('#1B1F3A', 0.04), borderRadius: 2 }}>
+                  <Box sx={{ p: 3, bgcolor: alpha('#1A1A1A', 0.04), borderRadius: 2 }}>
                     <Stack direction="row" justifyContent="space-between" mb={1.5}>
                       <Typography variant="caption" fontWeight={800} color="text.disabled">CUSTOMER</Typography>
                       <Typography variant="subtitle2" fontWeight={900}>{customer.name.toUpperCase()}</Typography>
@@ -1158,7 +1158,7 @@ export default function CustomerDetails({
                 variant="contained" color="secondary"
                 onClick={finalizePayment}
                 disabled={finishing}
-                startIcon={finishing ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:check-circle-bold-duotone" />}
+                startIcon={finishing ? <CircularProgress size={18} sx={{ color: 'inherit' }} /> : <Iconify icon="solar:check-circle-linear" />}
                 sx={{ fontWeight: 900, px: 4 }}
               >
                 {finishing ? 'CLOSING…' : 'CONFIRM & CLOSE'}

@@ -155,11 +155,11 @@ export default function PaymentMethodsPage() {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, minHeight: '100vh', bgcolor: alpha('#1B1F3A', 0.02) }}>
+    <Box sx={{ p: { xs: 2, md: 4 }, minHeight: '100vh', bgcolor: alpha('#1A1A1A', 0.02) }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" mb={5} spacing={2}>
         <Box>
           <Typography variant="h3" sx={{ fontWeight: 950, letterSpacing: -1 }}>
-            Payment <Box component="span" sx={{ color: '#C8972A' }}>Methods</Box>
+            Payment <Box component="span" sx={{ color: '#9A7B4F' }}>Methods</Box>
           </Typography>
           <Typography variant="body2" color="text.secondary" fontWeight={700}>
             Configure how the reception records incoming payments. Cash, banks, mobile wallets — anything.
@@ -168,7 +168,7 @@ export default function PaymentMethodsPage() {
         <Stack direction="row" spacing={2}>
           <Button
             variant="outlined" color="inherit" onClick={fetchMethods}
-            startIcon={loading ? <CircularProgress size={16} /> : <Iconify icon="solar:restart-bold-duotone" />}
+            startIcon={loading ? <CircularProgress size={16} /> : <Iconify icon="solar:restart-linear" />}
             disabled={loading}
             sx={{ fontWeight: 800, height: 48, borderRadius: 1.5 }}
           >
@@ -176,8 +176,8 @@ export default function PaymentMethodsPage() {
           </Button>
           <Button
             variant="contained" color="secondary" onClick={openCreate}
-            startIcon={<Iconify icon="solar:add-circle-bold-duotone" />}
-            sx={{ fontWeight: 900, height: 48, px: 3, borderRadius: 1.5, bgcolor: '#C8972A', '&:hover': { bgcolor: '#B5851F' } }}
+            startIcon={<Iconify icon="solar:add-circle-linear" />}
+            sx={{ fontWeight: 900, height: 48, px: 3, borderRadius: 1.5, bgcolor: '#9A7B4F', '&:hover': { bgcolor: '#B5851F' } }}
           >
             Add Method
           </Button>
@@ -198,8 +198,8 @@ export default function PaymentMethodsPage() {
                 {m.logoUrl ? (
                   <Avatar src={`${config.BASE_URL}${m.logoUrl}`} variant="rounded" sx={{ width: 56, height: 56, bgcolor: 'background.neutral' }} />
                 ) : (
-                  <Avatar variant="rounded" sx={{ width: 56, height: 56, bgcolor: '#1B1F3A', color: '#C8972A' }}>
-                    <Iconify icon={m.type === 'cash' ? 'solar:wallet-bold-duotone' : 'solar:card-bold-duotone'} width={28} />
+                  <Avatar variant="rounded" sx={{ width: 56, height: 56, bgcolor: '#1A1A1A', color: '#9A7B4F' }}>
+                    <Iconify icon={m.type === 'cash' ? 'solar:wallet-linear' : 'solar:card-linear'} width={28} />
                   </Avatar>
                 )}
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
@@ -242,7 +242,7 @@ export default function PaymentMethodsPage() {
                 </Tooltip>
                 <Tooltip title="Edit">
                   <IconButton size="small" onClick={() => openEdit(m)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.06) }}>
-                    <Iconify icon="solar:pen-bold-duotone" width={18} />
+                    <Iconify icon="solar:pen-linear" width={18} />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
@@ -254,7 +254,7 @@ export default function PaymentMethodsPage() {
                   >
                     {deletingId === m.id
                       ? <CircularProgress size={16} />
-                      : <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />}
+                      : <Iconify icon="solar:trash-bin-trash-linear" width={18} />}
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -264,8 +264,8 @@ export default function PaymentMethodsPage() {
 
         {methods.length === 0 && !loading && (
           <Grid item xs={12}>
-            <Box sx={{ py: 10, textAlign: 'center', border: '2px dashed', borderColor: alpha('#1B1F3A', 0.05), borderRadius: 3 }}>
-              <Iconify icon="solar:wallet-money-bold-duotone" width={64} sx={{ color: 'text.disabled', mb: 2 }} />
+            <Box sx={{ py: 10, textAlign: 'center', border: '2px dashed', borderColor: alpha('#1A1A1A', 0.05), borderRadius: 3 }}>
+              <Iconify icon="solar:wallet-money-linear" width={64} sx={{ color: 'text.disabled', mb: 2 }} />
               <Typography variant="h6" fontWeight={900} color="text.disabled">No payment methods yet</Typography>
               <Typography variant="body2" color="text.disabled" fontWeight={700}>
                 Click "Add Method" to set up Cash, banks, mobile wallets, etc.
@@ -276,7 +276,7 @@ export default function PaymentMethodsPage() {
       </Grid>
 
       <Dialog open={dialogOpen} onClose={() => !saving && setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
-        <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1B1F3A', color: 'white' }}>
+        <DialogTitle sx={{ fontWeight: 900, bgcolor: '#1A1A1A', color: 'white' }}>
           {form.id ? 'Edit Payment Method' : 'New Payment Method'}
         </DialogTitle>
         <DialogContent sx={{ mt: 3 }}>

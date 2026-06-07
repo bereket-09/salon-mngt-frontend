@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 
 import Paper from '@mui/material/Paper';
-import { alpha } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 
@@ -15,10 +14,10 @@ import { BOTTOM_NAV } from './config-layout';
 // ----------------------------------------------------------------------
 
 const TABS = [
-  { label: 'My Jobs', value: '/my-assignments', icon: 'solar:checklist-minimalistic-bold-duotone' },
-  { label: 'Earnings', value: '/my-earnings', icon: 'solar:wallet-money-bold-duotone' },
-  { label: 'Attendance', value: '/my-attendance', icon: 'solar:clock-circle-bold-duotone' },
-  { label: 'More', value: '__more__', icon: 'solar:hamburger-menu-bold-duotone' },
+  { label: 'My Jobs', value: '/my-assignments', icon: 'solar:checklist-minimalistic-linear' },
+  { label: 'Earnings', value: '/my-earnings', icon: 'solar:wallet-money-linear' },
+  { label: 'Attendance', value: '/my-attendance', icon: 'solar:clock-circle-linear' },
+  { label: 'More', value: '__more__', icon: 'solar:hamburger-menu-linear' },
 ];
 
 export default function BottomNav({ onOpenNav }) {
@@ -56,9 +55,9 @@ export default function BottomNav({ onOpenNav }) {
         position: 'fixed',
         display: { xs: 'block', md: 'none' },
         zIndex: (theme) => theme.zIndex.appBar + 1,
-        bgcolor: 'primary.darker',
-        borderTop: (theme) => `1px solid ${alpha(theme.palette.common.white, 0.08)}`,
-        boxShadow: (theme) => theme.customShadows.z16,
+        bgcolor: 'background.paper',
+        borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+        boxShadow: 'none',
         pb: 'env(safe-area-inset-bottom)',
       }}
     >
@@ -71,14 +70,17 @@ export default function BottomNav({ onOpenNav }) {
           bgcolor: 'transparent',
           '& .MuiBottomNavigationAction-root': {
             minWidth: 44,
-            color: 'grey.500',
-            '&.Mui-selected': { color: 'secondary.main' },
+            color: 'text.secondary',
+            '&.Mui-selected': { color: 'text.primary' },
+          },
+          '& .Mui-selected .MuiSvgIcon-root, & .Mui-selected svg': {
+            color: 'secondary.main',
           },
           '& .MuiBottomNavigationAction-label': {
-            fontWeight: 800,
-            fontSize: '0.65rem',
-            letterSpacing: 0.2,
-            '&.Mui-selected': { fontSize: '0.65rem' },
+            fontWeight: 600,
+            fontSize: '0.6875rem',
+            letterSpacing: '0.04em',
+            '&.Mui-selected': { fontSize: '0.6875rem', fontWeight: 700 },
           },
         }}
       >

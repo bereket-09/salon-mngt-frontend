@@ -83,17 +83,17 @@ export default function SpecialistBoard() {
         <Container maxWidth="xl" sx={{ py: 3, px: { xs: 2, md: 3 } }}>
             {/* HEADER */}
             <Paper sx={{
-                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1B1F3A', color: 'white',
+                p: { xs: 3, md: 4 }, mb: { xs: 4, md: 6 }, borderRadius: 2.5, bgcolor: '#1A1A1A', color: 'white',
                 boxShadow: theme.customShadows.z24, position: 'relative', overflow: 'hidden'
             }}>
                 <Box sx={{ position: 'absolute', top: -20, right: -20, opacity: 0.05 }}>
-                    <Iconify icon="solar:transmission-bold-duotone" width={240} />
+                    <Iconify icon="solar:transmission-linear" width={240} />
                 </Box>
                 <Stack direction={{ xs: 'column', md: 'row' }} alignItems={{ xs: 'flex-start', md: 'center' }} justifyContent="space-between" spacing={{ xs: 3, md: 4 }}>
                     <Box>
                         <Stack direction="row" spacing={2} alignItems="center" mb={1}>
-                            <Box sx={{ p: 1, bgcolor: alpha('#C8972A', 0.2), borderRadius: 1.5, color: '#C8972A', display: 'flex' }}>
-                                <Iconify icon="solar:users-group-rounded-bold-duotone" width={32} />
+                            <Box sx={{ p: 1, bgcolor: alpha('#9A7B4F', 0.2), borderRadius: 1.5, color: '#9A7B4F', display: 'flex' }}>
+                                <Iconify icon="solar:users-group-rounded-linear" width={32} />
                             </Box>
                             <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '3rem' } }}>Staff Board</Typography>
                         </Stack>
@@ -112,7 +112,7 @@ export default function SpecialistBoard() {
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
                         <IconButton sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: 'white', width: 56, height: 56 }} onClick={() => fetchData()}>
-                            <Iconify icon="solar:restart-bold-duotone" />
+                            <Iconify icon="solar:restart-linear" />
                         </IconButton>
                     </Stack>
                 </Stack>
@@ -142,7 +142,7 @@ export default function SpecialistBoard() {
                                         <Box sx={{ position: 'relative' }}>
                                             <Avatar sx={{
                                                 width: { xs: 56, md: 64 }, height: { xs: 56, md: 64 },
-                                                bgcolor: '#1B1F3A', color: 'white',
+                                                bgcolor: '#1A1A1A', color: 'white',
                                                 fontWeight: 800, fontSize: '1.4rem',
                                                 border: '2px solid',
                                                 borderColor: isBusy ? 'error.main' : 'success.main'
@@ -187,12 +187,12 @@ export default function SpecialistBoard() {
                                                     <Typography variant="subtitle2" fontWeight={800} color="error.main">
                                                         {activeTask.CustomerSession?.Customer?.name?.toUpperCase() || 'Customer'}
                                                     </Typography>
-                                                    <Iconify icon="solar:fire-bold-duotone" width={18} sx={{ color: 'error.main' }} />
+                                                    <Iconify icon="solar:fire-linear" width={18} sx={{ color: 'error.main' }} />
                                                 </Stack>
                                                 <Stack spacing={0.5}>
                                                     {activeTask.Services?.map(s => (
                                                         <Box key={s.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                            <Iconify icon="solar:check-circle-bold-duotone" width={12} sx={{ color: 'error.main' }} />
+                                                            <Iconify icon="solar:check-circle-linear" width={12} sx={{ color: 'error.main' }} />
                                                             <Typography variant="caption" fontWeight={700}>{s.name.toUpperCase()}</Typography>
                                                         </Box>
                                                     ))}
@@ -234,7 +234,7 @@ export default function SpecialistBoard() {
                                                             ))}
                                                         </Box>
                                                     </Box>
-                                                    <Iconify icon="solar:clock-circle-bold-duotone" sx={{ color: 'warning.main', width: 18, flexShrink: 0 }} />
+                                                    <Iconify icon="solar:clock-circle-linear" sx={{ color: 'warning.main', width: 18, flexShrink: 0 }} />
                                                 </Box>
                                             )) : (
                                                 <Typography variant="caption" color="text.disabled" fontWeight={700} sx={{ textAlign: 'center', display: 'block' }}>No waiting jobs.</Typography>

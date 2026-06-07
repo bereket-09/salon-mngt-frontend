@@ -78,11 +78,11 @@ export default function Invoices() {
       >
         <Stack direction="row" spacing={2.5} alignItems="center">
           <Box sx={{
-            p: 1.5, bgcolor: '#0D0E1C', borderRadius: 2, color: '#C8972A',
+            p: 1.5, bgcolor: '#141312', borderRadius: 2, color: '#9A7B4F',
             display: 'flex', boxShadow: theme.customShadows.z12,
-            border: '1px solid', borderColor: alpha('#C8972A', 0.2)
+            border: '1px solid', borderColor: alpha('#9A7B4F', 0.2)
           }}>
-            <Iconify icon="solar:bill-list-bold-duotone" width={32} />
+            <Iconify icon="solar:bill-list-linear" width={32} />
           </Box>
           <Box>
             <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '2.25rem' } }}>Invoices</Typography>
@@ -95,7 +95,7 @@ export default function Invoices() {
             onClick={fetchInvoices}
             startIcon={<Iconify icon="solar:restart-bold" />}
             fullWidth={isMobile}
-            sx={{ fontWeight: 900, height: 48, px: 3, bgcolor: '#C8972A', '&:hover': { bgcolor: '#b08425' } }}
+            sx={{ fontWeight: 900, height: 48, px: 3, bgcolor: '#9A7B4F', '&:hover': { bgcolor: '#7A6038' } }}
           >
             REFRESH DATA
           </Button>
@@ -104,10 +104,10 @@ export default function Invoices() {
 
       <Grid container spacing={3} mb={6}>
         {[
-          { label: 'Total Invoiced', value: `${invoices.reduce((s, i) => s + parseFloat(i.totalAmount || 0), 0).toLocaleString()} Br`, icon: 'solar:graph-up-bold-duotone', color: '#C8972A' },
-          { label: 'Paid Revenue', value: `${invoices.filter(i => i.status === 'paid').reduce((s, i) => s + parseFloat(i.totalAmount || 0), 0).toLocaleString()} Br`, icon: 'solar:wad-of-money-bold-duotone', color: '#4caf50' },
-          { label: 'Pending Bills', value: invoices.filter(i => i.status !== 'paid').length, icon: 'solar:clock-circle-bold-duotone', color: '#ff9800' },
-          { label: 'Client Count', value: new Set(invoices.map(i => i.CustomerId)).size, icon: 'solar:users-group-rounded-bold-duotone', color: '#2196f3' },
+          { label: 'Total Invoiced', value: `${invoices.reduce((s, i) => s + parseFloat(i.totalAmount || 0), 0).toLocaleString()} Br`, icon: 'solar:graph-up-linear', color: '#9A7B4F' },
+          { label: 'Paid Revenue', value: `${invoices.filter(i => i.status === 'paid').reduce((s, i) => s + parseFloat(i.totalAmount || 0), 0).toLocaleString()} Br`, icon: 'solar:wad-of-money-linear', color: '#4caf50' },
+          { label: 'Pending Bills', value: invoices.filter(i => i.status !== 'paid').length, icon: 'solar:clock-circle-linear', color: '#ff9800' },
+          { label: 'Client Count', value: new Set(invoices.map(i => i.CustomerId)).size, icon: 'solar:users-group-rounded-linear', color: '#2196f3' },
         ].map((stat, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
             <Card sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: alpha(stat.color, 0.2), bgcolor: alpha(stat.color, 0.02), display: 'flex', alignItems: 'center', gap: 2.5 }}>
@@ -153,7 +153,7 @@ export default function Invoices() {
             </Stack>
 
             <Stack direction="row" alignItems="flex-end" justifyContent="space-between" spacing={1.5} sx={{ mt: 2 }}>
-              <Typography variant="h4" fontWeight={900} color="#0D0E1C">
+              <Typography variant="h4" fontWeight={900} color="#141312">
                 {inv.totalAmount}{' '}
                 <Typography component="span" variant="caption" fontWeight={900} color="text.disabled">Br</Typography>
               </Typography>
@@ -191,7 +191,7 @@ export default function Invoices() {
       }}>
         <TableContainer>
           <Table>
-            <TableHead sx={{ bgcolor: alpha('#1B1F3A', 0.02) }}>
+            <TableHead sx={{ bgcolor: alpha('#1A1A1A', 0.02) }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 900, py: 3, letterSpacing: 0.5, color: 'text.secondary' }}>ID</TableCell>
                 <TableCell sx={{ fontWeight: 900, letterSpacing: 0.5, color: 'text.secondary' }}>CUSTOMER</TableCell>
@@ -225,7 +225,7 @@ export default function Invoices() {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="h5" fontWeight={900} color="#0D0E1C">
+                    <Typography variant="h5" fontWeight={900} color="#141312">
                       {inv.totalAmount} <Typography variant="caption" fontWeight={900} color="text.disabled">ETB</Typography>
                     </Typography>
                   </TableCell>
@@ -281,11 +281,11 @@ export default function Invoices() {
             <Box id="printable-bill" sx={{ p: { xs: 3, sm: 5 }, color: 'black', fontFamily: '"Outfit", sans-serif', fontVariantNumeric: 'tabular-nums' }}>
               <Box sx={{ pb: 3, mb: 4, textAlign: 'center' }}>
                 <Typography variant="h2" fontWeight={900} letterSpacing={-2} sx={{ color: 'black', fontSize: { xs: '2.25rem', sm: '3.75rem' } }}>
-                  MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
+                  MILANA<Box component="span" sx={{ color: '#9A7B4F' }}>.</Box>
                 </Typography>
                 <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 5, display: 'block', mt: -1 }}>BOUTIQUE SALON</Typography>
                 <Typography variant="caption" sx={{ color: 'grey.600', display: 'block', mt: 1 }}>OFFICIAL RECEIPT</Typography>
-                <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#C8972A', mt: 2.5 }} />
+                <Box sx={{ height: 3, borderRadius: 3, bgcolor: '#9A7B4F', mt: 2.5 }} />
               </Box>
 
               <Stack spacing={4}>

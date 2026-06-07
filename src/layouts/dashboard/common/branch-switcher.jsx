@@ -102,7 +102,7 @@ export default function BranchSwitcher() {
             bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.2),
           }),
         }}
-        startIcon={<Iconify icon="solar:shop-bold-duotone" width={20} sx={{ color: 'secondary.main' }} />}
+        startIcon={<Iconify icon="solar:shop-linear" width={20} sx={{ color: 'secondary.main' }} />}
         endIcon={<Iconify icon="solar:alt-arrow-down-bold" width={16} sx={{ color: 'text.secondary' }} />}
       >
         {selectedBranch?.name?.toUpperCase() || 'SELECT BRANCH'}
@@ -139,7 +139,7 @@ export default function BranchSwitcher() {
                onClick={() => handleSelect({ id: 'all', name: 'All Branches' })}
                sx={{ borderRadius: 1, fontWeight: 700, mb: 1.5, bgcolor: alpha(theme.palette.primary.main, 0.08) }}
             >
-               <Iconify icon="solar:globus-bold-duotone" sx={{ mr: 2, color: 'primary.main' }} />
+               <Iconify icon="solar:globus-linear" sx={{ mr: 2, color: 'primary.main' }} />
                ALL LOCATIONS
             </MenuItem>
           )}
@@ -151,7 +151,7 @@ export default function BranchSwitcher() {
               onClick={() => handleSelect(option)}
               sx={{ borderRadius: 1, fontWeight: 700, mb: 0.5 }}
             >
-              <Iconify icon="solar:map-point-wave-bold-duotone" sx={{ mr: 2, color: 'secondary.main' }} />
+              <Iconify icon="solar:map-point-wave-linear" sx={{ mr: 2, color: 'secondary.main' }} />
               {option.name.toUpperCase()}
             </MenuItem>
           ))}

@@ -219,7 +219,7 @@ export default function BookingsView() {
                     <Button
                         variant="soft" color="inherit"
                         onClick={() => setViewMode(v => v === 'list' ? 'calendar' : 'list')}
-                        startIcon={<Iconify icon={viewMode === 'list' ? "solar:calendar-bold-duotone" : "solar:list-bold-duotone"} />}
+                        startIcon={<Iconify icon={viewMode === 'list' ? "solar:calendar-linear" : "solar:list-linear"} />}
                         sx={{ fontWeight: 800, height: 48, borderRadius: 1.5, flex: { xs: 1, sm: 'none' } }}
                     >
                         {viewMode === 'list' ? 'CALENDAR VIEW' : 'LIST VIEW'}
@@ -383,7 +383,7 @@ export default function BookingsView() {
                                             </TableCell>
                                             <TableCell align="right" sx={{ pr: 4 }}>
                                                 <IconButton>
-                                                    <Iconify icon="solar:alt-arrow-right-bold-duotone" sx={{ color: 'text.disabled' }} />
+                                                    <Iconify icon="solar:alt-arrow-right-linear" sx={{ color: 'text.disabled' }} />
                                                 </IconButton>
                                             </TableCell>
                                         </TableRow>
@@ -418,7 +418,7 @@ export default function BookingsView() {
             >
                 {selectedBooking && (
                     <>
-                        <DialogTitle sx={{ p: { xs: 2.5, sm: 4 }, bgcolor: '#1B1F3A', color: 'white' }}>
+                        <DialogTitle sx={{ p: { xs: 2.5, sm: 4 }, bgcolor: '#1A1A1A', color: 'white' }}>
                             <Stack direction="row" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="h4" sx={{ fontWeight: 900 }}>Appointment Info</Typography>
@@ -441,7 +441,7 @@ export default function BookingsView() {
                                     <Typography variant="body2" color="text.secondary">{selectedBooking.email || 'NO EMAIL'}</Typography>
                                     {selectedBooking.Specialist && (
                                         <Stack direction="row" spacing={1} alignItems="center" mt={2}>
-                                            <Iconify icon="solar:star-fall-bold" sx={{ color: '#C8972A' }} />
+                                            <Iconify icon="solar:star-fall-bold" sx={{ color: '#9A7B4F' }} />
                                             <Typography variant="subtitle2" fontWeight={900}>ASSIGNED: {selectedBooking.Specialist.name.toUpperCase()}</Typography>
                                         </Stack>
                                     )}

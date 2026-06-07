@@ -23,6 +23,8 @@ export function responsiveFontSizes({ sm, md, lg }) {
 }
 
 export const primaryFont = 'Outfit, sans-serif';
+// Serif display face for editorial headings.
+export const displayFont = "'Fraunces', 'Playfair Display', Georgia, serif";
 
 // ----------------------------------------------------------------------
 
@@ -33,26 +35,33 @@ export const typography = {
   fontWeightSemiBold: 600,
   fontWeightBold: 700,
   h1: {
-    fontWeight: 800,
-    lineHeight: 80 / 64,
+    fontFamily: displayFont,
+    fontWeight: 600,
+    lineHeight: 1.08,
+    letterSpacing: '-0.02em',
     fontSize: pxToRem(40),
     ...responsiveFontSizes({ sm: 52, md: 58, lg: 64 }),
   },
   h2: {
-    fontWeight: 800,
-    lineHeight: 64 / 48,
+    fontFamily: displayFont,
+    fontWeight: 600,
+    lineHeight: 1.12,
+    letterSpacing: '-0.015em',
     fontSize: pxToRem(32),
     ...responsiveFontSizes({ sm: 40, md: 44, lg: 48 }),
   },
   h3: {
-    fontWeight: 700,
-    lineHeight: 1.5,
+    fontFamily: displayFont,
+    fontWeight: 600,
+    lineHeight: 1.2,
+    letterSpacing: '-0.01em',
     fontSize: pxToRem(24),
     ...responsiveFontSizes({ sm: 26, md: 30, lg: 32 }),
   },
   h4: {
-    fontWeight: 700,
-    lineHeight: 1.5,
+    fontFamily: displayFont,
+    fontWeight: 600,
+    lineHeight: 1.3,
     fontSize: pxToRem(20),
     ...responsiveFontSizes({ sm: 20, md: 24, lg: 24 }),
   },

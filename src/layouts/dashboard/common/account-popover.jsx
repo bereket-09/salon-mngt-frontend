@@ -18,17 +18,17 @@ import { accountMock } from 'src/_mock/account';
 const MENU_OPTIONS = [
   {
     label: 'Home',
-    icon: 'eva:home-fill',
+    icon: 'solar:home-2-linear',
     route: '/',
   },
   {
     label: 'Profile Settings',
-    icon: 'material-symbols:person-pin-outline-sharp',
+    icon: 'solar:user-id-linear',
     route: '/profile',
   },
   {
     label: 'General Settings',
-    icon: 'eva:settings-2-fill',
+    icon: 'solar:settings-linear',
     route: '/setting',
   }
 ];
@@ -61,33 +61,31 @@ export default function AccountPopover() {
       <IconButton
         onClick={handleOpen}
         sx={{
+          p: 0,
           width: 40,
           height: 40,
-          bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-          '&:hover': {
-            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
-          },
-          ...(open && {
-            bgcolor: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-          }),
         }}
       >
         <Avatar
+          variant="square"
           sx={{
-            width: 40,
-            height: 40,
-            border: (theme) => `solid 1px ${theme.palette.background.default}`,
-            bgcolor: 'primary.main',
+            width: 38,
+            height: 38,
+            borderRadius: '4px',
+            bgcolor: 'transparent',
+            color: 'secondary.main',
+            border: (theme) =>
+              `1px solid ${open ? theme.palette.secondary.main : alpha(theme.palette.secondary.main, 0.5)}`,
+            fontFamily: (theme) => theme.typography.h4.fontFamily,
+            fontWeight: 600,
+            fontSize: '1.05rem',
+            transition: (theme) => theme.transitions.create(['border-color']),
             '&:hover': {
-              bgcolor: 'secondary.main',
+              borderColor: 'secondary.main',
             },
           }}
         >
-          <Iconify
-            icon="ri:account-pin-circle-fill"
-            style={{ color: '#fff', fontSize: '48px', transform: 'scale(1.5)' }}
-          />
+          {account.name?.[0]?.toUpperCase() || 'U'}
         </Avatar>
       </IconButton>
 
@@ -100,71 +98,62 @@ export default function AccountPopover() {
         PaperProps={{
           sx: {
             p: 0,
-            mt: 1,
+            mt: 1.25,
             width: 240,
-            boxShadow: 4,
-            borderRadius: 1.5,
+            boxShadow: 'none',
+            borderRadius: 1,
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           },
         }}
       >
-        <Box sx={{ p: 2, textAlign: 'center' }}>
-          <Avatar
+        <Box sx={{ p: 2 }}>
+          <Typography
             sx={{
-              width: 56,
-              height: 56,
-              mx: 'auto',
-              mb: 1.5,
-              bgcolor: 'primary.main',
-              fontWeight: 900,
-              fontSize: '1.25rem',
+              display: 'block',
+              color: 'secondary.main',
+              fontWeight: 700,
+              fontSize: '0.6875rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.15em',
+              mb: 0.75,
             }}
           >
-            {account.name?.[0]?.toUpperCase() || 'U'}
-          </Avatar>
-
-          <Typography variant="subtitle1" noWrap sx={{ fontWeight: 800 }}>
+            {account.roles?.[0] || account.role || 'Account'}
+          </Typography>
+          <Typography variant="subtitle1" noWrap sx={{ fontWeight: 600 }}>
             {account.name}
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
             {account.email}
           </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'secondary.main',
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-            }}
-          >
-            {account.roles?.[0] || account.role}
-          </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider />
 
         {MENU_OPTIONS.map((option) => (
           <MenuItem
             key={option.label}
             onClick={() => handleMenuItemClick(option.route)}
-            sx={{ px: 2.5 }}
+            sx={{ px: 2, py: 1.25, fontWeight: 500 }}
           >
             <Iconify icon={option.icon} sx={{ mr: 2, width: 20, height: 20 }} />
             {option.label}
           </MenuItem>
         ))}
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider />
 
         <MenuItem
           onClick={handleLogout}
           sx={{
+            px: 2,
             typography: 'body2',
             color: 'error.main',
-            py: 1.5,
+            py: 1.25,
+            fontWeight: 500,
           }}
         >
-          <Iconify icon="ri:logout-circle-line" sx={{ mr: 2, width: 20, height: 20 }} />
+          <Iconify icon="solar:logout-2-linear" sx={{ mr: 2, width: 20, height: 20 }} />
           Logout
         </MenuItem>
       </Popover>

@@ -192,7 +192,7 @@ export default function ServicesPage() {
           <IconButton onClick={fetchData} disabled={loading} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), width: 44, height: 44 }}>
             {loading
               ? <CircularProgress size={18} sx={{ color: 'secondary.main' }} />
-              : <Iconify icon="solar:restart-bold-duotone" sx={{ color: 'secondary.main' }} />}
+              : <Iconify icon="solar:restart-linear" sx={{ color: 'secondary.main' }} />}
           </IconButton>
         </Stack>
       </Stack>
@@ -206,8 +206,8 @@ export default function ServicesPage() {
             bgcolor: alpha(theme.palette.background.neutral, 0.4)
           }}>
             <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-              <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.5, color: '#C8972A' }}>
-                <Iconify icon="solar:box-minimalistic-bold-duotone" width={28} />
+              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
+                <Iconify icon="solar:box-minimalistic-linear" width={28} />
               </Box>
               <Typography variant="h5" sx={{ fontWeight: 800 }}>Add New Service</Typography>
             </Stack>
@@ -232,7 +232,7 @@ export default function ServicesPage() {
                 onChange={(e) => setForm({ ...form, code: e.target.value })}
                 InputProps={{
                   sx: { borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' },
-                  startAdornment: <InputAdornment position="start"><Iconify icon="solar:hashtag-bold-duotone" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><Iconify icon="solar:hashtag-linear" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>,
                 }}
               />
 
@@ -243,7 +243,7 @@ export default function ServicesPage() {
                   onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
                   sx={{ borderRadius: 1.5, fontWeight: 700, bgcolor: 'background.paper' }}
                   MenuProps={{ PaperProps: { sx: { maxHeight: 360 } } }}
-                  startAdornment={<InputAdornment position="start"><Iconify icon="solar:widget-5-bold-duotone" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>}
+                  startAdornment={<InputAdornment position="start"><Iconify icon="solar:widget-5-linear" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>}
                 >
                   {renderCategoryOptions()}
                 </Select>
@@ -286,7 +286,7 @@ export default function ServicesPage() {
                 value={form.estimatedDuration}
                 onChange={(e) => setForm({ ...form, estimatedDuration: e.target.value })}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start"><Iconify icon="solar:clock-circle-bold-duotone" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><Iconify icon="solar:clock-circle-linear" sx={{ color: 'secondary.main', mr: 1 }} /></InputAdornment>,
                   sx: { borderRadius: 1.5, fontWeight: 800, bgcolor: 'background.paper' }
                 }}
               />
@@ -303,10 +303,10 @@ export default function ServicesPage() {
                 </Select>
               </FormControl>
 
-              <Box sx={{ p: 2, bgcolor: '#1B1F3A', borderRadius: 2, border: '1px solid', borderColor: alpha('#C8972A', 0.1) }}>
+              <Box sx={{ p: 2, bgcolor: '#1A1A1A', borderRadius: 2, border: '1px solid', borderColor: alpha('#9A7B4F', 0.1) }}>
                 <FormControlLabel
                   control={<Switch checked={form.commissionEnabled} color="secondary" onChange={(e) => setForm({ ...form, commissionEnabled: e.target.checked })} />}
-                  label={<Typography variant="caption" fontWeight={800} color="#C8972A">ENABLE COMMISSION</Typography>}
+                  label={<Typography variant="caption" fontWeight={800} color="#9A7B4F">ENABLE COMMISSION</Typography>}
                 />
                 {form.commissionEnabled && (
                   <TextField
@@ -354,7 +354,7 @@ export default function ServicesPage() {
                             <Chip
                               label={categoryLabel(s)}
                               size="small" color="warning" variant="soft"
-                              icon={<Iconify icon="solar:widget-5-bold-duotone" width={14} />}
+                              icon={<Iconify icon="solar:widget-5-linear" width={14} />}
                               sx={{ fontWeight: 800, borderRadius: 0.5 }}
                             />
                           )}
@@ -370,7 +370,7 @@ export default function ServicesPage() {
                         <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block' }}>Branch: {s.Branch?.name?.toUpperCase() || 'All Branches'}</Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="h4" fontWeight={900} color="#1B1F3A">{s.price}</Typography>
+                        <Typography variant="h4" fontWeight={900} color="#1A1A1A">{s.price}</Typography>
                         <Typography variant="caption" fontWeight={800} color="text.secondary">ETB</Typography>
                       </Box>
                     </Stack>
@@ -386,8 +386,8 @@ export default function ServicesPage() {
                         )}
                       </Box>
                       <Stack direction="row" spacing={1}>
-                        <IconButton size="small" onClick={() => setEditService(s)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}><Iconify icon="solar:pen-bold-duotone" width={18} /></IconButton>
-                        <IconButton size="small" onClick={() => confirmDelete(s.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}><Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} /></IconButton>
+                        <IconButton size="small" onClick={() => setEditService(s)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}><Iconify icon="solar:pen-linear" width={18} /></IconButton>
+                        <IconButton size="small" onClick={() => confirmDelete(s.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}><Iconify icon="solar:trash-bin-trash-linear" width={18} /></IconButton>
                       </Stack>
                     </Stack>
                   </Box>
@@ -400,7 +400,7 @@ export default function ServicesPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editService} onClose={() => setEditService(null)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 2.5 } }}>
-        <DialogTitle sx={{ fontWeight: 800, bgcolor: '#1B1F3A', color: 'white' }}>Edit Service</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 800, bgcolor: '#1A1A1A', color: 'white' }}>Edit Service</DialogTitle>
         <DialogContent sx={{ mt: 3 }}>
           {editService && (
             <Stack spacing={3}>
@@ -449,10 +449,10 @@ export default function ServicesPage() {
                 </Select>
               </FormControl>
 
-              <Box sx={{ p: 2, bgcolor: '#1B1F3A', borderRadius: 2 }}>
+              <Box sx={{ p: 2, bgcolor: '#1A1A1A', borderRadius: 2 }}>
                 <FormControlLabel
                   control={<Switch checked={editService.commissionEnabled} color="secondary" onChange={(e) => setEditService({ ...editService, commissionEnabled: e.target.checked })} />}
-                  label={<Typography variant="caption" fontWeight={800} color="#C8972A">Enable Commission</Typography>}
+                  label={<Typography variant="caption" fontWeight={800} color="#9A7B4F">Enable Commission</Typography>}
                 />
                 {editService.commissionEnabled && (
                   <TextField

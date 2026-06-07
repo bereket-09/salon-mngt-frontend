@@ -128,8 +128,8 @@ export default function BranchesTable() {
             position: 'sticky', top: 24
           }}>
             <Stack direction="row" spacing={2} alignItems="center" mb={4}>
-              <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.5, color: '#C8972A' }}>
-                <Iconify icon="solar:transmission-bold-duotone" width={24} />
+              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
+                <Iconify icon="solar:transmission-linear" width={24} />
               </Box>
               <Typography variant="h5" sx={{ fontWeight: 800 }}>
                 {editingBranch ? 'Edit Branch' : 'Add New Branch'}
@@ -236,7 +236,7 @@ export default function BranchesTable() {
                     <Box sx={{ p: 3 }}>
                       <Stack direction="row" spacing={2} alignItems="center" mb={2}>
                         <Avatar sx={{
-                          width: 40, height: 40, bgcolor: '#1B1F3A', color: 'white',
+                          width: 40, height: 40, bgcolor: '#1A1A1A', color: 'white',
                           fontWeight: 800, fontSize: '1rem'
                         }}>{b.name[0]}</Avatar>
                         <Box sx={{ minWidth: 0 }}>
@@ -249,11 +249,11 @@ export default function BranchesTable() {
 
                       <Stack spacing={1} mb={3}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Iconify icon="solar:map-point-bold-duotone" sx={{ color: 'secondary.main', width: 16 }} />
+                          <Iconify icon="solar:map-point-linear" sx={{ color: 'secondary.main', width: 16 }} />
                           <Typography variant="body2" fontWeight={800} color="text.primary">{b.location.toUpperCase()}</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Iconify icon="solar:phone-bold-duotone" sx={{ color: 'info.main', width: 16 }} />
+                          <Iconify icon="solar:phone-linear" sx={{ color: 'info.main', width: 16 }} />
                           <Typography variant="body2" fontWeight={800} color="text.secondary">{b.phone || 'No Phone'}</Typography>
                         </Box>
                       </Stack>
@@ -267,8 +267,8 @@ export default function BranchesTable() {
                           )}
                         </Box>
                         <Stack direction="row" spacing={1}>
-                          <IconButton size="small" onClick={() => handleEdit(b)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05), color: 'secondary.main' }}><Iconify icon="solar:pen-bold-duotone" width={18} /></IconButton>
-                          <IconButton size="small" color="error" onClick={() => confirmDelete(b.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05) }}><Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} /></IconButton>
+                          <IconButton size="small" onClick={() => handleEdit(b)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05), color: 'secondary.main' }}><Iconify icon="solar:pen-linear" width={18} /></IconButton>
+                          <IconButton size="small" color="error" onClick={() => confirmDelete(b.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05) }}><Iconify icon="solar:trash-bin-trash-linear" width={18} /></IconButton>
                         </Stack>
                       </Stack>
                     </Box>

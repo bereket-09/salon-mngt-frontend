@@ -92,7 +92,7 @@ export default function CommissionReport() {
           <Button
             variant="soft" color="secondary"
             onClick={() => navigate(-1)}
-            startIcon={<Iconify icon="solar:alt-arrow-left-bold-duotone" />}
+            startIcon={<Iconify icon="solar:alt-arrow-left-linear" />}
             sx={{ height: 52, fontWeight: 900, borderRadius: 1.5, px: 3 }}
           >
             Back to Payouts
@@ -136,8 +136,8 @@ export default function CommissionReport() {
               <Stack spacing={4}>
                 <Box sx={{ textAlign: 'center' }}>
                   <Avatar sx={{
-                    width: 100, height: 100, mx: 'auto', bgcolor: '#1B1F3A', color: '#C8972A',
-                    fontWeight: 900, fontSize: '2.5rem', border: '5px solid', borderColor: alpha('#C8972A', 0.1),
+                    width: 100, height: 100, mx: 'auto', bgcolor: '#1A1A1A', color: '#9A7B4F',
+                    fontWeight: 900, fontSize: '2.5rem', border: '5px solid', borderColor: alpha('#9A7B4F', 0.1),
                     boxShadow: theme.customShadows.z12
                   }}>
                     {report.userName?.[0]}
@@ -156,9 +156,9 @@ export default function CommissionReport() {
                   <Typography variant="overline" color="text.disabled" sx={{ letterSpacing: 2.5, fontWeight: 900, mb: 2, display: 'block' }}>EARNINGS INFO</Typography>
                   <Stack spacing={2.5}>
                     {[
-                      { label: 'TOTAL REVENUE', value: `${report.totalRevenue || 0} Br`, icon: 'solar:chart-square-bold-duotone', color: 'info' },
-                      { label: 'SESSIONS', value: report.totalSessions || 0, icon: 'solar:users-group-rounded-bold-duotone', color: 'secondary' },
-                      { label: 'JOBS DONE', value: report.totalAssignments || 0, icon: 'solar:verified-check-bold-duotone', color: 'success' },
+                      { label: 'TOTAL REVENUE', value: `${report.totalRevenue || 0} Br`, icon: 'solar:chart-square-linear', color: 'info' },
+                      { label: 'SESSIONS', value: report.totalSessions || 0, icon: 'solar:users-group-rounded-linear', color: 'secondary' },
+                      { label: 'JOBS DONE', value: report.totalAssignments || 0, icon: 'solar:verified-check-linear', color: 'success' },
                     ].map((metric, i) => (
                       <Stack key={i} direction="row" justifyContent="space-between" alignItems="center">
                         <Stack direction="row" spacing={1.5} alignItems="center">
@@ -172,18 +172,18 @@ export default function CommissionReport() {
                 </Box>
 
                 <Box sx={{
-                  p: 3, borderRadius: 2.5, bgcolor: '#1B1F3A',
+                  p: 3, borderRadius: 2.5, bgcolor: '#1A1A1A',
                   textAlign: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                   position: 'relative', overflow: 'hidden'
                 }}>
                   <Box sx={{ position: 'absolute', top: -10, right: -10, opacity: 0.1 }}>
-                    <Iconify icon="solar:safe-bold-duotone" width={100} />
+                    <Iconify icon="solar:safe-linear" width={100} />
                   </Box>
-                  <Typography variant="overline" color="#C8972A" sx={{ letterSpacing: 3, fontWeight: 900, opacity: 0.8 }}>MY COMMISSION EARNINGS</Typography>
+                  <Typography variant="overline" color="#9A7B4F" sx={{ letterSpacing: 3, fontWeight: 900, opacity: 0.8 }}>MY COMMISSION EARNINGS</Typography>
                   <Typography variant="h2" fontWeight={900} color="white" sx={{ mt: 1 }}>{report.commissionAmount || 0} <Typography variant="h5" component="span" fontWeight={900}>ETB</Typography></Typography>
                   <LinearProgress
                     variant="determinate" value={100}
-                    sx={{ mt: 2, height: 4, borderRadius: 2, bgcolor: alpha('#C8972A', 0.2), '& .MuiLinearProgress-bar': { bgcolor: '#C8972A' } }}
+                    sx={{ mt: 2, height: 4, borderRadius: 2, bgcolor: alpha('#9A7B4F', 0.2), '& .MuiLinearProgress-bar': { bgcolor: '#9A7B4F' } }}
                   />
                 </Box>
               </Stack>
@@ -194,7 +194,7 @@ export default function CommissionReport() {
           <Grid item xs={12} lg={8}>
             <Stack direction="row" spacing={2} alignItems="center" mb={3}>
               <Box sx={{ p: 1, bgcolor: alpha(theme.palette.secondary.main, 0.1), borderRadius: 1.2, color: 'secondary.main', display: 'flex' }}>
-                <Iconify icon="solar:bill-list-bold-duotone" width={24} />
+                <Iconify icon="solar:bill-list-linear" width={24} />
               </Box>
               <Typography variant="h5" sx={{ fontWeight: 900 }}>Job History</Typography>
             </Stack>
@@ -217,10 +217,10 @@ export default function CommissionReport() {
                       <Grid item xs={12} sm={6}>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Box sx={{
-                            width: 44, height: 44, bgcolor: '#1B1F3A', borderRadius: 1.5,
-                            color: '#C8972A', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            width: 44, height: 44, bgcolor: '#1A1A1A', borderRadius: 1.5,
+                            color: '#9A7B4F', display: 'flex', alignItems: 'center', justifyContent: 'center'
                           }}>
-                            <Iconify icon="solar:ticket-bold-duotone" width={24} />
+                            <Iconify icon="solar:ticket-linear" width={24} />
                           </Box>
                           <Box>
                             <Typography variant="subtitle1" fontWeight={900} sx={{ letterSpacing: -0.5 }}>VISIT #S_{session.sessionId}</Typography>
@@ -237,7 +237,7 @@ export default function CommissionReport() {
                             </Typography>
                           </Box>
                           <IconButton sx={{ bgcolor: 'background.paper', boxShadow: theme.customShadows.z2 }}>
-                            <Iconify icon={expandedSessions[session.sessionId] ? 'solar:alt-arrow-up-bold-duotone' : 'solar:alt-arrow-down-bold-duotone'} />
+                            <Iconify icon={expandedSessions[session.sessionId] ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} />
                           </IconButton>
                         </Stack>
                       </Grid>
@@ -283,7 +283,7 @@ export default function CommissionReport() {
               ))}
               {(!report.sessions || report.sessions.length === 0) && (
                 <Box sx={{ py: 15, textAlign: 'center', border: '2px dashed', borderColor: alpha(theme.palette.divider, 0.2), borderRadius: 4, bgcolor: alpha(theme.palette.secondary.main, 0.01) }}>
-                  <Iconify icon="solar:document-text-bold-duotone" width={60} sx={{ color: 'text.disabled', opacity: 0.2, mb: 1.5 }} />
+                  <Iconify icon="solar:document-text-linear" width={60} sx={{ color: 'text.disabled', opacity: 0.2, mb: 1.5 }} />
                   <Typography variant="h5" color="text.disabled" fontWeight={900}>No jobs found</Typography>
                   <Typography variant="body2" color="text.disabled" fontWeight={700}>Try selecting a different date range.</Typography>
                 </Box>

@@ -166,8 +166,8 @@ export default function MyAssignmentsView() {
                     <Avatar
                         src={user?.avatarUrl}
                         sx={{
-                            width: { xs: 48, md: 72 }, height: { xs: 48, md: 72 }, flexShrink: 0, bgcolor: '#1B1F3A', color: '#C8972A',
-                            fontWeight: 900, border: '4px solid', borderColor: alpha('#C8972A', 0.2),
+                            width: { xs: 48, md: 72 }, height: { xs: 48, md: 72 }, flexShrink: 0, bgcolor: '#1A1A1A', color: '#9A7B4F',
+                            fontWeight: 900, border: '4px solid', borderColor: alpha('#9A7B4F', 0.2),
                         }}
                     >
                         {user?.name[0]}
@@ -196,16 +196,16 @@ export default function MyAssignmentsView() {
                         mb: 2,
                         p: 2,
                         borderRadius: 2,
-                        bgcolor: alpha('#1B1F3A', 0.03),
-                        '&:hover': { bgcolor: alpha('#1B1F3A', 0.06) },
+                        bgcolor: alpha('#1A1A1A', 0.03),
+                        '&:hover': { bgcolor: alpha('#1A1A1A', 0.06) },
                         transition: '0.3s'
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Iconify icon="solar:users-group-rounded-bold-duotone" sx={{ color: 'secondary.main' }} />
+                        <Iconify icon="solar:users-group-rounded-linear" sx={{ color: 'secondary.main' }} />
                         Active Customers In Salon
                     </Typography>
-                    <IconButton size="small" sx={{ bgcolor: showActiveBoard ? 'secondary.main' : alpha('#1B1F3A', 0.1), color: showActiveBoard ? 'white' : 'inherit' }}>
+                    <IconButton size="small" sx={{ bgcolor: showActiveBoard ? 'secondary.main' : alpha('#1A1A1A', 0.1), color: showActiveBoard ? 'white' : 'inherit' }}>
                         <Iconify icon={showActiveBoard ? "solar:alt-arrow-up-bold" : "solar:alt-arrow-down-bold"} />
                     </IconButton>
                 </Stack>
@@ -255,7 +255,7 @@ export default function MyAssignmentsView() {
                             <Typography variant="h3" fontWeight={900} sx={{ mb: 1, fontSize: { xs: '1.6rem', md: '3rem' }, lineHeight: 1.1 }}>{job.Services?.map(s => s.name).join(' + ').toUpperCase()}</Typography>
                             <Stack spacing={0.5}>
                                 <Stack direction="row" spacing={{ xs: 1.5, md: 2 }} alignItems="center">
-                                    <Iconify icon="solar:user-bold-duotone" sx={{ color: 'text.secondary' }} />
+                                    <Iconify icon="solar:user-linear" sx={{ color: 'text.secondary' }} />
                                     <Typography variant="h5" fontWeight={800} sx={{ fontSize: { xs: '1.05rem', md: '1.5rem' } }}>{job.CustomerSession?.Customer?.name || 'Customer'}</Typography>
                                 </Stack>
                                 <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ ml: { xs: 3.5, md: 4 } }}>
@@ -269,7 +269,7 @@ export default function MyAssignmentsView() {
                                     fullWidth variant="contained" color="success" size="large"
                                     onClick={() => handleActionClick(job.id, 'completed')}
                                     sx={{ height: { xs: 52, md: 64 }, fontWeight: 900, fontSize: { xs: '1rem', md: '1.2rem' } }}
-                                    startIcon={<Iconify icon="solar:check-circle-bold-duotone" />}
+                                    startIcon={<Iconify icon="solar:check-circle-linear" />}
                                 >
                                     FINISH JOB
                                 </Button>
@@ -277,7 +277,7 @@ export default function MyAssignmentsView() {
                                     fullWidth variant="soft" color="warning" size="large"
                                     onClick={() => handleActionClick(job.id, 'waiting')}
                                     sx={{ height: { xs: 48, md: 52 }, fontWeight: 900 }}
-                                    startIcon={<Iconify icon="solar:pause-bold-duotone" />}
+                                    startIcon={<Iconify icon="solar:pause-linear" />}
                                 >
                                     PAUSE
                                 </Button>
@@ -306,7 +306,7 @@ export default function MyAssignmentsView() {
                                         variant="contained" color="warning"
                                         fullWidth={isMobile}
                                         onClick={() => handleActionClick(job.id, 'in_progress')}
-                                        startIcon={<Iconify icon="solar:play-bold-duotone" />}
+                                        startIcon={<Iconify icon="solar:play-linear" />}
                                         sx={{ fontWeight: 900, height: { xs: 48, sm: 'auto' }, flexShrink: 0 }}
                                     >
                                         RESUME
@@ -340,7 +340,7 @@ export default function MyAssignmentsView() {
                                         fullWidth={isMobile}
                                         disabled={activeJobs.length > 0}
                                         onClick={() => handleActionClick(job.id, 'in_progress')}
-                                        startIcon={<Iconify icon="solar:play-bold-duotone" />}
+                                        startIcon={<Iconify icon="solar:play-linear" />}
                                         sx={{ fontWeight: 900, height: { xs: 48, sm: 'auto' }, flexShrink: 0 }}
                                     >
                                         START
@@ -363,13 +363,13 @@ export default function MyAssignmentsView() {
                             mb: 3,
                             p: 2,
                             borderRadius: 2,
-                            bgcolor: alpha('#1B1F3A', 0.03),
-                            '&:hover': { bgcolor: alpha('#1B1F3A', 0.06) },
+                            bgcolor: alpha('#1A1A1A', 0.03),
+                            '&:hover': { bgcolor: alpha('#1A1A1A', 0.06) },
                             transition: '0.3s'
                         }}
                     >
                         <Typography variant="h5" fontWeight={900}>Done Today ({completedJobs.length})</Typography>
-                        <IconButton size="small" sx={{ bgcolor: showDoneToday ? 'secondary.main' : alpha('#1B1F3A', 0.1), color: showDoneToday ? 'white' : 'inherit' }}>
+                        <IconButton size="small" sx={{ bgcolor: showDoneToday ? 'secondary.main' : alpha('#1A1A1A', 0.1), color: showDoneToday ? 'white' : 'inherit' }}>
                             <Iconify icon={showDoneToday ? "solar:alt-arrow-up-bold" : "solar:alt-arrow-down-bold"} />
                         </IconButton>
                     </Stack>
@@ -385,7 +385,7 @@ export default function MyAssignmentsView() {
                                         <Typography variant="subtitle2" fontWeight={900}>{job.Services?.map(s => s.name).join(' + ')}</Typography>
                                         <Typography variant="caption" fontWeight={700} color="text.secondary">{dayjs(job.completedAt).format('h:mm A')}</Typography>
                                     </Box>
-                                    <Iconify icon="solar:verified-check-bold-duotone" color="success.main" />
+                                    <Iconify icon="solar:verified-check-linear" color="success.main" />
                                 </Box>
                             ))}
                         </Stack>

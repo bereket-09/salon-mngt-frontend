@@ -5,7 +5,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Box,
-  Card,
   Stack,
   TextField,
   Typography,
@@ -13,18 +12,21 @@ import {
   IconButton,
   InputAdornment,
   alpha,
-  Divider,
-  Container,
-  Fade
+  useTheme,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
 
 export default function LoginView() {
+  const theme = useTheme();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const ink = theme.palette.primary.main;
+  const bronze = theme.palette.secondary.main;
+  const bone = theme.palette.background.default;
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -72,100 +74,167 @@ export default function LoginView() {
     }
   };
 
+  // Shared flat input styling: hairline border, bronze focus outline.
+  const fieldSx = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 1,
+      bgcolor: theme.palette.common.white,
+      fontFamily: theme.typography.fontFamily,
+      fontSize: '1rem',
+      '& fieldset': { borderColor: alpha(ink, 0.18) },
+      '&:hover fieldset': { borderColor: alpha(bronze, 0.5) },
+      '&.Mui-focused fieldset': { borderColor: bronze, borderWidth: '1.5px' },
+    },
+    '& .MuiInputBase-input': { py: 1.9, color: ink },
+    '& .MuiInputLabel-root': {
+      color: theme.palette.text.secondary,
+      fontSize: '0.95rem',
+    },
+    '& .MuiInputLabel-root.Mui-focused': { color: bronze },
+  };
+
+  // Micro-label used across the editorial layout.
+  const microLabel = {
+    textTransform: 'uppercase',
+    letterSpacing: '0.32em',
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    color: bronze,
+  };
+
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-      bgcolor: '#05060A',
-    }}>
-      {/* IMMERSIVE BACKGROUND ILLUSTRATION */}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        width: '100%',
+        bgcolor: bone,
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        overflowX: 'hidden',
+      }}
+    >
+      {/* ── LEFT: editorial brand statement (desktop only) ───────────── */}
       <Box
-        component="img"
-        src="/assets/new.svg"
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          opacity: 0.25, // Increased prominence
-          zIndex: 0,
-          mixBlendMode: 'screen',
-          filter: 'contrast(1.2) brightness(0.8)',
-          animation: 'pulseBackground 25s ease-in-out infinite',
+          display: { xs: 'none', md: 'flex' },
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          width: '50%',
+          p: { md: 7, lg: 10 },
+          borderRight: `1px solid ${alpha(ink, 0.08)}`,
         }}
-      />
+      >
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Box sx={{ width: 28, height: 1, bgcolor: bronze }} />
+          <Typography sx={microLabel}>Milana Studio</Typography>
+        </Stack>
 
-      {/* Luxury Gradient Overlay */}
-      <Box sx={{
-        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-        background: 'radial-gradient(circle at center, transparent 0%, #05060A 90%)',
-        zIndex: 1
-      }} />
-
-      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2 }}>
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Fade in timeout={1500}>
-            <Box>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontWeight: 900,
-                  color: 'white',
-                  letterSpacing: { xs: -2, md: -5 },
-                  fontSize: { xs: '2.5rem', md: '7.5rem' },
-                  lineHeight: 1,
-                  mb: 1
-                }}
-              >
-                MILANA<Box component="span" sx={{ color: '#C8972A' }}>.</Box>
-              </Typography>
-              <Typography variant="overline" sx={{ color: '#C8972A', fontWeight: 900, letterSpacing: 10, display: 'block', opacity: 0.9 }}>
-                MANAGER LOGIN
-              </Typography>
-            </Box>
-          </Fade>
+        <Box sx={{ maxWidth: 520 }}>
+          <Typography
+            variant="h1"
+            sx={{
+              color: ink,
+              fontWeight: 400,
+              lineHeight: 1.04,
+              letterSpacing: '-0.02em',
+              fontSize: { md: '3.4rem', lg: '4.6rem' },
+            }}
+          >
+            The art of a{' '}
+            <Box component="em" sx={{ color: bronze, fontStyle: 'italic' }}>
+              well-run
+            </Box>{' '}
+            salon.
+          </Typography>
+          <Typography
+            sx={{
+              mt: 4,
+              maxWidth: 420,
+              color: theme.palette.text.secondary,
+              fontSize: '1.05rem',
+              lineHeight: 1.7,
+            }}
+          >
+            A quiet, considered workspace for managing your studio &mdash;
+            appointments, talent, and clientele, all in one refined place.
+          </Typography>
         </Box>
 
-        <Card sx={{
-          p: { xs: 5, md: 10 },
-          borderRadius: 4,
-          boxShadow: '0 80px 160px rgba(0,0,0,0.8)',
-          bgcolor: alpha('#0D0E1C', 0.92),
-          backdropFilter: 'blur(40px)',
-          border: '1px solid',
-          borderColor: alpha('#C8972A', 0.2),
-          animation: 'slideUp 1s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>
-          <Stack spacing={1} sx={{ mb: 6, textAlign: 'center' }}>
-            <Typography variant="h2" fontWeight={900} color="white" letterSpacing={-1}>Login</Typography>
-            <Typography variant="subtitle1" color="grey.500" fontWeight={600}>Enter your username and password</Typography>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Typography sx={{ ...microLabel, color: alpha(ink, 0.45) }}>
+            Premium ERP &mdash; v4.0
+          </Typography>
+        </Stack>
+      </Box>
+
+      {/* ── RIGHT: the form ──────────────────────────────────────────── */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: { xs: 3, sm: 6, md: 7, lg: 12 },
+          py: { xs: 6, md: 0 },
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 420,
+            '@media (prefers-reduced-motion: no-preference)': {
+              animation: 'editorialFade 0.7s ease both',
+            },
+          }}
+        >
+          {/* Mobile brand mark */}
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            sx={{ display: { xs: 'flex', md: 'none' }, mb: 5 }}
+          >
+            <Box sx={{ width: 28, height: 1, bgcolor: bronze }} />
+            <Typography sx={microLabel}>Milana Studio</Typography>
           </Stack>
 
+          <Typography sx={microLabel}>Welcome back</Typography>
+          <Typography
+            variant="h2"
+            sx={{
+              mt: 1.5,
+              color: ink,
+              fontWeight: 400,
+              letterSpacing: '-0.01em',
+              lineHeight: 1.1,
+              fontSize: { xs: '2.4rem', sm: '2.9rem' },
+            }}
+          >
+            Sign in
+          </Typography>
+          <Typography
+            sx={{
+              mt: 1.5,
+              color: theme.palette.text.secondary,
+              fontSize: '0.98rem',
+            }}
+          >
+            Enter your credentials to access the studio.
+          </Typography>
+
+          <Box
+            sx={{ width: 36, height: 1, bgcolor: alpha(ink, 0.15), my: 4 }}
+          />
+
           <form onSubmit={handleSignIn}>
-            <Stack spacing={4}>
+            <Stack spacing={2.5}>
               <TextField
                 fullWidth
                 label="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                variant="standard"
-                sx={{
-                  '& .MuiInput-underline:before': { borderBottomColor: alpha('#ffffff', 0.2) },
-                  '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: '#C8972A' },
-                  '& .MuiInput-underline:after': { borderBottomColor: '#C8972A' },
-                  '& .MuiInputLabel-root': { color: 'grey.500', fontWeight: 700 },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#C8972A' },
-                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 },
-                  '& .MuiInputBase-input:focus': { boxShadow: `0 2px 0 0 ${alpha('#C8972A', 0.5)}` }
-                }}
+                sx={fieldSx}
               />
 
               <TextField
@@ -175,16 +244,7 @@ export default function LoginView() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                variant="standard"
-                sx={{
-                  '& .MuiInput-underline:before': { borderBottomColor: alpha('#ffffff', 0.2) },
-                  '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: '#C8972A' },
-                  '& .MuiInput-underline:after': { borderBottomColor: '#C8972A' },
-                  '& .MuiInputLabel-root': { color: 'grey.500', fontWeight: 700 },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#C8972A' },
-                  '& .MuiInputBase-input': { color: 'white', fontWeight: 700, fontSize: '1.2rem', py: 1.5 },
-                  '& .MuiInputBase-input:focus': { boxShadow: `0 2px 0 0 ${alpha('#C8972A', 0.5)}` }
-                }}
+                sx={fieldSx}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -192,9 +252,21 @@ export default function LoginView() {
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                         aria-label="toggle password visibility"
-                        sx={{ color: 'grey.500', width: 44, height: 44 }}
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          width: 44,
+                          height: 44,
+                          '&:hover': { color: bronze, bgcolor: 'transparent' },
+                        }}
                       >
-                        <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} width={24} />
+                        <Iconify
+                          icon={
+                            showPassword
+                              ? 'solar:eye-linear'
+                              : 'solar:eye-closed-linear'
+                          }
+                          width={22}
+                        />
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -207,49 +279,65 @@ export default function LoginView() {
                 type="submit"
                 variant="contained"
                 disabled={loading}
+                disableElevation
+                endIcon={
+                  !loading && (
+                    <Iconify icon="solar:arrow-right-linear" width={20} />
+                  )
+                }
                 sx={{
-                  height: 72,
-                  bgcolor: '#C8972A',
-                  color: 'white',
-                  fontWeight: 900,
-                  fontSize: '1.2rem',
-                  borderRadius: 2,
-                  mt: 4,
-                  boxShadow: '0 20px 40px rgba(200, 151, 42, 0.3)',
-                  '&:hover': {
-                    bgcolor: '#b08425',
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 30px 60px rgba(200, 151, 42, 0.4)',
-                  }
+                  mt: 1,
+                  height: 56,
+                  bgcolor: ink,
+                  color: theme.palette.common.white,
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                  letterSpacing: '0.04em',
+                  borderRadius: 1,
+                  textTransform: 'none',
+                  transition: 'background-color 0.25s ease',
+                  '&:hover': { bgcolor: bronze },
+                  '&.Mui-disabled': {
+                    bgcolor: alpha(ink, 0.4),
+                    color: theme.palette.common.white,
+                  },
+                  '@media (prefers-reduced-motion: reduce)': {
+                    transition: 'none',
+                  },
                 }}
               >
-                {loading ? 'LOGGING IN...' : 'LOGIN'}
+                {loading ? 'Signing in...' : 'Sign in'}
               </Button>
             </Stack>
           </form>
 
-          <Box sx={{ textAlign: 'center', mt: 6 }}>
-            <Typography variant="body2" sx={{ color: 'grey.500', fontWeight: 700 }}>
-              Milana Salon Premium ERP System v4.0
-            </Typography>
-          </Box>
-        </Card>
-      </Container>
+          <Typography
+            sx={{
+              mt: 5,
+              fontSize: '0.8rem',
+              color: alpha(ink, 0.4),
+            }}
+          >
+            Milana Salon &mdash; Premium ERP System
+          </Typography>
+        </Box>
+      </Box>
 
       <style>
         {`
-          @keyframes pulseBackground {
-            0% { transform: translate(-50%, -50%) scale(1); filter: contrast(1.2) brightness(0.8); }
-            50% { transform: translate(-50%, -51%) scale(1.05); filter: contrast(1.4) brightness(1); }
-            100% { transform: translate(-50%, -50%) scale(1); filter: contrast(1.2) brightness(0.8); }
+          @keyframes editorialFade {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
           }
-          @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+          @media (prefers-reduced-motion: reduce) {
+            @keyframes editorialFade {
+              from { opacity: 1; transform: none; }
+              to { opacity: 1; transform: none; }
+            }
           }
         `}
       </style>
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar theme="dark" />
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar theme="light" />
     </Box>
   );
 }

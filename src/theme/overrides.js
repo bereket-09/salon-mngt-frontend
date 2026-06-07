@@ -61,9 +61,11 @@ export function overrides(theme) {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 50,
-          fontWeight: 700,
+          borderRadius: 4,
+          fontWeight: 600,
           textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': { boxShadow: 'none' },
         },
         containedInherit: {
           color: theme.palette.common.white,
@@ -83,25 +85,26 @@ export function overrides(theme) {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: theme.customShadows.card,
-          borderRadius: 16,
+          // Editorial: flat surfaces, hairline border, depth by line not shadow.
+          boxShadow: 'none',
+          borderRadius: 6,
           position: 'relative',
           zIndex: 0, // Fix Safari overflow: hidden with border radius
-          border: `1px solid ${alpha(theme.palette.grey[500], 0.08)}`,
+          border: `1px solid ${alpha(theme.palette.grey[500], 0.18)}`,
         },
       },
     },
     MuiChip: {
       styleOverrides: {
-        root: { fontWeight: 700, borderRadius: 8 },
-        sizeSmall: { borderRadius: 6 },
+        root: { fontWeight: 600, borderRadius: 4 },
+        sizeSmall: { borderRadius: 4 },
         label: { fontVariantNumeric: 'tabular-nums' },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 16,
+          borderRadius: 8,
           boxShadow: theme.customShadows.dialog,
           [theme.breakpoints.down('sm')]: {
             margin: theme.spacing(2),
@@ -153,7 +156,7 @@ export function overrides(theme) {
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 6,
           [`& .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: alpha(theme.palette.grey[500], 0.24),
           },

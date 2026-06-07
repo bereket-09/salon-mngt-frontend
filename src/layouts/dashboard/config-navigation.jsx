@@ -6,7 +6,7 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     title: 'Overview',
-    icon: 'solar:chart-bold-duotone',
+    icon: 'solar:chart-linear',
     path: '/analytics',
     roles: ['admin'],
   },
@@ -16,7 +16,7 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     title: 'Operations',
-    icon: 'solar:calendar-minimalistic-bold-duotone',
+    icon: 'solar:calendar-minimalistic-linear',
     roles: ['admin', 'receptionist'],
     children: [
       {
@@ -43,7 +43,7 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     title: 'Management',
-    icon: 'solar:settings-bold-duotone',
+    icon: 'solar:settings-linear',
     roles: ['admin'],
     children: [
       {
@@ -78,7 +78,7 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     title: 'Financials',
-    icon: 'solar:wallet-money-bold-duotone',
+    icon: 'solar:wallet-money-linear',
     roles: ['admin'],
     children: [
       {
@@ -101,7 +101,7 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     title: 'My Workspace',
-    icon: 'solar:user-circle-bold-duotone',
+    icon: 'solar:user-circle-linear',
     roles: ['admin', 'receptionist', 'employee'],
     children: [
       {

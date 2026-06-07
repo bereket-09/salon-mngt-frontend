@@ -74,8 +74,8 @@ export default function CustomerForm({
     }}>
       <Box sx={{ p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.05), borderBottom: '1px solid', borderColor: alpha(theme.palette.divider, 0.05) }}>
         <Stack direction="row" spacing={2} alignItems="center">
-          <Box sx={{ p: 1, bgcolor: '#1B1F3A', borderRadius: 1.5, color: '#C8972A' }}>
-            <Iconify icon="solar:user-plus-bold-duotone" width={24} />
+          <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
+            <Iconify icon="solar:user-plus-linear" width={24} />
           </Box>
           <Box>
             <Typography variant="h6" fontWeight={800}>Register Customer</Typography>
@@ -144,7 +144,7 @@ export default function CustomerForm({
               disabled={loading || !form.name || !form.phone || !form.branchId}
               onClick={createCustomer}
               sx={{ height: 60, fontWeight: 900, borderRadius: 1.5, fontSize: '1rem' }}
-              startIcon={<Iconify icon="solar:user-check-bold-duotone" />}
+              startIcon={<Iconify icon="solar:user-check-linear" />}
             >
               Check-In Customer
             </Button>

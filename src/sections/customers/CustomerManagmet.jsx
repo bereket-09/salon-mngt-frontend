@@ -99,7 +99,7 @@ export default function CustomersManagePage() {
           variant="contained"
           onClick={redirectToOrder}
           startIcon={<Iconify icon="solar:user-plus-bold" />}
-          sx={{ bgcolor: '#0D0E1C', color: 'white', fontWeight: 900, px: 3, height: 48, borderRadius: 1.5 }}
+          sx={{ bgcolor: '#141312', color: 'white', fontWeight: 900, px: 3, height: 48, borderRadius: 1.5 }}
         >
           ADD NEW CUSTOMER
         </Button>
@@ -107,23 +107,23 @@ export default function CustomersManagePage() {
 
       {!selectedCustomer && (
         <Card sx={{
-          borderRadius: 3, border: '1px solid', borderColor: alpha('#0D0E1C', 0.05),
+          borderRadius: 3, border: '1px solid', borderColor: alpha('#141312', 0.05),
           boxShadow: '0 20px 40px rgba(0,0,0,0.02)'
         }}>
-          <Box sx={{ p: 3, bgcolor: alpha('#0D0E1C', 0.01), borderBottom: '1px solid', borderColor: alpha('#0D0E1C', 0.05) }}>
+          <Box sx={{ p: 3, bgcolor: alpha('#141312', 0.01), borderBottom: '1px solid', borderColor: alpha('#141312', 0.05) }}>
             <TextField
               fullWidth
               placeholder="Search by name or phone number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
-                startAdornment: <Iconify icon="solar:magnifer-bold" sx={{ mr: 1.5, color: '#C8972A' }} />,
+                startAdornment: <Iconify icon="solar:magnifer-bold" sx={{ mr: 1.5, color: '#9A7B4F' }} />,
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2, bgcolor: 'white',
-                  '& fieldset': { borderColor: alpha('#0D0E1C', 0.1) },
-                  '&:hover fieldset': { borderColor: '#C8972A' },
+                  '& fieldset': { borderColor: alpha('#141312', 0.1) },
+                  '&:hover fieldset': { borderColor: '#9A7B4F' },
                 }
               }}
             />
@@ -137,16 +137,16 @@ export default function CustomersManagePage() {
                     p: 3,
                     borderRadius: 2.5,
                     border: '1px solid',
-                    borderColor: alpha('#0D0E1C', 0.05),
+                    borderColor: alpha('#141312', 0.05),
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     transition: '0.2s',
-                    '&:hover': { bgcolor: alpha('#C8972A', 0.02), borderColor: '#C8972A' }
+                    '&:hover': { bgcolor: alpha('#9A7B4F', 0.02), borderColor: '#9A7B4F' }
                   }}
                 >
                   <Stack direction="row" spacing={3} alignItems="center">
-                    <Avatar sx={{ width: 56, height: 56, bgcolor: '#0D0E1C', fontWeight: 900, color: 'white' }}>
+                    <Avatar sx={{ width: 56, height: 56, bgcolor: '#141312', fontWeight: 900, color: 'white' }}>
                       {c.name[0]}
                     </Avatar>
                     <Box>
@@ -177,7 +177,7 @@ export default function CustomersManagePage() {
 
               {filteredCustomers.length === 0 && (
                 <Box sx={{ py: 10, textAlign: 'center' }}>
-                  <Iconify icon="solar:user-block-bold-duotone" width={64} sx={{ color: alpha('#0D0E1C', 0.1), mb: 2 }} />
+                  <Iconify icon="solar:user-block-linear" width={64} sx={{ color: alpha('#141312', 0.1), mb: 2 }} />
                   <Typography variant="h6" color="text.disabled" fontWeight={800}>No customers found.</Typography>
                 </Box>
               )}
@@ -191,13 +191,13 @@ export default function CustomersManagePage() {
           <Button
             onClick={resetView}
             startIcon={<Iconify icon="solar:alt-arrow-left-bold" />}
-            sx={{ mb: 4, fontWeight: 900, color: '#C8972A' }}
+            sx={{ mb: 4, fontWeight: 900, color: '#9A7B4F' }}
           >
             BACK TO LIST
           </Button>
 
-          <Card sx={{ mb: 5, borderRadius: 4, border: '1px solid', borderColor: alpha('#0D0E1C', 0.1) }}>
-            <Box sx={{ p: 4, bgcolor: '#0D0E1C', color: 'white' }}>
+          <Card sx={{ mb: 5, borderRadius: 4, border: '1px solid', borderColor: alpha('#141312', 0.1) }}>
+            <Box sx={{ p: 4, bgcolor: '#141312', color: 'white' }}>
               <Typography variant="overline" sx={{ letterSpacing: 3, opacity: 0.7 }}>HISTORY</Typography>
               <Typography variant="h3" fontWeight={900}>Visit History</Typography>
             </Box>
@@ -206,19 +206,19 @@ export default function CustomersManagePage() {
                 {sessions.map((s) => (
                   <Grid item xs={12} key={s.id}>
                     <Box sx={{
-                      p: 3, borderRadius: 2.5, bgcolor: alpha('#C8972A', 0.03),
-                      border: '1px solid', borderColor: alpha('#C8972A', 0.1)
+                      p: 3, borderRadius: 2.5, bgcolor: alpha('#9A7B4F', 0.03),
+                      border: '1px solid', borderColor: alpha('#9A7B4F', 0.1)
                     }}>
                       <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                         <Box>
                           <Typography variant="h6" fontWeight={900} mb={1}>Session #{s.id}</Typography>
                           <Stack direction="row" spacing={3}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Iconify icon="solar:calendar-bold" width={18} color="#C8972A" />
+                              <Iconify icon="solar:calendar-bold" width={18} color="#9A7B4F" />
                               <Typography variant="body2" fontWeight={800}>{new Date(s.checkInTime).toLocaleDateString()}</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Iconify icon="solar:clock-circle-bold" width={18} color="#C8972A" />
+                              <Iconify icon="solar:clock-circle-bold" width={18} color="#9A7B4F" />
                               <Typography variant="body2" fontWeight={800}>
                                 {new Date(s.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </Typography>
@@ -229,14 +229,14 @@ export default function CustomersManagePage() {
                           <Button
                             variant="contained"
                             onClick={() => fetchAssignments(s.id)}
-                            sx={{ bgcolor: '#0D0E1C', fontWeight: 900, borderRadius: 1 }}
+                            sx={{ bgcolor: '#141312', fontWeight: 900, borderRadius: 1 }}
                           >
                             SERVICES
                           </Button>
                           <Button
                             variant="outlined"
                             onClick={() => fetchInvoices(s.CustomerId)}
-                            sx={{ borderColor: '#C8972A', color: '#C8972A', fontWeight: 900, borderRadius: 1 }}
+                            sx={{ borderColor: '#9A7B4F', color: '#9A7B4F', fontWeight: 900, borderRadius: 1 }}
                           >
                             INVOICE
                           </Button>
@@ -253,7 +253,7 @@ export default function CustomersManagePage() {
           {assignments.length > 0 && (
             <Box sx={{ mb: 5 }}>
               <Typography variant="h5" fontWeight={900} mb={3} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Iconify icon="solar:clipboard-list-bold-duotone" sx={{ color: '#C8972A' }} />
+                <Iconify icon="solar:clipboard-list-linear" sx={{ color: '#9A7B4F' }} />
                 Services Done
               </Typography>
               <Grid container spacing={3}>
@@ -261,7 +261,7 @@ export default function CustomersManagePage() {
                   <Grid item xs={12} md={6} key={a.id}>
                     <Card sx={{ p: 4, borderRadius: 3, height: '100%', border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
                       <Stack direction="row" justifyContent="space-between" mb={3}>
-                        <Typography variant="overline" color="#C8972A" fontWeight={900} letterSpacing={2}>STATUS: {a.status.toUpperCase()}</Typography>
+                        <Typography variant="overline" color="#9A7B4F" fontWeight={900} letterSpacing={2}>STATUS: {a.status.toUpperCase()}</Typography>
                         <Iconify icon="solar:check-circle-bold" color={a.status === 'completed' ? '#4caf50' : '#ff9800'} />
                       </Stack>
                       <Stack spacing={2}>
@@ -289,7 +289,7 @@ export default function CustomersManagePage() {
           {invoices.length > 0 && (
             <Box>
               <Typography variant="h5" fontWeight={900} mb={3} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Iconify icon="solar:wad-of-money-bold-duotone" sx={{ color: '#C8972A' }} />
+                <Iconify icon="solar:wad-of-money-linear" sx={{ color: '#9A7B4F' }} />
                 Payment Record
               </Typography>
               {invoices.map((inv) => (
@@ -310,7 +310,7 @@ export default function CustomersManagePage() {
                       </Box>
                     ))}
                   </Stack>
-                  <Box sx={{ mt: 4, p: 3, bgcolor: '#0D0E1C', color: 'white', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ mt: 4, p: 3, bgcolor: '#141312', color: 'white', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="h5" fontWeight={900}>GRAND TOTAL</Typography>
                     <Typography variant="h3" fontWeight={900}>{inv.totalAmount} Br</Typography>
                   </Box>
