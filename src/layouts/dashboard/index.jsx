@@ -12,6 +12,16 @@ import BottomNav from './bottom-nav';
 
 export default function DashboardLayout({ children }) {
   const [openNav, setOpenNav] = useState(false);
+  // Desktop side-nav collapsed (icon-only rail). Persisted so it survives reloads
+  // (the branch switcher reloads the page).
+  const [navCollapsed, setNavCollapsed] = useState(() => {
+    try { return localStorage.getItem('navCollapsed') === '1'; } catch { return false; }
+  });
+  const toggleCollapse = () => setNavCollapsed((c) => {
+    const next = !c;
+    try { localStorage.setItem('navCollapsed', next ? '1' : '0'); } catch { /* ignore */ }
+    return next;
+  });
 
   return (
     <>
@@ -24,9 +34,14 @@ export default function DashboardLayout({ children }) {
           flexDirection: { xs: 'column', lg: 'row' },
         }}
       >
-        <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
+        <Nav
+          openNav={openNav}
+          onCloseNav={() => setOpenNav(false)}
+          collapsed={navCollapsed}
+          onToggleCollapse={toggleCollapse}
+        />
 
-        <Main>{children}</Main>
+        <Main navCollapsed={navCollapsed}>{children}</Main>
       </Box>
 
       <BottomNav onOpenNav={() => setOpenNav(true)} />

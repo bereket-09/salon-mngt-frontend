@@ -10,7 +10,7 @@ import { NAV, HEADER, BOTTOM_NAV } from './config-layout';
 
 const SPACING = 8;
 
-export default function Main({ children, sx, ...other }) {
+export default function Main({ children, sx, navCollapsed = false, ...other }) {
   const lgUp = useResponsive('up', 'lg');
   const mdUp = useResponsive('up', 'md');
   const mdDown = useResponsive('down', 'md');
@@ -42,7 +42,8 @@ export default function Main({ children, sx, ...other }) {
         ...(lgUp && {
           px: 6,
           py: `${HEADER.H_DESKTOP + SPACING * 3}px`,
-          width: `calc(100% - ${NAV.WIDTH}px)`,
+          width: `calc(100% - ${navCollapsed ? NAV.W_MINI : NAV.WIDTH}px)`,
+          transition: 'width 0.25s ease',
         }),
         ...sx,
       }}
@@ -56,4 +57,5 @@ export default function Main({ children, sx, ...other }) {
 Main.propTypes = {
   children: PropTypes.node,
   sx: PropTypes.object,
+  navCollapsed: PropTypes.bool,
 };

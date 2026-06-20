@@ -10,6 +10,7 @@ export const HEADER = {
 export const NAV = {
   WIDTH: 260,
   W_TABLET: 220,
+  W_MINI: 88, // collapsed icon-only rail (desktop)
 };
 
 // Height of the mobile bottom navigation bar (employee tier).

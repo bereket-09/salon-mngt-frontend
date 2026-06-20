@@ -15,6 +15,8 @@ import {
   ListItemButton,
   Avatar,
   Collapse,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
@@ -31,15 +33,11 @@ import AttendanceClock from './common/attendance-clock';
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
-export default function Nav({ openNav, onCloseNav }) {
+export default function Nav({ openNav, onCloseNav, collapsed = false, onToggleCollapse }) {
   const pathname = usePathname();
   const router = useRouter();
   const upLg = useResponsive('up', 'lg');
-  const onlyTablet = useResponsive('between', 'md', 'lg');
   const userData = JSON.parse(localStorage.getItem('userData')) || {};
-
-  // Width steps: tablet gets a slightly narrower rail than desktop.
-  const navWidth = onlyTablet ? NAV.W_TABLET : NAV.WIDTH;
 
   // Active branch surfaced prominently in the account block.
   const branchName = localStorage.getItem('selectedBranchName');
@@ -66,65 +64,73 @@ export default function Nav({ openNav, onCloseNav }) {
     onCloseNav();
   }, [pathname]);
 
-  const renderAccount = (
-    <Box sx={{ px: 3, mb: 2.5 }}>
-      <ListItemButton
-        onClick={handleOpenAccount}
-        sx={{
-          p: 0,
-          minHeight: 44,
-          borderRadius: 0,
-          alignItems: 'center',
-          bgcolor: 'transparent',
-          '&:hover': { bgcolor: 'transparent' },
-        }}
-      >
-        <Avatar
-          variant="square"
+  const renderAccount = (mini) => (
+    <Box sx={{ px: mini ? 0 : 3, mb: 2.5, display: 'flex', flexDirection: 'column', alignItems: mini ? 'center' : 'stretch' }}>
+      <Tooltip title={mini ? `${userData.name || 'User'} · ${userData.role || 'Staff'}` : ''} placement="right">
+        <ListItemButton
+          onClick={handleOpenAccount}
           sx={{
-            width: 38,
-            height: 38,
-            borderRadius: '4px',
+            p: 0,
+            minHeight: 44,
+            borderRadius: 0,
+            alignItems: 'center',
+            justifyContent: mini ? 'center' : 'flex-start',
+            width: mini ? 'auto' : '100%',
             bgcolor: 'transparent',
-            color: 'secondary.main',
-            border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.5)}`,
-            fontFamily: (theme) => theme.typography.h4.fontFamily,
-            fontWeight: 600,
-            fontSize: '1.05rem',
+            '&:hover': { bgcolor: 'transparent' },
           }}
         >
-          {userData.name?.[0]?.toUpperCase() || 'U'}
-        </Avatar>
-        <Box sx={{ ml: 1.5, minWidth: 0, flexGrow: 1 }}>
-          <Typography
-            variant="subtitle2"
-            noWrap
-            sx={{ color: 'common.white', fontWeight: 600, fontSize: '0.825rem' }}
-          >
-            {userData.name || 'User'}
-          </Typography>
-          <Typography
-            noWrap
+          <Avatar
+            variant="square"
             sx={{
-              display: 'block',
+              width: 38,
+              height: 38,
+              borderRadius: '4px',
+              bgcolor: 'transparent',
               color: 'secondary.main',
-              textTransform: 'uppercase',
-              fontWeight: 700,
-              fontSize: '0.6rem',
-              letterSpacing: '0.15em',
+              border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.5)}`,
+              fontFamily: (theme) => theme.typography.h4.fontFamily,
+              fontWeight: 600,
+              fontSize: '1.05rem',
             }}
           >
-            {userData.role || 'Staff'}
-          </Typography>
-        </Box>
-        <Iconify
-          icon="solar:alt-arrow-down-linear"
-          width={16}
-          sx={{ color: alpha('#FFFFFF', 0.4), flexShrink: 0 }}
-        />
-      </ListItemButton>
+            {userData.name?.[0]?.toUpperCase() || 'U'}
+          </Avatar>
+          {!mini && (
+            <>
+              <Box sx={{ ml: 1.5, minWidth: 0, flexGrow: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  noWrap
+                  sx={{ color: 'common.white', fontWeight: 600, fontSize: '0.825rem' }}
+                >
+                  {userData.name || 'User'}
+                </Typography>
+                <Typography
+                  noWrap
+                  sx={{
+                    display: 'block',
+                    color: 'secondary.main',
+                    textTransform: 'uppercase',
+                    fontWeight: 700,
+                    fontSize: '0.6rem',
+                    letterSpacing: '0.15em',
+                  }}
+                >
+                  {userData.role || 'Staff'}
+                </Typography>
+              </Box>
+              <Iconify
+                icon="solar:alt-arrow-down-linear"
+                width={16}
+                sx={{ color: alpha('#FFFFFF', 0.4), flexShrink: 0 }}
+              />
+            </>
+          )}
+        </ListItemButton>
+      </Tooltip>
 
-      {branchName && (
+      {!mini && branchName && (
         <Box sx={{ mt: 2 }}>
           <Typography
             sx={{
@@ -188,11 +194,31 @@ export default function Nav({ openNav, onCloseNav }) {
     setOpenGroups((prev) => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const renderMenu = (
-    <Stack component="nav" spacing={0.25} sx={{ px: 2, pb: 3 }}>
+  const visibleChildren = (item) =>
+    (item.children || []).filter((child) => !child.roles || child.roles.includes(userData.role));
+
+  const renderMenu = (mini) => (
+    <Stack
+      component="nav"
+      spacing={mini ? 0.5 : 0.25}
+      sx={{ px: mini ? 1 : 2, pb: 3, alignItems: mini ? 'center' : 'stretch' }}
+    >
       {navConfig
         .filter((item) => !item.roles || item.roles.includes(userData.role))
         .map((item) => {
+          // Collapsed rail: flatten groups to icon-only items separated by a hairline.
+          if (mini) {
+            const kids = item.children ? visibleChildren(item) : [item];
+            return (
+              <Box key={item.title} sx={{ width: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {item.children && <Divider flexItem sx={{ borderColor: alpha('#FFFFFF', 0.08), my: 0.75, width: 28, mx: 'auto' }} />}
+                {kids.map((child) => (
+                  <NavItem key={child.title} item={child} mini />
+                ))}
+              </Box>
+            );
+          }
+
           const isOpen = openGroups[item.title];
           return item.children ? (
             <Box key={item.title} sx={{ mb: 1.5 }}>
@@ -225,11 +251,9 @@ export default function Nav({ openNav, onCloseNav }) {
               </ListItemButton>
               <Collapse in={isOpen} unmountOnExit>
                 <Stack spacing={0.25} sx={{ mt: 0.5 }}>
-                  {item.children
-                    .filter((child) => !child.roles || child.roles.includes(userData.role))
-                    .map((child) => (
-                      <NavItem key={child.title} item={child} />
-                    ))}
+                  {visibleChildren(item).map((child) => (
+                    <NavItem key={child.title} item={child} />
+                  ))}
                 </Stack>
               </Collapse>
             </Box>
@@ -240,7 +264,37 @@ export default function Nav({ openNav, onCloseNav }) {
     </Stack>
   );
 
-  const renderContent = (
+  // Logo + collapse toggle. The toggle only shows on desktop (where collapsing applies).
+  const renderLogo = (mini) => (
+    <Stack
+      direction={mini ? 'column' : 'row'}
+      alignItems="center"
+      justifyContent={mini ? 'center' : 'space-between'}
+      spacing={mini ? 1 : 0}
+      sx={{ px: mini ? 0 : 3, pt: 4, pb: 3 }}
+    >
+      <Typography
+        variant="h3"
+        sx={{ color: 'common.white', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1 }}
+      >
+        {mini ? 'M' : 'Milana'}
+        <Box component="span" sx={{ color: 'secondary.main', ml: '2px', fontSize: '1em' }}>.</Box>
+      </Typography>
+      {upLg && onToggleCollapse && (
+        <Tooltip title={mini ? 'Expand menu' : 'Collapse menu'} placement="right">
+          <IconButton
+            size="small"
+            onClick={onToggleCollapse}
+            sx={{ color: alpha('#FFFFFF', 0.5), '&:hover': { color: 'common.white', bgcolor: alpha('#FFFFFF', 0.08) } }}
+          >
+            <Iconify icon={mini ? 'solar:square-double-alt-arrow-right-linear' : 'solar:square-double-alt-arrow-left-linear'} width={20} />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+
+  const renderContent = (mini) => (
     <Scrollbar
       sx={{
         height: 1,
@@ -251,52 +305,37 @@ export default function Nav({ openNav, onCloseNav }) {
         },
       }}
     >
-      <Box sx={{ px: 3, pt: 4, pb: 3 }}>
-        <Typography
-          variant="h3"
-          sx={{
-            color: 'common.white',
-            fontWeight: 500,
-            letterSpacing: '0.01em',
-            lineHeight: 1,
-          }}
-        >
-          Milana
-          <Box
-            component="span"
-            sx={{ color: 'secondary.main', ml: '2px', fontSize: '1em' }}
-          >
-            .
-          </Box>
-        </Typography>
-      </Box>
+      {renderLogo(mini)}
 
       <Divider sx={{ borderColor: alpha('#FFFFFF', 0.1), mb: 3 }} />
 
-      {renderAccount}
+      {renderAccount(mini)}
 
       <Divider sx={{ borderColor: alpha('#FFFFFF', 0.1), mb: 2.5 }} />
 
-      {renderMenu}
+      {renderMenu(mini)}
       <Box sx={{ flexGrow: 1 }} />
-      <AttendanceClock />
+      {!mini && <AttendanceClock />}
     </Scrollbar>
   );
 
+  const desktopWidth = collapsed ? NAV.W_MINI : NAV.WIDTH;
+
   return (
-    <Box sx={{ flexShrink: { lg: 0 }, width: { lg: navWidth } }}>
+    <Box sx={{ flexShrink: { lg: 0 }, width: { lg: desktopWidth }, transition: 'width 0.25s ease' }}>
       {upLg ? (
         <Box
           sx={{
             height: 1,
             position: 'fixed',
-            width: navWidth,
+            width: desktopWidth,
+            transition: 'width 0.25s ease',
             bgcolor: 'background.sidebar',
             borderRight: '1px solid',
             borderColor: alpha('#FFFFFF', 0.1),
           }}
         >
-          {renderContent}
+          {renderContent(collapsed)}
         </Box>
       ) : (
         <Drawer
@@ -310,7 +349,7 @@ export default function Nav({ openNav, onCloseNav }) {
             },
           }}
         >
-          {renderContent}
+          {renderContent(false)}
         </Drawer>
       )}
     </Box>
@@ -320,34 +359,44 @@ export default function Nav({ openNav, onCloseNav }) {
 Nav.propTypes = {
   openNav: PropTypes.bool,
   onCloseNav: PropTypes.func,
+  collapsed: PropTypes.bool,
+  onToggleCollapse: PropTypes.func,
 };
 
 // ----------------------------------------------------------------------
 
-function NavItem({ item }) {
+function NavItem({ item, mini }) {
   const pathname = usePathname();
   const active = item.path === pathname || (item.path !== '/' && pathname.startsWith(item.path));
 
-  return (
+  const button = (
     <ListItemButton
       component={RouterLink}
       href={item.path}
       sx={{
         minHeight: 44,
-        borderRadius: 0,
+        borderRadius: mini ? 1 : 0,
         typography: 'body2',
         color: active ? 'common.white' : alpha('#FFFFFF', 0.55),
         fontWeight: active ? 600 : 400,
-        pl: 2,
-        pr: 1.5,
         position: 'relative',
         transition: 'color 0.2s ease',
-        bgcolor: 'transparent',
-        // Thin bronze left rule on active.
-        borderLeft: '2px solid',
-        borderColor: active ? 'secondary.main' : 'transparent',
+        ...(mini
+          ? {
+              width: 44,
+              justifyContent: 'center',
+              px: 0,
+              bgcolor: active ? alpha('#FFFFFF', 0.08) : 'transparent',
+            }
+          : {
+              pl: 2,
+              pr: 1.5,
+              bgcolor: 'transparent',
+              borderLeft: '2px solid',
+              borderColor: active ? 'secondary.main' : 'transparent',
+            }),
         '&:hover': {
-          bgcolor: 'transparent',
+          bgcolor: mini ? alpha('#FFFFFF', 0.08) : 'transparent',
           color: active ? 'common.white' : alpha('#FFFFFF', 0.85),
         },
       }}
@@ -358,18 +407,29 @@ function NavItem({ item }) {
           sx={{
             width: 19,
             height: 19,
-            mr: 1.5,
+            mr: mini ? 0 : 1.5,
             color: active ? 'secondary.main' : 'inherit',
           }}
         />
       )}
-      <Box component="span" sx={{ flexGrow: 1, letterSpacing: 0.1, fontSize: '0.8125rem' }}>
-        {item.title}
-      </Box>
+      {!mini && (
+        <Box component="span" sx={{ flexGrow: 1, letterSpacing: 0.1, fontSize: '0.8125rem' }}>
+          {item.title}
+        </Box>
+      )}
     </ListItemButton>
+  );
+
+  return mini ? (
+    <Tooltip title={item.title} placement="right">
+      {button}
+    </Tooltip>
+  ) : (
+    button
   );
 }
 
 NavItem.propTypes = {
   item: PropTypes.object,
+  mini: PropTypes.bool,
 };
