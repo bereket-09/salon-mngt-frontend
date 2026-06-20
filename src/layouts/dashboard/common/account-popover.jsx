@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
+import { getStoredUser, clearAuthStorage } from 'src/utils/auth';
 
 import { accountMock } from 'src/_mock/account';
 
@@ -36,7 +37,7 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const router = useRouter();
-  const account = JSON.parse(localStorage.getItem('userData')) || accountMock;
+  const account = getStoredUser() || accountMock;
 
   const handleOpen = (event) => setOpen(event.currentTarget);
   const handleClose = () => setOpen(null);
@@ -48,9 +49,7 @@ export default function AccountPopover() {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-      alert('Logged out successfully');
+      clearAuthStorage(); // wipes token, user, and branch selection
       router.push('/login');
       setOpen(null);
     }

@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
+import { getStoredUser, clearAuthStorage, hasValidSession } from 'src/utils/auth';
 
 // Import sections
 import ProfilePage from 'src/sections/setting/profile';
@@ -39,22 +40,11 @@ export const BookingsPage = lazy(() => import('src/pages/bookings'));
 
 /* eslint-disable react/prop-types */
 const PrivateRoute = ({ children }) => {
-  const userData = localStorage.getItem('userData');
-  const authToken = localStorage.getItem('authToken');
-  const currentTime = Math.floor(Date.now() / 1000);
-
-  if (userData && authToken) {
-    const parsedUserData = JSON.parse(userData);
-    if (parsedUserData.exp && parsedUserData.exp < currentTime) {
-      localStorage.removeItem('userData');
-      localStorage.removeItem('authToken');
-      return <Navigate to="/login" replace />;
-    }
-  }
-
-  if (!userData || !authToken) {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('authToken');
+  // hasValidSession() never throws: a missing/corrupt token or user, or an
+  // expired JWT, all return false. In that case we wipe any leftover session
+  // storage and send the user to /login instead of crashing.
+  if (!hasValidSession()) {
+    clearAuthStorage();
     return <Navigate to="/login" replace />;
   }
 
@@ -62,10 +52,12 @@ const PrivateRoute = ({ children }) => {
 };
 
 const IndexPageRoleRedirect = () => {
-  const userStr = localStorage.getItem('userData');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const user = getStoredUser();
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    clearAuthStorage();
+    return <Navigate to="/login" replace />;
+  }
 
   if (user.role === 'admin') {
     return <Navigate to="/analytics" replace />;

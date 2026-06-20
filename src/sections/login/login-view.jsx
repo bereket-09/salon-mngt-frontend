@@ -15,6 +15,7 @@ import {
   useTheme,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
+import { getStoredUser, getToken, clearAuthStorage } from 'src/utils/auth';
 
 export default function LoginView() {
   const theme = useTheme();
@@ -29,15 +30,17 @@ export default function LoginView() {
   const bone = theme.palette.background.default;
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const userStr = localStorage.getItem('userData');
-    if (token && userStr) {
-      const user = JSON.parse(userStr);
-      if (['admin'].includes(user.role)) {
-        router.push('/analytics');
-      } else {
-        router.push('/my-assignments');
-      }
+    // Already logged in? Bounce to the right home. getStoredUser() is safe:
+    // a corrupt/missing user returns null, so we just stay on the login page
+    // instead of throwing.
+    const token = getToken();
+    const user = getStoredUser();
+    if (token && user) {
+      router.push(['admin'].includes(user.role) ? '/analytics' : '/my-assignments');
+    } else if (token || localStorage.getItem('userData')) {
+      // Half-written / corrupt session left behind — clear it so the next
+      // login starts clean.
+      clearAuthStorage();
     }
   }, [router]);
 
@@ -53,16 +56,20 @@ export default function LoginView() {
       });
       const result = await response.json();
       if (response.ok) {
+        // Guard against a 200 that's missing the token/user: don't persist a
+        // broken session (the old code would store "undefined" and crash the
+        // app on the next render). Clear anything stale and surface an error.
+        if (!result.token || !result.user) {
+          clearAuthStorage();
+          toast.error('Login response was incomplete. Please try again.');
+          return;
+        }
         localStorage.setItem('authToken', result.token);
         localStorage.setItem('userData', JSON.stringify(result.user));
         toast.success('Welcome back!');
 
         // Redirect based on role
-        if (['admin'].includes(result.user.role)) {
-          router.push('/analytics');
-        } else {
-          router.push('/my-assignments');
-        }
+        router.push(['admin'].includes(result.user.role) ? '/analytics' : '/my-assignments');
       } else {
         toast.error(result.error || 'Login failed');
       }

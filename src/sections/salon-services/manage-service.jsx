@@ -29,6 +29,7 @@ import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
 import Iconify from 'src/components/iconify';
 import ConfirmDialog from 'src/components/confirm-dialog/confirm-dialog';
+import { withBranch, getSelectedBranchName } from 'src/utils/branch';
 
 export default function ServicesPage() {
   const theme = useTheme();
@@ -66,7 +67,11 @@ export default function ServicesPage() {
     try {
       const auth = { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' };
       const [svcRes, brRes, catRes] = await Promise.all([
-        fetch(`${config.BASE_URL}/services`, auth),
+        // Scope to the selected branch: withBranch('?') appends "?branchId=<id>"
+        // for a specific branch, or nothing when "All Branches" is selected.
+        // The backend returns that branch's services + global (all-branch) ones,
+        // hiding services that belong to OTHER branches.
+        fetch(`${config.BASE_URL}/services${withBranch('?')}`, auth),
         fetch(`${config.BASE_URL}/branches`, auth),
         fetch(`${config.BASE_URL}/service-categories?tree=1`, auth),
       ]);
@@ -181,7 +186,13 @@ export default function ServicesPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Box>
           <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -1 }}>Service List</Typography>
-          <Typography variant="body1" color="text.secondary" fontWeight={600}>Manage your salon services and staff commissions.</Typography>
+          <Typography variant="body1" color="text.secondary" fontWeight={600}>
+            Managing{' '}
+            <Box component="span" sx={{ color: 'secondary.main', fontWeight: 800 }}>
+              {getSelectedBranchName() ? getSelectedBranchName().toUpperCase() : 'ALL BRANCHES'}
+            </Box>
+            {' '}— services and staff commissions.
+          </Typography>
         </Box>
         <Stack direction="row" spacing={2} alignItems="center">
           <Chip
