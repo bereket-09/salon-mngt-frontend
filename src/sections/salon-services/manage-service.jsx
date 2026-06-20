@@ -66,8 +66,9 @@ export default function ServicesPage() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table' | 'tree'
+  const [viewMode, setViewMode] = useState('tree'); // 'tree' | 'grid' | 'table' — Tree is the default
   const [collapsed, setCollapsed] = useState({}); // tree node key -> true when collapsed (default open)
+  const [addOpen, setAddOpen] = useState(true); // "Add New Service" panel expanded?
   const token = localStorage.getItem('authToken');
 
   useEffect(() => {
@@ -230,6 +231,16 @@ export default function ServicesPage() {
           {(s.code || 'NO CODE')} · {genderLabel(s.gender)} · {s.estimatedDuration || 30} min · {s.Branch?.name || 'All Branches'}
         </Typography>
       </Box>
+      {s.commissionEnabled && (
+        <Tooltip title="Commission">
+          <Chip
+            size="small" variant="soft" color="success"
+            icon={<Iconify icon="solar:hand-money-linear" width={14} />}
+            label={`${Number(s.commissionRate || 0).toFixed(0)}%`}
+            sx={{ fontWeight: 800, height: 22 }}
+          />
+        </Tooltip>
+      )}
       <Typography fontWeight={900} sx={{ whiteSpace: 'nowrap' }}>
         {s.price} <Typography component="span" variant="caption" color="text.secondary">ETB</Typography>
       </Typography>
@@ -303,13 +314,19 @@ export default function ServicesPage() {
             position: 'sticky', top: 24, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
             bgcolor: alpha(theme.palette.background.neutral, 0.4)
           }}>
-            <Stack direction="row" spacing={2} alignItems="center" mb={4}>
+            <Stack
+              direction="row" spacing={2} alignItems="center"
+              onClick={() => setAddOpen((o) => !o)}
+              sx={{ cursor: 'pointer', mb: addOpen ? 4 : 0 }}
+            >
               <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
                 <Iconify icon="solar:box-minimalistic-linear" width={28} />
               </Box>
-              <Typography variant="h5" sx={{ fontWeight: 800 }}>Add New Service</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 800, flexGrow: 1 }}>Add New Service</Typography>
+              <Iconify icon={addOpen ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={22} sx={{ color: 'text.secondary' }} />
             </Stack>
 
+            <Collapse in={addOpen}>
             <Stack spacing={3}>
               <TextField
                 label="Service Name"
@@ -431,6 +448,7 @@ export default function ServicesPage() {
                 {creating ? 'Saving…' : 'Save Service'}
               </Button>
             </Stack>
+            </Collapse>
           </Card>
         </Grid>
 
