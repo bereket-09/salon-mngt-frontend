@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -24,6 +24,16 @@ import {
   InputAdornment,
   alpha,
   CircularProgress,
+  ToggleButton,
+  ToggleButtonGroup,
+  Collapse,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import config from 'src/config';
@@ -56,6 +66,8 @@ export default function ServicesPage() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table' | 'tree'
+  const [collapsed, setCollapsed] = useState({}); // tree node key -> true when collapsed (default open)
   const token = localStorage.getItem('authToken');
 
   useEffect(() => {
@@ -164,6 +176,67 @@ export default function ServicesPage() {
     return svc.Category.Parent ? `${svc.Category.Parent.name} › ${svc.Category.name}` : svc.Category.name;
   };
 
+  const genderLabel = (g) => (g === 'male' ? 'Men' : g === 'female' ? 'Women' : 'Unisex');
+
+  // Edit/delete buttons, reused by every view.
+  const ServiceActions = ({ s }) => (
+    <Stack direction="row" spacing={1}>
+      <Tooltip title="Edit">
+        <IconButton size="small" onClick={() => setEditService(s)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}>
+          <Iconify icon="solar:pen-linear" width={18} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Delete">
+        <IconButton size="small" onClick={() => confirmDelete(s.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}>
+          <Iconify icon="solar:trash-bin-trash-linear" width={18} />
+        </IconButton>
+      </Tooltip>
+    </Stack>
+  );
+
+  // Tree view data: super-category → (direct services + sub-categories with their services).
+  // Only categories that actually contain services are kept, plus an "Uncategorized" bucket.
+  const treeData = useMemo(() => {
+    const groups = categories
+      .map((sup) => {
+        const direct = services.filter((s) => s.Category && s.Category.id === sup.id);
+        const subs = (sup.Children || [])
+          .map((child) => ({ sub: child, items: services.filter((s) => s.Category && s.Category.id === child.id) }))
+          .filter((x) => x.items.length > 0);
+        const count = direct.length + subs.reduce((n, x) => n + x.items.length, 0);
+        return { sup, direct, subs, count };
+      })
+      .filter((g) => g.count > 0);
+    const uncategorized = services.filter((s) => !s.Category);
+    return { groups, uncategorized };
+  }, [categories, services]);
+
+  const isOpen = (key) => collapsed[key] !== true; // default expanded
+  const toggleNode = (key) => setCollapsed((c) => ({ ...c, [key]: c[key] !== true }));
+
+  // Compact leaf row used inside the tree view.
+  const renderTreeRow = (s) => (
+    <Stack
+      key={s.id}
+      direction="row"
+      alignItems="center"
+      spacing={1.5}
+      sx={{ py: 1.25, px: 1.5, borderRadius: 1, '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.04) } }}
+    >
+      <Iconify icon="solar:tag-horizontal-linear" width={16} sx={{ color: 'text.disabled' }} />
+      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+        <Typography variant="body2" fontWeight={800} noWrap>{s.name}</Typography>
+        <Typography variant="caption" color="text.secondary" fontWeight={600} noWrap sx={{ display: 'block' }}>
+          {(s.code || 'NO CODE')} · {genderLabel(s.gender)} · {s.estimatedDuration || 30} min · {s.Branch?.name || 'All Branches'}
+        </Typography>
+      </Box>
+      <Typography fontWeight={900} sx={{ whiteSpace: 'nowrap' }}>
+        {s.price} <Typography component="span" variant="caption" color="text.secondary">ETB</Typography>
+      </Typography>
+      <ServiceActions s={s} />
+    </Stack>
+  );
+
   const executeDelete = async () => {
     setConfirmOpen(false);
     if (!deleteId) return;
@@ -195,10 +268,24 @@ export default function ServicesPage() {
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} alignItems="center">
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(e, v) => v && setViewMode(v)}
+            sx={{
+              height: 44, bgcolor: 'background.paper', borderRadius: 1.5, p: 0.5,
+              '& .MuiToggleButton-root': { border: 0, borderRadius: '8px !important', px: 1.5, fontWeight: 800 },
+              '& .Mui-selected': { bgcolor: 'secondary.main !important', color: 'common.white !important' },
+            }}
+          >
+            <ToggleButton value="grid"><Tooltip title="Grid view"><Iconify icon="solar:widget-4-linear" width={20} /></Tooltip></ToggleButton>
+            <ToggleButton value="table"><Tooltip title="Table view"><Iconify icon="solar:list-linear" width={20} /></Tooltip></ToggleButton>
+            <ToggleButton value="tree"><Tooltip title="Tree view (by category)"><Iconify icon="solar:siderbar-linear" width={20} /></Tooltip></ToggleButton>
+          </ToggleButtonGroup>
           <Chip
             label={`${services.length} Active Services`}
             color="secondary"
-            sx={{ fontWeight: 800, borderRadius: 1.5, px: 2, height: 44 }}
+            sx={{ fontWeight: 800, borderRadius: 1.5, px: 2, height: 44, display: { xs: 'none', sm: 'flex' } }}
           />
           <IconButton onClick={fetchData} disabled={loading} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), width: 44, height: 44 }}>
             {loading
@@ -347,65 +434,175 @@ export default function ServicesPage() {
           </Card>
         </Grid>
 
-        {/* SERVICE GRID */}
+        {/* SERVICE VIEWS */}
         <Grid item xs={12} lg={8}>
-          <Grid container spacing={3}>
-            {services.map((s) => (
-              <Grid item xs={12} sm={6} key={s.id}>
-                <Card sx={{
-                  borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
-                  transition: '0.2s',
-                  '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.customShadows.z12, borderColor: 'secondary.main' }
-                }}>
-                  <Box sx={{ p: 4 }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="start" mb={3}>
-                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                        <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" useFlexGap>
-                          {categoryLabel(s) && (
+          {services.length === 0 ? (
+            <Card sx={{ p: 8, textAlign: 'center', borderRadius: 2.5, border: '1px dashed', borderColor: alpha(theme.palette.divider, 0.3) }}>
+              <Iconify icon="solar:box-minimalistic-linear" width={56} sx={{ color: 'text.disabled', mb: 2 }} />
+              <Typography variant="h6" fontWeight={800} color="text.secondary">No services in this view</Typography>
+              <Typography variant="body2" color="text.disabled" fontWeight={600}>Add one using the form, or switch branch.</Typography>
+            </Card>
+          ) : viewMode === 'grid' ? (
+            /* ── GRID VIEW ── */
+            <Grid container spacing={3}>
+              {services.map((s) => (
+                <Grid item xs={12} sm={6} key={s.id}>
+                  <Card sx={{
+                    borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
+                    transition: '0.2s',
+                    '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.customShadows.z12, borderColor: 'secondary.main' }
+                  }}>
+                    <Box sx={{ p: 4 }}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="start" mb={3}>
+                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                          <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" useFlexGap>
+                            {categoryLabel(s) && (
+                              <Chip
+                                label={categoryLabel(s)}
+                                size="small" color="warning" variant="soft"
+                                icon={<Iconify icon="solar:widget-5-linear" width={14} />}
+                                sx={{ fontWeight: 800, borderRadius: 0.5 }}
+                              />
+                            )}
                             <Chip
-                              label={categoryLabel(s)}
-                              size="small" color="warning" variant="soft"
-                              icon={<Iconify icon="solar:widget-5-linear" width={14} />}
+                              label={genderLabel(s.gender)}
+                              size="small" color={s.gender === 'male' ? 'info' : 'secondary'} variant="soft"
                               sx={{ fontWeight: 800, borderRadius: 0.5 }}
                             />
-                          )}
-                          <Chip
-                            label={s.gender === 'male' ? 'Men' : s.gender === 'female' ? 'Women' : 'Unisex'}
-                            size="small" color={s.gender === 'male' ? 'info' : 'secondary'} variant="soft"
-                            sx={{ fontWeight: 800, borderRadius: 0.5 }}
-                          />
-                          <Chip label={`${s.estimatedDuration || 30} min`} variant="soft" color="default" size="small" sx={{ fontWeight: 800, borderRadius: 0.5 }} />
-                        </Stack>
-                        <Typography variant="h6" fontWeight={800} noWrap>{s.name.toUpperCase()}</Typography>
-                        <Typography variant="caption" color="secondary.main" fontWeight={900} sx={{ display: 'block', mt: -0.5, mb: 0.5 }}>{s.code || 'NO CODE'}</Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block' }}>Branch: {s.Branch?.name?.toUpperCase() || 'All Branches'}</Typography>
-                      </Box>
-                      <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="h4" fontWeight={900} color="#1A1A1A">{s.price}</Typography>
-                        <Typography variant="caption" fontWeight={800} color="text.secondary">ETB</Typography>
-                      </Box>
-                    </Stack>
-
-                    <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Box>
-                        {s.commissionEnabled ? (
-                          <Typography variant="caption" fontWeight={800} color="success.main">Commission: {Number(s.commissionRate || 0).toFixed(0)}%</Typography>
-                        ) : (
-                          <Typography variant="caption" color="text.disabled" fontWeight={800}>No Commission</Typography>
-                        )}
-                      </Box>
-                      <Stack direction="row" spacing={1}>
-                        <IconButton size="small" onClick={() => setEditService(s)} sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.05) }}><Iconify icon="solar:pen-linear" width={18} /></IconButton>
-                        <IconButton size="small" onClick={() => confirmDelete(s.id)} sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), color: 'error.main' }}><Iconify icon="solar:trash-bin-trash-linear" width={18} /></IconButton>
+                            <Chip label={`${s.estimatedDuration || 30} min`} variant="soft" color="default" size="small" sx={{ fontWeight: 800, borderRadius: 0.5 }} />
+                          </Stack>
+                          <Typography variant="h6" fontWeight={800} noWrap>{s.name.toUpperCase()}</Typography>
+                          <Typography variant="caption" color="secondary.main" fontWeight={900} sx={{ display: 'block', mt: -0.5, mb: 0.5 }}>{s.code || 'NO CODE'}</Typography>
+                          <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block' }}>Branch: {s.Branch?.name?.toUpperCase() || 'All Branches'}</Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Typography variant="h4" fontWeight={900} color="#1A1A1A">{s.price}</Typography>
+                          <Typography variant="caption" fontWeight={800} color="text.secondary">ETB</Typography>
+                        </Box>
                       </Stack>
+
+                      <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Box>
+                          {s.commissionEnabled ? (
+                            <Typography variant="caption" fontWeight={800} color="success.main">Commission: {Number(s.commissionRate || 0).toFixed(0)}%</Typography>
+                          ) : (
+                            <Typography variant="caption" color="text.disabled" fontWeight={800}>No Commission</Typography>
+                          )}
+                        </Box>
+                        <ServiceActions s={s} />
+                      </Stack>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : viewMode === 'table' ? (
+            /* ── TABLE VIEW ── */
+            <TableContainer component={Card} sx={{ borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1) }}>
+              <Table size="medium">
+                <TableHead>
+                  <TableRow sx={{ '& th': { fontWeight: 900, bgcolor: alpha(theme.palette.background.neutral, 0.6), whiteSpace: 'nowrap' } }}>
+                    <TableCell>Service</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>For</TableCell>
+                    <TableCell align="center">Duration</TableCell>
+                    <TableCell>Branch</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell>Commission</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {services.map((s) => (
+                    <TableRow key={s.id} hover>
+                      <TableCell>
+                        <Typography variant="subtitle2" fontWeight={800}>{s.name}</Typography>
+                        <Typography variant="caption" color="secondary.main" fontWeight={800}>{s.code || 'NO CODE'}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        {categoryLabel(s) || <Typography variant="caption" color="text.disabled">—</Typography>}
+                      </TableCell>
+                      <TableCell>
+                        <Chip size="small" variant="soft" color={s.gender === 'male' ? 'info' : 'secondary'} label={genderLabel(s.gender)} sx={{ fontWeight: 800, borderRadius: 0.5 }} />
+                      </TableCell>
+                      <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>{s.estimatedDuration || 30} min</TableCell>
+                      <TableCell><Typography variant="caption" fontWeight={700}>{s.Branch?.name || 'All Branches'}</Typography></TableCell>
+                      <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+                        <Typography component="span" fontWeight={900}>{s.price}</Typography>{' '}
+                        <Typography component="span" variant="caption" color="text.secondary">ETB</Typography>
+                      </TableCell>
+                      <TableCell>
+                        {s.commissionEnabled
+                          ? <Typography variant="caption" fontWeight={800} color="success.main">{Number(s.commissionRate || 0).toFixed(0)}%</Typography>
+                          : <Typography variant="caption" color="text.disabled" fontWeight={700}>—</Typography>}
+                      </TableCell>
+                      <TableCell align="right"><ServiceActions s={s} /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            /* ── TREE VIEW (super-category → sub-category → services) ── */
+            <Stack spacing={2}>
+              {treeData.groups.map(({ sup, direct, subs, count }) => {
+                const supKey = `sup-${sup.id}`;
+                return (
+                  <Card key={sup.id} sx={{ borderRadius: 2.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1), overflow: 'hidden' }}>
+                    <Stack
+                      direction="row" alignItems="center" spacing={1.5}
+                      onClick={() => toggleNode(supKey)}
+                      sx={{ p: 2.5, cursor: 'pointer', bgcolor: alpha(theme.palette.background.neutral, 0.5), '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.06) } }}
+                    >
+                      <Iconify icon={isOpen(supKey) ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} width={18} />
+                      <Box sx={{ width: 32, height: 32, borderRadius: 1, display: 'grid', placeItems: 'center', bgcolor: alpha(sup.color || theme.palette.secondary.main, 0.15), color: sup.color || theme.palette.secondary.main }}>
+                        <Iconify icon={sup.icon || 'solar:widget-5-linear'} width={18} />
+                      </Box>
+                      <Typography variant="h6" fontWeight={800} sx={{ flexGrow: 1 }}>{sup.name}</Typography>
+                      <Chip size="small" label={`${count}`} sx={{ fontWeight: 800 }} />
                     </Stack>
+                    <Collapse in={isOpen(supKey)} unmountOnExit>
+                      <Box sx={{ p: 2 }}>
+                        {direct.map((s) => renderTreeRow(s))}
+                        {subs.map(({ sub, items }) => {
+                          const subKey = `sub-${sub.id}`;
+                          return (
+                            <Box key={sub.id} sx={{ mb: 0.5 }}>
+                              <Stack
+                                direction="row" alignItems="center" spacing={1}
+                                onClick={() => toggleNode(subKey)}
+                                sx={{ py: 1, px: 1.5, cursor: 'pointer', borderRadius: 1, '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.05) } }}
+                              >
+                                <Iconify icon={isOpen(subKey) ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} width={16} sx={{ color: 'text.secondary' }} />
+                                <Iconify icon="solar:folder-2-linear" width={16} sx={{ color: 'secondary.main' }} />
+                                <Typography variant="subtitle2" fontWeight={800}>{sub.name}</Typography>
+                                <Chip size="small" variant="soft" label={items.length} sx={{ fontWeight: 800, height: 18 }} />
+                              </Stack>
+                              <Collapse in={isOpen(subKey)} unmountOnExit>
+                                <Box sx={{ pl: 3, borderLeft: '1px dashed', borderColor: alpha(theme.palette.divider, 0.4), ml: 1.5 }}>
+                                  {items.map((s) => renderTreeRow(s))}
+                                </Box>
+                              </Collapse>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Collapse>
+                  </Card>
+                );
+              })}
+              {treeData.uncategorized.length > 0 && (
+                <Card sx={{ borderRadius: 2.5, border: '1px dashed', borderColor: alpha(theme.palette.divider, 0.3) }}>
+                  <Box sx={{ p: 2 }}>
+                    <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1, px: 1.5, color: 'text.secondary' }}>Uncategorized</Typography>
+                    {treeData.uncategorized.map((s) => renderTreeRow(s))}
                   </Box>
                 </Card>
-              </Grid>
-            ))}
-          </Grid>
+              )}
+            </Stack>
+          )}
         </Grid>
       </Grid>
 
