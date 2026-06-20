@@ -307,8 +307,9 @@ export default function ServicesPage() {
       </Stack>
 
       <Grid container spacing={4}>
-        {/* ADD NEW SERVICE */}
-        <Grid item xs={12} lg={4}>
+        {/* ADD NEW SERVICE — collapses to a slim side rail to give the views the width */}
+        <Grid item xs={12} lg={addOpen ? 4 : 'auto'}>
+          {addOpen ? (
           <Card sx={{
             p: 4, borderRadius: 2.5, boxShadow: theme.customShadows.z12,
             position: 'sticky', top: 24, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
@@ -316,17 +317,18 @@ export default function ServicesPage() {
           }}>
             <Stack
               direction="row" spacing={2} alignItems="center"
-              onClick={() => setAddOpen((o) => !o)}
-              sx={{ cursor: 'pointer', mb: addOpen ? 4 : 0 }}
+              onClick={() => setAddOpen(false)}
+              sx={{ cursor: 'pointer', mb: 4 }}
             >
               <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F' }}>
                 <Iconify icon="solar:box-minimalistic-linear" width={28} />
               </Box>
               <Typography variant="h5" sx={{ fontWeight: 800, flexGrow: 1 }}>Add New Service</Typography>
-              <Iconify icon={addOpen ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={22} sx={{ color: 'text.secondary' }} />
+              <Tooltip title="Collapse panel">
+                <Iconify icon="solar:square-double-alt-arrow-left-linear" width={22} sx={{ color: 'text.secondary' }} />
+              </Tooltip>
             </Stack>
 
-            <Collapse in={addOpen}>
             <Stack spacing={3}>
               <TextField
                 label="Service Name"
@@ -448,12 +450,39 @@ export default function ServicesPage() {
                 {creating ? 'Saving…' : 'Save Service'}
               </Button>
             </Stack>
-            </Collapse>
           </Card>
+          ) : (
+            <Card
+              onClick={() => setAddOpen(true)}
+              sx={{
+                p: 1.5, borderRadius: 2.5, boxShadow: theme.customShadows.z8,
+                position: 'sticky', top: 24, cursor: 'pointer',
+                border: '1px solid', borderColor: alpha(theme.palette.divider, 0.1),
+                bgcolor: alpha(theme.palette.background.neutral, 0.4),
+                display: 'flex', alignItems: 'center', gap: 1.5,
+                flexDirection: { xs: 'row', lg: 'column' },
+                transition: 'border-color 0.2s',
+                '&:hover': { borderColor: 'secondary.main' },
+              }}
+            >
+              <Box sx={{ p: 1, bgcolor: '#1A1A1A', borderRadius: 1.5, color: '#9A7B4F', display: 'grid', placeItems: 'center' }}>
+                <Iconify icon="solar:add-circle-linear" width={24} />
+              </Box>
+              <Typography
+                sx={{
+                  fontWeight: 800, letterSpacing: '0.12em', whiteSpace: 'nowrap', color: 'text.secondary',
+                  writingMode: { lg: 'vertical-rl' },
+                  transform: { lg: 'rotate(180deg)' },
+                }}
+              >
+                ADD SERVICE
+              </Typography>
+            </Card>
+          )}
         </Grid>
 
         {/* SERVICE VIEWS */}
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} lg={addOpen ? 8 : true}>
           {services.length === 0 ? (
             <Card sx={{ p: 8, textAlign: 'center', borderRadius: 2.5, border: '1px dashed', borderColor: alpha(theme.palette.divider, 0.3) }}>
               <Iconify icon="solar:box-minimalistic-linear" width={56} sx={{ color: 'text.disabled', mb: 2 }} />
