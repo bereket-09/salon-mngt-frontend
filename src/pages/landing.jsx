@@ -39,6 +39,7 @@ export default function LandingPage() {
     const [typeFilter, setTypeFilter] = useState('all');
     const [services, setServices] = useState([]);
     const [branches, setBranches] = useState([]);
+    const [landingBranchId, setLandingBranchId] = useState(''); // selected branch on the public menu
     const [specialists, setSpecialists] = useState([]);
     const [bookingSuccess, setBookingSuccess] = useState(false);
     const [bookingForm, setBookingForm] = useState({
@@ -117,17 +118,20 @@ export default function LandingPage() {
     }, []);
 
     useEffect(() => {
-        fetch(`${config.BASE_URL}/services`)
+        fetch(`${config.BASE_URL}/services?landing=1`)
             .then((res) => res.json())
-            .then((data) => setServices(data))
+            .then((data) => setServices(Array.isArray(data) ? data : []))
             .catch((err) => console.error(err));
 
         fetch(`${config.BASE_URL}/branches`)
             .then((res) => res.json())
             .then((data) => {
-                setBranches(data);
-                if (data.length > 0) {
-                    setBookingForm(prev => ({ ...prev, branchId: data[0].id }));
+                setBranches(Array.isArray(data) ? data : []);
+                if (Array.isArray(data) && data.length > 0) {
+                    // Default to the "main" branch (the one offering everything), else the first.
+                    const main = data.find((b) => b.type === 'both') || data[0];
+                    setLandingBranchId(String(main.id));
+                    setBookingForm(prev => ({ ...prev, branchId: main.id }));
                 }
             })
             .catch((err) => console.error(err));
@@ -193,7 +197,9 @@ export default function LandingPage() {
     const filteredServices = services.filter((s) => {
         const matchesGender = genderFilter === 'both' ? true : s.gender === genderFilter || s.gender === 'both';
         const matchesType = typeFilter === 'all' ? true : s.type === typeFilter;
-        return matchesGender && matchesType;
+        // Branch-specific menu: show this branch's services + any shared (no-branch) service.
+        const matchesBranch = !landingBranchId || s.BranchId == null || String(s.BranchId) === String(landingBranchId);
+        return matchesGender && matchesType && matchesBranch;
     });
 
     const uniqueTypes = ['all', ...new Set(services.map(s => s.type).filter(Boolean))];
@@ -532,6 +538,27 @@ export default function LandingPage() {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Stack spacing={2.5} alignItems={{ xs: 'flex-start', md: 'flex-end' }}>
+                                {branches.length > 1 && (
+                                    <Stack direction="row" flexWrap="wrap" useFlexGap sx={{ border: `1px solid ${hairline}` }}>
+                                        {branches.map((b) => {
+                                            const active = String(landingBranchId) === String(b.id);
+                                            return (
+                                                <Button
+                                                    key={b.id}
+                                                    onClick={() => setLandingBranchId(String(b.id))}
+                                                    sx={{
+                                                        ...microLabel, minHeight: 44, px: { xs: 2, md: 2.5 }, borderRadius: 0,
+                                                        color: active ? bronze : muted,
+                                                        bgcolor: active ? alpha(bronze, 0.1) : 'transparent',
+                                                        '&:hover': { bgcolor: alpha(bronze, 0.06) },
+                                                    }}
+                                                >
+                                                    {b.name}
+                                                </Button>
+                                            );
+                                        })}
+                                    </Stack>
+                                )}
                                 <Stack direction="row" sx={{ border: `1px solid ${hairline}` }}>
                                     {[
                                         { id: 'both', label: 'All' },

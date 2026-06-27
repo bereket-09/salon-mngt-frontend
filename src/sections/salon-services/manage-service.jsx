@@ -57,6 +57,7 @@ export default function ServicesPage() {
     estimatedDuration: 30,
     commissionEnabled: false,
     commissionRate: 10,
+    hideOnLanding: false,
     code: '',
   });
   const [editService, setEditService] = useState(null);
@@ -117,7 +118,7 @@ export default function ServicesPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
-      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', categoryId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 10, code: '' });
+      setForm({ name: '', type: 'Styling', price: '', status: 'active', BranchId: '', categoryId: '', gender: 'both', estimatedDuration: 30, commissionEnabled: false, commissionRate: 10, hideOnLanding: false, code: '' });
       await fetchData();
     } catch (err) {
       console.error(err);
@@ -440,6 +441,20 @@ export default function ServicesPage() {
                 )}
               </Box>
 
+              <Box sx={{ p: 1.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.18), borderRadius: 1.5 }}>
+                <FormControlLabel
+                  sx={{ m: 0, width: '100%', justifyContent: 'space-between' }}
+                  labelPlacement="start"
+                  control={<Switch checked={!!form.hideOnLanding} color="secondary" onChange={(e) => setForm({ ...form, hideOnLanding: e.target.checked })} />}
+                  label={(
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight={800}>Hide on landing page</Typography>
+                      <Typography variant="caption" color="text.secondary">Keep this service off the public site</Typography>
+                    </Box>
+                  )}
+                />
+              </Box>
+
               <Button
                 variant="contained" color="secondary" fullWidth
                 onClick={handleCreate}
@@ -721,6 +736,15 @@ export default function ServicesPage() {
                     onChange={(e) => setEditService({ ...editService, commissionRate: e.target.value })}
                   />
                 )}
+              </Box>
+
+              <Box sx={{ p: 1.5, border: '1px solid', borderColor: alpha(theme.palette.divider, 0.18), borderRadius: 1.5 }}>
+                <FormControlLabel
+                  sx={{ m: 0, width: '100%', justifyContent: 'space-between' }}
+                  labelPlacement="start"
+                  control={<Switch checked={!!editService.hideOnLanding} color="secondary" onChange={(e) => setEditService({ ...editService, hideOnLanding: e.target.checked })} />}
+                  label={<Typography variant="subtitle2" fontWeight={800}>Hide on landing page</Typography>}
+                />
               </Box>
             </Stack>
           )}
