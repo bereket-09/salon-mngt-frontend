@@ -44,6 +44,16 @@ export default function LoginView() {
     }
   }, [router]);
 
+  // If the user landed here because their session expired mid-use, tell them.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('sessionExpired')) {
+        sessionStorage.removeItem('sessionExpired');
+        toast.info('Your session expired. Please sign in again.');
+      }
+    } catch (_e) { /* ignore */ }
+  }, []);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
